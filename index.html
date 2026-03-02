@@ -3,7 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K Williamson – Creations</title>
+<title>K Williamson – AI Assisted Creations</title>
+
+<!-- Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+<!-- Meta -->
+<meta name="description" content="A growing collection of tools, experiments and games built with Claude. Mostly for secondary school maths.">
+<meta name="author" content="K Williamson">
+
+<!-- Open Graph -->
+<meta property="og:title" content="K Williamson – AI Assisted Creations">
+<meta property="og:description" content="A growing collection of tools, experiments and games built with Claude. Mostly for secondary school maths.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kiatinw.github.io">
+<meta property="og:image" content="https://kiatinw.github.io/og-image.png">
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="K Williamson – AI Assisted Creations">
+<meta name="twitter:description" content="A growing collection of tools, experiments and games built with Claude. Mostly for secondary school maths.">
+
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -363,6 +383,41 @@ h1 {
 @keyframes rise {
   to { opacity: 1; transform: translateY(0) rotate(0deg); }
 }
+
+/* ══ REDUCED MOTION ══ */
+@media (prefers-reduced-motion: reduce) {
+  .bg-orb, .h1-assisted { animation: none; }
+  .card, .hero, .divider, .foot,
+  .card:nth-child(1), .card:nth-child(2),
+  .card:nth-child(3), .card:nth-child(4),
+  .card:nth-child(5) {
+    animation: none;
+    opacity: 1; transform: none;
+  }
+  .hero { opacity: 1; transform: none; }
+  .divider { opacity: 1; transform: none; }
+  .foot { opacity: 1; }
+  .card, .card-wm, .card-pill, .card-cta, .cta-line, .card:hover .card-cta {
+    transition: none;
+  }
+}
+
+/* ══ MOBILE ══ */
+@media (max-width: 600px) {
+  .page { padding: 0 1.4rem 6rem; }
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 3.5rem 0 3rem;
+    gap: 1rem;
+  }
+  .hero-right { display: none; }
+  .h1-ai, .h1-assisted, .h1-creations {
+    font-size: clamp(3.4rem, 14vw, 5rem);
+  }
+  .hero-tagline { margin-top: 1.6rem; }
+  .divider { margin: 2.8rem 0 1.8rem; }
+  .grid { gap: 1.2rem; }
+}
 </style>
 </head>
 <body>
@@ -510,5 +565,9 @@ document.querySelectorAll('.card').forEach(card => {
   });
 });
 </script>
+
+<!-- Plausible analytics — privacy-friendly, no cookies -->
+<!-- Replace "kiatinw.github.io" with your domain if it ever changes -->
+<script defer data-domain="kiatinw.github.io" src="https://plausible.io/js/script.js"></script>
 </body>
 </html>
