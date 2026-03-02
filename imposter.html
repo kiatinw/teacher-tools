@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impostor</title>
+<title>Impostor – Maths Edition</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
 
@@ -49,7 +49,7 @@
     margin-bottom: 2rem;
   }
 
-  .screen { width: 100%; max-width: 480px; display: none; }
+  .screen { width: 100%; max-width: 520px; display: none; }
   .screen.active { display: flex; flex-direction: column; gap: 16px; }
 
   label {
@@ -60,62 +60,6 @@
     display: block;
     margin-bottom: 6px;
   }
-
-  textarea, input[type="text"] {
-    width: 100%;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.85rem;
-    padding: 12px;
-    border-radius: 4px;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  textarea:focus, input[type="text"]:focus { border-color: var(--red); }
-  textarea { min-height: 120px; }
-
-  .btn {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem;
-    letter-spacing: 0.1em;
-    padding: 14px 28px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
-    width: 100%;
-  }
-  .btn:active { transform: scale(0.97); }
-
-  .btn-red { background: var(--red); color: #fff; }
-  .btn-dark { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-  .btn-green { background: var(--green); color: #0d0d0d; }
-  .btn-yellow { background: var(--yellow); color: #0d0d0d; }
-
-  /* Players list */
-  .players-list { display: flex; flex-direction: column; gap: 8px; }
-  .player-row {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--card); border: 1px solid var(--border);
-    padding: 10px 14px; border-radius: 4px;
-    font-size: 0.85rem;
-  }
-  .player-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    color: var(--red);
-    margin-right: 10px;
-  }
-  .player-name { flex: 1; }
-  .remove-btn {
-    background: none; border: none; color: var(--muted);
-    font-size: 1rem; cursor: pointer; padding: 0 4px;
-    transition: color 0.2s;
-  }
-  .remove-btn:hover { color: var(--red); }
 
   input[type="number"] {
     width: 100%;
@@ -131,7 +75,69 @@
     transition: border-color 0.2s;
   }
   input[type="number"]:focus { border-color: var(--red); }
-  input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    width: 100%;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-dark { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .btn-green { background: var(--green); color: #0d0d0d; }
+  .btn-yellow { background: var(--yellow); color: #0d0d0d; }
+
+  /* Year group tabs */
+  .year-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .year-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 6px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .year-tab:hover { color: var(--text); border-color: var(--muted); }
+  .year-tab.active { background: rgba(232,49,42,0.15); border-color: var(--red); color: var(--red); }
+
+  /* Topic grid */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .cat-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 10px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.3;
+  }
+  .cat-btn:hover { border-color: var(--muted); }
+  .cat-btn.selected { border-color: var(--red); background: rgba(232,49,42,0.12); color: var(--red); }
+  .cat-btn.random-pick { border-color: var(--yellow); background: rgba(245,197,24,0.08); color: var(--yellow); }
 
   /* Role reveal card */
   .role-card {
@@ -140,126 +146,44 @@
     border-radius: 8px;
     padding: 32px 24px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
   }
   .role-card.impostor { border-color: var(--red); }
   .role-card.citizen { border-color: var(--green); }
 
-  .player-turn {
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
+  .player-turn { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
   .player-turn span { color: var(--yellow); }
+  .cover-message { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--text); margin-bottom: 8px; }
+  .cover-sub { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; }
 
-  .cover-message {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
-
-  .cover-sub {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-  }
-
-  .role-badge {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 3.5rem;
-    line-height: 1;
-    margin: 16px 0 8px;
-  }
+  .role-badge { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; line-height: 1; margin: 16px 0 8px; }
   .role-badge.impostor { color: var(--red); }
   .role-badge.citizen { color: var(--green); }
 
-  .role-word {
-    font-size: 1.1rem;
-    background: rgba(255,255,255,0.05);
-    padding: 12px 20px;
-    border-radius: 4px;
-    letter-spacing: 0.05em;
-    margin: 8px 0;
-  }
+  .role-word { font-size: 1.1rem; background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 4px; letter-spacing: 0.05em; margin: 8px 0; }
 
   .hidden-content { display: none; }
 
-  .progress-dots {
-    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
-    margin-top: 8px;
-  }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
-  }
+  .progress-dots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
   .dot.done { background: var(--green); }
   .dot.current { background: var(--yellow); }
 
-  .info-row {
-    display: flex; justify-content: space-between;
-    font-size: 0.7rem; color: var(--muted);
-    padding: 6px 0;
-  }
+  .info-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); padding: 6px 0; }
   .info-row span:last-child { color: var(--text); }
 
-  .results-area {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-  }
-  .results-area h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    margin-bottom: 12px;
-  }
-  .impostor-reveal {
-    font-size: 0.9rem; margin: 8px 0;
-    background: rgba(232,49,42,0.1);
-    border: 1px solid rgba(232,49,42,0.3);
-    border-radius: 4px;
-    padding: 10px;
-  }
-  .category-reveal {
-    font-size: 0.9rem; margin: 8px 0;
-    background: rgba(42,232,122,0.1);
-    border: 1px solid rgba(42,232,122,0.3);
-    border-radius: 4px;
-    padding: 10px;
-  }
+  .results-area { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; }
+
+  .reveal-box { font-size: 0.9rem; margin: 8px 0; border-radius: 4px; padding: 12px; }
+  .reveal-box.red { background: rgba(232,49,42,0.1); border: 1px solid rgba(232,49,42,0.3); }
+  .reveal-box.green { background: rgba(42,232,122,0.1); border: 1px solid rgba(42,232,122,0.3); }
+  .reveal-box.yellow { background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3); }
+  .reveal-box .rval { font-family: 'Bebas Neue',sans-serif; font-size: 1.8rem; margin-top: 4px; }
+  .reveal-box .rval.red { color: var(--red); }
+  .reveal-box .rval.green { color: var(--green); }
+  .reveal-box .rval.yellow { color: var(--yellow); font-size: 1.2rem; font-family: 'DM Mono', monospace; }
 
   .sep { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
-
-  /* Setup header */
   .header { text-align: center; }
-
-  .category-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .cat-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    padding: 10px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    transition: border-color 0.2s, background 0.2s;
-    letter-spacing: 0.05em;
-  }
-  .cat-btn:hover { border-color: var(--muted); }
-  .cat-btn.selected { border-color: var(--red); background: rgba(232,49,42,0.12); color: var(--red); }
-
   .small-note { font-size: 0.65rem; color: var(--muted); text-align: center; }
 </style>
 </head>
@@ -269,14 +193,25 @@
 <div class="screen active" id="screen-setup">
   <div class="header">
     <h1>IMPOSTOR</h1>
-    <p class="tagline">Who doesn't belong?</p>
+    <p class="tagline">Maths Edition</p>
+  </div>
+
+  <div>
+    <label>Year Group</label>
+    <div class="year-tabs" id="year-tabs"></div>
+  </div>
+
+  <div>
+    <label>Topic</label>
+    <button id="random-topic-btn" class="btn btn-dark" onclick="pickRandomTopic()" style="font-size:1rem;padding:10px;margin-bottom:8px">🎲 Random Topic</button>
+    <div class="cat-grid" id="cat-grid"></div>
   </div>
 
   <div>
     <label>Number of Players</label>
-    <input type="number" id="player-count-input" min="3" max="20" value="4">
+    <input type="number" id="player-count-input" min="3" max="30" value="4">
   </div>
-  <p class="small-note">Min 3 players. Each player gets a number — one will be the impostor.</p>
+  <p class="small-note">Min 3 players · each gets a number · one is the impostor</p>
 
   <button class="btn btn-red" onclick="startGame()">START GAME</button>
 </div>
@@ -284,9 +219,7 @@
 <!-- REVEAL SCREEN -->
 <div class="screen" id="screen-reveal">
   <div class="progress-dots" id="progress-dots"></div>
-
   <div class="role-card" id="role-card">
-    <!-- Cover state -->
     <div id="cover-state">
       <p class="player-turn">PASS TO <span id="current-player-name">—</span></p>
       <div class="cover-message">👁 LOOK AWAY</div>
@@ -294,7 +227,6 @@
       <br>
       <button class="btn btn-yellow" onclick="revealRole()">REVEAL MY ROLE</button>
     </div>
-    <!-- Role state -->
     <div id="role-state" class="hidden-content">
       <p class="player-turn">YOUR ROLE</p>
       <div class="role-badge" id="role-badge">—</div>
@@ -304,7 +236,6 @@
       <button class="btn btn-dark" onclick="hideRole()">HIDE & PASS DEVICE</button>
     </div>
   </div>
-
   <div class="info-row">
     <span>PLAYER</span>
     <span id="player-counter">1 / ?</span>
@@ -317,192 +248,331 @@
     <h1>DISCUSS</h1>
     <p class="tagline">Find the impostor</p>
   </div>
-
   <div class="results-area">
     <div class="info-row">
-      <span>Category</span>
+      <span>Year &amp; Topic</span>
       <span id="play-category-display" style="color:var(--muted)">Hidden</span>
     </div>
-    <button class="btn btn-dark" id="toggle-category-btn" onclick="toggleCategory()" style="margin:8px 0;font-size:1rem;padding:10px">👁 SHOW CATEGORY</button>
+    <button class="btn btn-dark" id="toggle-category-btn" onclick="toggleCategory()" style="margin:8px 0;font-size:1rem;padding:10px">👁 SHOW YEAR &amp; TOPIC</button>
     <hr class="sep">
-    <p class="small-note" style="margin-top:8px">Everyone discusses. When ready, vote for who you think is the impostor.</p>
+    <p class="small-note" style="margin-top:8px">Discuss. Vote for who you think is the impostor.</p>
   </div>
-
   <button class="btn btn-red" onclick="showResults()">REVEAL RESULTS</button>
 </div>
 
 <!-- RESULTS SCREEN -->
 <div class="screen" id="screen-results">
-  <div class="header">
-    <h1>RESULTS</h1>
-  </div>
-
+  <div class="header"><h1>RESULTS</h1></div>
   <div class="results-area">
-    <div class="impostor-reveal">
-      <label style="margin-bottom:4px">THE IMPOSTOR WAS</label>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--red)" id="result-impostor">—</div>
+    <div class="reveal-box red">
+      <label>THE IMPOSTOR WAS</label>
+      <div class="rval red" id="result-impostor">—</div>
     </div>
-    <div class="category-reveal">
-      <label style="margin-bottom:4px">CATEGORY</label>
-      <div style="font-size:0.95rem" id="result-category">—</div>
+    <div class="reveal-box green">
+      <label>YEAR GROUP &amp; TOPIC</label>
+      <div style="font-size:0.85rem;margin-top:6px" id="result-category">—</div>
     </div>
-    <div class="category-reveal" style="background:rgba(245,197,24,0.1);border-color:rgba(245,197,24,0.3)">
-      <label style="margin-bottom:4px">THE WORD WAS</label>
-      <div style="font-size:0.95rem" id="result-word">—</div>
+    <div class="reveal-box yellow">
+      <label>THE WORD WAS</label>
+      <div class="rval yellow" id="result-word">—</div>
     </div>
   </div>
-
-  <button class="btn btn-green" onclick="newRound()">NEW ROUND (SAME PLAYERS)</button>
-  <button class="btn btn-dark" onclick="newGame()">CHANGE PLAYERS / WORDS</button>
+  <button class="btn btn-green" onclick="newRound()">NEW ROUND (SAME TOPIC)</button>
+  <button class="btn btn-dark" onclick="newGame()">BACK TO SETUP</button>
 </div>
 
 <script>
-  const CATEGORIES = {
-    "Algebra": ["variable", "coefficient", "expression", "equation", "inequality", "factor", "expand", "simplify", "quadratic", "polynomial", "root", "substitution", "formula", "identity", "simultaneous"],
-    "Geometry": ["angle", "bisector", "chord", "arc", "tangent", "sector", "segment", "polygon", "congruent", "similar", "locus", "perpendicular", "parallel", "hypotenuse", "circumference"],
-    "Trigonometry": ["sine", "cosine", "tangent", "radian", "amplitude", "period", "identity", "SOHCAHTOA", "inverse", "bearing", "adjacent", "opposite", "hypotenuse", "cotangent", "secant"],
-    "Statistics & Probability": ["mean", "median", "mode", "range", "variance", "standard deviation", "histogram", "frequency", "probability", "sample", "hypothesis", "correlation", "outlier", "quartile", "cumulative"],
-    "Calculus": ["derivative", "integral", "limit", "gradient", "chain rule", "product rule", "stationary point", "inflection", "differentiation", "integration", "area under curve", "turning point", "rate of change", "antiderivative", "tangent"],
-    "Number Theory": ["prime", "factor", "multiple", "divisor", "HCF", "LCM", "modulo", "integer", "rational", "irrational", "surds", "index", "logarithm", "Fibonacci", "Euclidean"],
-    "Vectors": ["magnitude", "direction", "scalar", "dot product", "cross product", "unit vector", "position vector", "column vector", "resultant", "component", "parallel", "perpendicular", "displacement", "basis", "linear combination"],
-    "Functions & Graphs": ["domain", "range", "inverse", "composite", "asymptote", "intercept", "gradient", "translation", "reflection", "stretch", "parabola", "hyperbola", "exponential", "logarithm", "mapping"],
-    "Sequences & Series": ["arithmetic", "geometric", "common difference", "common ratio", "nth term", "sum to infinity", "convergent", "divergent", "recurrence", "Fibonacci", "sigma notation", "partial sum", "limit", "first term", "progression"]
-  };
-
-  let gameState = {};
-  let categoryVisible = false;
-
-  function startGame() {
-    const numPlayers = parseInt(document.getElementById('player-count-input').value);
-    if (isNaN(numPlayers) || numPlayers < 3) { alert('Please enter at least 3 players.'); return; }
-
-    const categoryNames = Object.keys(CATEGORIES);
-    const selectedCategory = categoryNames[Math.floor(Math.random() * categoryNames.length)];
-    const words = CATEGORIES[selectedCategory];
-    const word = words[Math.floor(Math.random() * words.length)];
-    const impostorIndex = Math.floor(Math.random() * numPlayers);
-    const order = Array.from({length: numPlayers}, (_, i) => i).sort(() => Math.random() - 0.5);
-
-    gameState = { category: selectedCategory, word, impostorIndex, order, numPlayers, currentStep: 0, words };
-
-    showScreen('screen-reveal');
-    setupReveal();
+const SYLLABUS = {
+  "Year 7": {
+    "Number": ["integer","factor","multiple","prime","composite","square number","cube number","index","HCF","LCM","order of operations","place value","rounding","estimation","number line"],
+    "Fractions, Decimals & %": ["numerator","denominator","equivalent","improper fraction","mixed number","decimal","percentage","convert","simplify","compare","recurring","terminating","rate","ratio","proportion"],
+    "Algebraic Techniques": ["variable","term","expression","coefficient","constant","like terms","expand","simplify","substitute","pronumeral","algebra","evaluate","formula","equation","power"],
+    "Equations": ["equation","solution","solve","balance","inverse operation","unknown","pronumeral","check","linear","verify","substitute","isolate","backtrack","one-step","two-step"],
+    "Angle Relationships": ["angle","acute","obtuse","reflex","right angle","straight angle","revolution","complementary","supplementary","vertically opposite","adjacent","transversal","parallel","perpendicular","protractor"],
+    "Geometrical Figures": ["polygon","triangle","quadrilateral","regular","irregular","equilateral","isosceles","scalene","rhombus","parallelogram","trapezium","kite","interior angle","exterior angle","diagonal"],
+    "Length & Area": ["perimeter","area","length","breadth","height","rectangle","composite","sector","arc","circumference","radius","diameter","pi","formula","unit"],
+    "Data & Probability": ["data","frequency","tally","mode","mean","median","range","dot plot","stem-and-leaf","probability","chance","outcome","sample space","event","experimental"]
+  },
+  "Year 8": {
+    "Number & Finance": ["rational","irrational","scientific notation","significant figures","percentage change","profit","loss","discount","GST","commission","simple interest","tax","currency","index","surd"],
+    "Algebra": ["like terms","expand","factorise","distributive law","substitution","formula","linear expression","simplify","index laws","power","pronumeral","coefficient","algebraic fraction","equivalent","binomial"],
+    "Equations & Inequalities": ["equation","inequality","solve","unknown","solution","linear","two-step","bracket","variable","number line","graph","inverse","verify","balance","formal"],
+    "Pythagoras' Theorem": ["hypotenuse","right angle","square root","Pythagorean triad","legs","theorem","irrational","exact","approximate","distance","diagonal","altitude","proof","converse","formula"],
+    "Linear Relationships": ["gradient","y-intercept","x-intercept","linear","equation","table of values","graph","slope","rise","run","direct proportion","formula","coordinate","axes","intercept"],
+    "Volume & Surface Area": ["volume","surface area","prism","cylinder","cross-section","net","capacity","face","edge","vertex","height","base","formula","composite","convert"],
+    "Ratios & Rates": ["ratio","rate","proportion","equivalent ratio","simplify","scale","unit rate","speed","distance","time","map scale","unitary method","divide","share","compare"],
+    "Data Analysis": ["mean","median","mode","range","outlier","skew","symmetric","histogram","box plot","dot plot","stem-and-leaf","frequency","distribution","shape","spread"]
+  },
+  "Year 9 Core": {
+    "Financial Mathematics": ["simple interest","compound interest","principal","rate","time","appreciation","depreciation","loan","repayment","budget","income","tax","superannuation","investment","return"],
+    "Algebra & Equations": ["expand","factorise","quadratic","linear","simultaneous","equation","solution","substitution","index laws","algebraic fraction","binomial","perfect square","difference of squares","formula","inequality"],
+    "Linear Relationships": ["gradient","y-intercept","slope","parallel","perpendicular","equation","graph","coordinate","midpoint","distance","collinear","direct variation","linear model","table of values","intercepts"],
+    "Area & Volume": ["surface area","volume","prism","cylinder","cone","sphere","composite","Pythagoras","similar","scale","perimeter","area","net","formula","capacity"],
+    "Trigonometry": ["sine","cosine","tangent","opposite","adjacent","hypotenuse","ratio","SOHCAHTOA","angle of elevation","angle of depression","right-angled triangle","exact value","inverse","bearing","solve"],
+    "Data & Visualisation": ["categorical","numerical","discrete","continuous","histogram","frequency","class interval","cumulative","dot plot","stem-and-leaf","bivariate","scatter plot","trend","correlation","outlier"],
+    "Probability": ["probability","sample space","event","complement","mutually exclusive","independent","tree diagram","Venn diagram","relative frequency","expected value","experimental","theoretical","conditional","two-stage","table"]
+  },
+  "Year 9 Path": {
+    "Further Algebra": ["quadratic","factorise","perfect square","difference of squares","algebraic fraction","simultaneous","substitution","elimination","linear","non-linear","expand","expression","formula","simplify","solve"],
+    "Indices": ["index law","negative index","fractional index","surd","rationalise","simplify","scientific notation","power","base","exponential","evaluate","exact","product","quotient","zero index"],
+    "Further Trigonometry": ["sine rule","cosine rule","non-right triangle","bearing","direction","angle","area of triangle","ambiguous case","exact value","radian","unit circle","solve","application","formula","two triangles"],
+    "Functions & Graphs": ["function","relation","domain","range","input","output","vertical line test","mapping","notation","linear","quadratic","parabola","axis of symmetry","turning point","graph"],
+    "Further Linear Relationships": ["gradient","parallel","perpendicular","y-intercept","slope","equation","simultaneous","intersection","linear model","collinear","midpoint","distance formula","graph","system","solution"]
+  },
+  "Year 10 Core": {
+    "Financial Mathematics": ["compound interest","annuity","loan","repayment","appreciation","depreciation","present value","future value","investment","tax","budget","superannuation","net income","gross income","formula"],
+    "Algebra": ["quadratic formula","discriminant","completing the square","factorise","expand","simultaneous","algebraic fraction","inequality","absolute value","surds","index","logarithm","formula","linear","non-linear"],
+    "Non-linear Relationships": ["parabola","hyperbola","exponential","circle","cubic","turning point","axis of symmetry","x-intercept","y-intercept","vertex","asymptote","graph","domain","range","transformation"],
+    "Trigonometry": ["sine rule","cosine rule","area formula","bearing","angle of elevation","angle of depression","non-right triangle","exact value","radian","unit circle","quadrant","solve","application","direction","navigation"],
+    "Surface Area & Volume": ["surface area","volume","sphere","cone","pyramid","prism","cylinder","composite","similar","scale factor","formula","net","capacity","hemisphere","frustum"],
+    "Data Analysis": ["bivariate","scatter plot","correlation","line of best fit","regression","interpolate","extrapolate","causation","association","residual","trend","outlier","two-way table","frequency","analysis"],
+    "Probability": ["conditional probability","Venn diagram","two-way table","tree diagram","complement","independent","mutually exclusive","relative frequency","expected value","simulation","counting","factorial","permutation","combination","arrangement"]
+  },
+  "Year 10 Path": {
+    "Further Trigonometry": ["radian","unit circle","sine","cosine","tangent","exact value","period","amplitude","phase shift","transformation","graph","equation","quadrant","symmetry","solve"],
+    "Further Functions & Graphs": ["polynomial","degree","root","factor theorem","remainder theorem","rational function","asymptote","inverse function","absolute value","exponential","logarithm","composition","transformation","domain","range"],
+    "Further Algebra": ["quadratic formula","discriminant","completing the square","sum of roots","product of roots","nature of roots","simultaneous","non-linear","substitution","elimination","literal","inequality","absolute value","solve","parametric"],
+    "Networks": ["network","graph","vertex","edge","degree","path","cycle","Euler path","Hamiltonian path","tree","spanning tree","directed","weighted","adjacency matrix","shortest path"],
+    "Geometrical Proof": ["similar","congruent","proof","theorem","angle","parallel","transversal","circle","chord","tangent","arc","sector","cyclic quadrilateral","geometry","deductive"]
+  },
+  "Year 11 Standard": {
+    "Algebra & Modelling": ["formula","substitution","simplify","expand","linear","equation","inequality","solve","pronumeral","expression","evaluate","rearrange","algebraic","equivalent","variable"],
+    "Measurement": ["unit","convert","perimeter","area","volume","surface area","composite","error","accuracy","significant figures","tolerance","approximation","formula","scale","rate"],
+    "Financial Mathematics": ["income","tax","deduction","net income","simple interest","compound interest","depreciation","loan","repayment","budget","earning","overtime","piecework","commission","superannuation"],
+    "Statistics": ["mean","median","mode","range","quartile","interquartile range","outlier","box plot","histogram","frequency","standard deviation","normal distribution","z-score","skew","spread"],
+    "Networks": ["network","vertex","edge","path","cycle","Eulerian","Hamiltonian","tree","spanning tree","weighted","directed","shortest path","flow","capacity","minimum spanning"],
+    "Probability": ["probability","frequency","relative frequency","complement","Venn diagram","two-way table","tree diagram","expected value","independent","conditional","sample space","event","outcome","theoretical","experimental"]
+  },
+  "Year 11 Advanced": {
+    "Functions": ["function","domain","range","mapping","inverse","composite","notation","vertical line test","one-to-one","onto","transformation","restriction","piecewise","absolute value","even/odd"],
+    "Trigonometry": ["radian","unit circle","exact value","sine","cosine","tangent","period","amplitude","phase shift","transformation","graph","equation","identity","quadrant","ASTC"],
+    "Calculus": ["derivative","differentiation","limit","gradient","tangent","normal","chain rule","product rule","quotient rule","stationary point","increasing","decreasing","concavity","inflection","rate of change"],
+    "Exponentials & Logarithms": ["exponential","logarithm","base","natural log","e","index law","log law","graph","equation","solve","growth","decay","transformation","asymptote","domain"],
+    "Statistics": ["data","distribution","mean","variance","standard deviation","normal distribution","z-score","probability","sample","population","histogram","outlier","centre","spread","shape"],
+    "Sequences & Series": ["arithmetic","geometric","common difference","common ratio","nth term","sum","series","sigma","convergent","divergent","first term","recurrence","progression","partial sum","limit"]
+  },
+  "Year 11 Extension": {
+    "Proof": ["proof","induction","base case","inductive step","conjecture","counterexample","direct proof","contrapositive","contradiction","proposition","theorem","lemma","corollary","logical","argument"],
+    "Further Functions": ["polynomial","factor theorem","remainder theorem","root","multiplicity","rational function","asymptote","inverse","composition","absolute value","signum","floor","ceiling","restriction","domain"],
+    "Trig Identities": ["pythagorean identity","double angle","compound angle","auxiliary angle","t-results","half angle","product-to-sum","sum-to-product","identity","prove","equation","simplify","exact","general solution","period"],
+    "Combinatorics": ["permutation","combination","factorial","arrangement","selection","pigeonhole","Pascal's triangle","binomial theorem","multinomial","inclusion-exclusion","counting","coefficient","expansion","principle","theorem"],
+    "Vectors": ["vector","scalar","magnitude","direction","component","addition","subtraction","dot product","unit vector","position vector","parallel","perpendicular","linear combination","resultant","geometric"]
+  },
+  "Year 12 Standard 2": {
+    "Algebra & Modelling": ["formula","model","linear","non-linear","direct variation","inverse variation","graph","interpret","extrapolate","interpolate","simultaneous","break-even","equation","table","rate"],
+    "Measurement": ["surface area","volume","error","tolerance","trigonometry","sine rule","cosine rule","bearing","angle","area","perimeter","composite","formula","application","approximation"],
+    "Financial Mathematics": ["compound interest","annuity","future value","present value","loan","repayment","investment","depreciation","reducing balance","table","formula","interest","principal","installment","amortise"],
+    "Statistics": ["normal distribution","z-score","standard deviation","mean","percentile","skew","bivariate","scatter plot","correlation","regression","line of fit","interpolate","extrapolate","causation","association"],
+    "Networks & Paths": ["network","critical path","activity chart","float","earliest start","latest start","directed","weighted","Gantt chart","scheduling","project","sequence","precedence","minimum time","path"],
+    "Probability": ["probability","complement","conditional","Venn diagram","two-way table","tree diagram","counting","selection","expected value","simulation","frequency","relative","theoretical","combination","arrangement"]
+  },
+  "Year 12 Advanced": {
+    "Calculus": ["differentiation","integration","chain rule","product rule","quotient rule","stationary point","inflection","area","definite integral","antiderivative","rate of change","related rates","optimisation","concavity","fundamental theorem"],
+    "Trigonometric Functions": ["sine","cosine","tangent","period","amplitude","phase","graph","equation","solve","derivative","integral","inverse trig","identity","transformation","radian"],
+    "Exponential & Log Functions": ["exponential","logarithm","e","natural log","derivative","integral","growth","decay","equation","graph","asymptote","log law","chain rule","application","model"],
+    "Statistical Analysis": ["continuous random variable","probability density","normal distribution","z-score","expectation","variance","standard deviation","sample","confidence interval","hypothesis","binomial","mean","cumulative","model","distribution"],
+    "Discrete Probability": ["random variable","probability distribution","expected value","variance","standard deviation","binomial distribution","uniform distribution","tree diagram","table","mean","spread","model","trial","success","complement"]
+  },
+  "Year 12 Extension 1": {
+    "Proof by Induction": ["mathematical induction","base case","inductive step","assumption","divisibility","inequality","series","formula","conjecture","verify","prove","proposition","integer","positive","recursive"],
+    "Vectors": ["vector","dot product","projection","component","magnitude","direction","perpendicular","parallel","unit vector","angle between vectors","geometric","proof","parametric","scalar","linear dependence"],
+    "Trigonometric Equations": ["general solution","principal value","multiple angle","auxiliary angle","t-substitution","equation","identity","simplify","period","solve","inverse","exact","radian","degree","sum and product"],
+    "Calculus": ["integration by substitution","integration by parts","inverse trig integral","related rates","implicit differentiation","parametric derivative","differential equation","separable","solution","initial condition","slope field","Euler","approximate","model","Newton's method"],
+    "Combinatorics": ["permutation","combination","binomial theorem","Pascal's triangle","multinomial","expansion","coefficient","pigeonhole principle","inclusion-exclusion","counting principle","arrangement","selection","proof","identity","row"]
+  },
+  "Year 12 Extension 2": {
+    "Proof": ["contradiction","contrapositive","inequality","AM-GM inequality","absolute value inequality","induction","divisibility","logical","proposition","disprove","counterexample","rigour","formal","necessary","sufficient"],
+    "Complex Numbers": ["complex number","real part","imaginary part","modulus","argument","conjugate","polar form","De Moivre's theorem","roots of unity","Argand diagram","locus","multiplication","division","exponential form","Euler's formula"],
+    "3D Vectors": ["position vector","displacement","dot product","cross product","scalar triple product","plane","line","angle","perpendicular","parallel","equation","parametric","normal","distance","intersection"],
+    "Integration Techniques": ["integration by parts","reduction formula","partial fractions","trigonometric substitution","recurrence relation","definite integral","improper integral","arc length","surface area","volume of revolution","residue"],
+    "Mechanics": ["force","motion","velocity","acceleration","momentum","Newton's law","projectile","resisted motion","simple harmonic motion","equilibrium","energy","work","power","differential equation","model"]
   }
+};
 
-  // --- REVEAL ---
-  function setupReveal() {
-    const dots = document.getElementById('progress-dots');
-    dots.innerHTML = gameState.order.map((_, i) =>
-      `<div class="dot" id="dot-${i}"></div>`
-    ).join('');
-    showStep(0);
+let selectedYear = null;
+let selectedTopic = null;
+let gameState = {};
+let categoryVisible = false;
+
+function renderYearTabs() {
+  const container = document.getElementById('year-tabs');
+  container.innerHTML = Object.keys(SYLLABUS).map(yr => {
+    const id = 'yt-' + yr.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    return `<button class="year-tab" onclick="selectYear('${yr}')" id="${id}">${yr}</button>`;
+  }).join('');
+}
+
+function selectYear(yr) {
+  selectedYear = yr;
+  selectedTopic = '__random__'; // default to random
+  document.querySelectorAll('.year-tab').forEach(b => b.classList.remove('active'));
+  const id = 'yt-' + yr.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  document.getElementById(id).classList.add('active');
+  renderTopics();
+  highlightRandomBtn(true);
+}
+
+function topicId(t) {
+  return 'ct-' + t.replace(/[^a-zA-Z0-9]/g,'_');
+}
+
+function highlightRandomBtn(on) {
+  const btn = document.getElementById('random-topic-btn');
+  btn.style.borderColor = on ? 'var(--yellow)' : '';
+  btn.style.color = on ? 'var(--yellow)' : '';
+  btn.style.background = on ? 'rgba(245,197,24,0.08)' : '';
+}
+
+function renderTopics() {
+  const grid = document.getElementById('cat-grid');
+  if (!selectedYear) { grid.innerHTML = ''; return; }
+  const topics = Object.keys(SYLLABUS[selectedYear]);
+  grid.innerHTML = topics.map(t => {
+    return `<button class="cat-btn" onclick="selectTopic(this,'${t.replace(/'/g,"\\'")}')" id="${topicId(t)}">${t}</button>`;
+  }).join('');
+}
+
+function selectTopic(el, t) {
+  selectedTopic = t;
+  document.querySelectorAll('.cat-btn').forEach(b => { b.classList.remove('selected'); });
+  el.classList.add('selected');
+  highlightRandomBtn(false);
+}
+
+function pickRandomTopic() {
+  if (!selectedYear) { alert('Please select a year group first.'); return; }
+  selectedTopic = '__random__';
+  document.querySelectorAll('.cat-btn').forEach(b => { b.classList.remove('selected'); });
+  highlightRandomBtn(true);
+}
+
+function resolveTopic() {
+  if (selectedTopic === '__random__') {
+    const topics = Object.keys(SYLLABUS[selectedYear]);
+    return topics[Math.floor(Math.random() * topics.length)];
   }
+  return selectedTopic;
+}
 
-  function showStep(step) {
-    gameState.currentStep = step;
-    const playerNum = gameState.order[step] + 1;
+function startGame() {
+  if (!selectedYear) { alert('Please select a year group.'); return; }
+  if (!selectedTopic) { alert('Please select a topic or press Random Topic.'); return; }
+  const numPlayers = parseInt(document.getElementById('player-count-input').value);
+  if (isNaN(numPlayers) || numPlayers < 3) { alert('Please enter at least 3 players.'); return; }
 
-    document.getElementById('current-player-name').textContent = `PLAYER ${playerNum}`;
-    document.getElementById('player-counter').textContent = `${step+1} / ${gameState.numPlayers}`;
+  const topic = resolveTopic();
+  const words = SYLLABUS[selectedYear][topic];
+  const word = words[Math.floor(Math.random() * words.length)];
+  const impostorIndex = Math.floor(Math.random() * numPlayers);
+  const order = Array.from({length: numPlayers}, (_, i) => i).sort(() => Math.random() - 0.5);
 
-    gameState.order.forEach((_, i) => {
-      const dot = document.getElementById(`dot-${i}`);
-      dot.className = 'dot' + (i < step ? ' done' : i === step ? ' current' : '');
-    });
+  gameState = { year: selectedYear, topic, word, impostorIndex, order, numPlayers, currentStep: 0, words };
+  showScreen('screen-reveal');
+  setupReveal();
+}
 
-    document.getElementById('cover-state').style.display = '';
-    document.getElementById('role-state').classList.add('hidden-content');
-    document.getElementById('role-card').className = 'role-card';
+function setupReveal() {
+  document.getElementById('progress-dots').innerHTML = gameState.order.map((_, i) => `<div class="dot" id="dot-${i}"></div>`).join('');
+  showStep(0);
+}
+
+function showStep(step) {
+  gameState.currentStep = step;
+  const playerNum = gameState.order[step] + 1;
+  document.getElementById('current-player-name').textContent = `PLAYER ${playerNum}`;
+  document.getElementById('player-counter').textContent = `${step+1} / ${gameState.numPlayers}`;
+  gameState.order.forEach((_, i) => {
+    document.getElementById(`dot-${i}`).className = 'dot' + (i < step ? ' done' : i === step ? ' current' : '');
+  });
+  document.getElementById('cover-state').style.display = '';
+  document.getElementById('role-state').classList.add('hidden-content');
+  document.getElementById('role-card').className = 'role-card';
+}
+
+function revealRole() {
+  const step = gameState.currentStep;
+  const isImpostor = gameState.order[step] === gameState.impostorIndex;
+  const badge = document.getElementById('role-badge');
+  const wordArea = document.getElementById('word-area');
+  const card = document.getElementById('role-card');
+
+  if (isImpostor) {
+    badge.textContent = 'IMPOSTOR';
+    badge.className = 'role-badge impostor';
+    wordArea.innerHTML = `<p style="color:var(--muted);font-size:0.75rem;margin-top:8px">You don't know the word — bluff!</p>`;
+    card.className = 'role-card impostor';
+  } else {
+    badge.textContent = 'CITIZEN';
+    badge.className = 'role-badge citizen';
+    wordArea.innerHTML = `
+      <p style="color:var(--muted);font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">The word is</p>
+      <div class="role-word">${gameState.word}</div>
+      <p style="color:var(--muted);font-size:0.65rem;margin-top:4px">${gameState.year} · ${gameState.topic}</p>
+    `;
+    card.className = 'role-card citizen';
   }
+  document.getElementById('cover-state').style.display = 'none';
+  document.getElementById('role-state').classList.remove('hidden-content');
+}
 
-  function revealRole() {
-    const step = gameState.currentStep;
-    const playerIdx = gameState.order[step];
-    const isImpostor = playerIdx === gameState.impostorIndex;
-
-    const badge = document.getElementById('role-badge');
-    const wordArea = document.getElementById('word-area');
-    const card = document.getElementById('role-card');
-
-    if (isImpostor) {
-      badge.textContent = 'IMPOSTOR';
-      badge.className = 'role-badge impostor';
-      wordArea.innerHTML = `<p style="color:var(--muted);font-size:0.75rem;margin-top:8px">You don't know the word. Bluff!</p>`;
-      card.className = 'role-card impostor';
-    } else {
-      badge.textContent = 'CITIZEN';
-      badge.className = 'role-badge citizen';
-      wordArea.innerHTML = `
-        <p style="color:var(--muted);font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">The word is</p>
-        <div class="role-word">${gameState.word}</div>
-        <p style="color:var(--muted);font-size:0.65rem;margin-top:4px">Category: ${gameState.category}</p>
-      `;
-      card.className = 'role-card citizen';
-    }
-
-    document.getElementById('cover-state').style.display = 'none';
-    document.getElementById('role-state').classList.remove('hidden-content');
+function hideRole() {
+  const step = gameState.currentStep;
+  if (step + 1 < gameState.numPlayers) {
+    showStep(step + 1);
+  } else {
+    showScreen('screen-play');
+    setupPlay();
   }
+}
 
-  function hideRole() {
-    const step = gameState.currentStep;
-    if (step + 1 < gameState.numPlayers) {
-      showStep(step + 1);
-    } else {
-      showScreen('screen-play');
-      setupPlay();
-    }
-  }
+function setupPlay() {
+  categoryVisible = false;
+  document.getElementById('play-category-display').textContent = 'Hidden';
+  document.getElementById('play-category-display').style.color = 'var(--muted)';
+  document.getElementById('toggle-category-btn').textContent = '👁 SHOW YEAR & TOPIC';
+}
 
-  // --- PLAY ---
-  function setupPlay() {
-    categoryVisible = false;
-    document.getElementById('play-category-display').textContent = 'Hidden';
-    document.getElementById('play-category-display').style.color = 'var(--muted)';
-    document.getElementById('toggle-category-btn').textContent = '👁 SHOW CATEGORY';
+function toggleCategory() {
+  categoryVisible = !categoryVisible;
+  const display = document.getElementById('play-category-display');
+  const btn = document.getElementById('toggle-category-btn');
+  if (categoryVisible) {
+    display.textContent = `${gameState.year} · ${gameState.topic}`;
+    display.style.color = 'var(--text)';
+    btn.textContent = '🙈 HIDE YEAR & TOPIC';
+  } else {
+    display.textContent = 'Hidden';
+    display.style.color = 'var(--muted)';
+    btn.textContent = '👁 SHOW YEAR & TOPIC';
   }
+}
 
-  function toggleCategory() {
-    categoryVisible = !categoryVisible;
-    const display = document.getElementById('play-category-display');
-    const btn = document.getElementById('toggle-category-btn');
-    if (categoryVisible) {
-      display.textContent = gameState.category;
-      display.style.color = 'var(--text)';
-      btn.textContent = '🙈 HIDE CATEGORY';
-    } else {
-      display.textContent = 'Hidden';
-      display.style.color = 'var(--muted)';
-      btn.textContent = '👁 SHOW CATEGORY';
-    }
-  }
+function showResults() {
+  document.getElementById('result-impostor').textContent = `Player ${gameState.impostorIndex + 1}`;
+  document.getElementById('result-category').textContent = `${gameState.year} · ${gameState.topic}`;
+  document.getElementById('result-word').textContent = gameState.word;
+  showScreen('screen-results');
+}
 
-  function showResults() {
-    document.getElementById('result-impostor').textContent = `Player ${gameState.impostorIndex + 1}`;
-    document.getElementById('result-category').textContent = gameState.category;
-    document.getElementById('result-word').textContent = gameState.word;
-    showScreen('screen-results');
-  }
+function newRound() {
+  const words = gameState.words;
+  const numPlayers = gameState.numPlayers;
+  const word = words[Math.floor(Math.random() * words.length)];
+  const impostorIndex = Math.floor(Math.random() * numPlayers);
+  const order = Array.from({length: numPlayers}, (_, i) => i).sort(() => Math.random() - 0.5);
+  gameState = { ...gameState, word, impostorIndex, order, currentStep: 0 };
+  showScreen('screen-reveal');
+  setupReveal();
+}
 
-  function newRound() {
-    const words = gameState.words;
-    const numPlayers = gameState.numPlayers;
-    const word = words[Math.floor(Math.random() * words.length)];
-    const impostorIndex = Math.floor(Math.random() * numPlayers);
-    const order = Array.from({length: numPlayers}, (_, i) => i).sort(() => Math.random() - 0.5);
-    gameState = { ...gameState, word, impostorIndex, order, currentStep: 0 };
-    showScreen('screen-reveal');
-    setupReveal();
-  }
+function newGame() { showScreen('screen-setup'); }
 
-  function newGame() {
-    showScreen('screen-setup');
-  }
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+renderYearTabs();
 </script>
 </body>
 </html>
