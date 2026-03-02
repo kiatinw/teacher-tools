@@ -4,11 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>K Williamson – Creations</title>
-
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-
 <style>
-
 :root {
   --bg: #f8f9fb;
   --text: #111111;
@@ -16,13 +13,11 @@
   --border: rgba(0,0,0,0.06);
   --accent: #c84b2f;
 }
-
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -31,14 +26,12 @@ body {
   max-width: 1100px;
   margin: 0 auto;
 }
-
 h1 {
   font-family: 'DM Serif Display', serif;
   font-size: 3.5rem;
   font-weight: 400;
   margin-bottom: 0.6rem;
 }
-
 .tagline {
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -46,13 +39,9 @@ h1 {
   color: var(--muted);
   margin-bottom: 4rem;
 }
-
-/* ===== Section Header ===== */
-
 .section-header {
   margin-bottom: 3rem;
 }
-
 .section-header h2 {
   font-size: 0.75rem;
   letter-spacing: 0.25em;
@@ -60,23 +49,16 @@ h1 {
   color: var(--muted);
   margin-bottom: 0.8rem;
 }
-
 .section-header p {
   font-family: 'DM Serif Display', serif;
   font-size: 2rem;
   font-weight: 400;
 }
-
-/* ===== Grid ===== */
-
 .grid {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 }
-
-/* ===== Cards ===== */
-
 .card {
   text-decoration: none;
   color: inherit;
@@ -86,34 +68,27 @@ h1 {
   border: 1px solid var(--border);
   transition: all 0.2s ease;
 }
-
 .card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 35px rgba(0,0,0,0.06);
 }
-
 .card-title {
   font-family: 'DM Serif Display', serif;
   font-size: 1.5rem;
   margin-bottom: 0.9rem;
 }
-
 .card-desc {
   font-size: 0.85rem;
   color: var(--muted);
   line-height: 1.6;
   margin-bottom: 1.8rem;
 }
-
 .card-link {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--accent);
 }
-
-/* ===== Footer ===== */
-
 footer {
   margin-top: 5rem;
   font-size: 0.7rem;
@@ -121,21 +96,16 @@ footer {
   text-transform: uppercase;
   color: var(--muted);
 }
-
 </style>
 </head>
 <body>
-
 <h1>AI Assisted Creations</h1>
 <div class="tagline">1% ideas, 99% bad prompts</div>
-
 <div class="section-header">
   <h2>Creations</h2>
   <p>Tools, experiments and shipped projects.</p>
 </div>
-
 <div class="grid">
-
   <a class="card" href="https://kiatinw.github.io/rankmachine/">
     <div class="card-title">⚡️RankForge</div>
     <div class="card-desc">
@@ -143,7 +113,6 @@ footer {
     </div>
     <div class="card-link">Open →</div>
   </a>
-
   <a class="card" href="https://kiatinw.github.io/NESA_Course_Mapping/">
     <div class="card-title">📚 NESA Course Mapping Tool</div>
     <div class="card-desc">
@@ -151,7 +120,6 @@ footer {
     </div>
     <div class="card-link">Open →</div>
   </a>
-
   <a class="card" href="https://kiatinw.github.io/Ext1emojigame/">
     <div class="card-title">🎮 Extension 1 Emoji Game</div>
     <div class="card-desc">
@@ -159,12 +127,16 @@ footer {
     </div>
     <div class="card-link">Open →</div>
   </a>
-
+  <a class="card" href="imposter-game.html">
+    <div class="card-title">🕵️ Maths Impostor</div>
+    <div class="card-desc">
+      A pass-the-device party game for maths classes. One player is the impostor who doesn't know the secret word — can they bluff their way through?
+    </div>
+    <div class="card-link">Open →</div>
+  </a>
 </div>
-
 <footer>
 © 2026 K Williamson
 </footer>
-
 </body>
 </html>
