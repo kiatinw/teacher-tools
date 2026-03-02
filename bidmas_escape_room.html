@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escape the Order Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --red: #ff3355;
+    --yellow: #ffcc00;
+    --cyan: #00cfff;
+    --orange: #ff8c00;
+    --bg: #0a0e1a;
+    --panel: #0f1628;
+    --border: #1e3a5f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Share Tech Mono', monospace;
+    background: var(--bg);
+    color: #c8d8e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.5rem 1rem 3rem;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 700px; width: 100%; position: relative; z-index: 1; }
+
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    font-weight: 900;
+    color: var(--green);
+    text-shadow: 0 0 20px rgba(0,255,136,0.6), 0 0 60px rgba(0,255,136,0.2);
+    letter-spacing: 0.05em;
+  }
+  .header p { margin-top: 0.4rem; color: #6a8a9a; font-size: 0.8rem; letter-spacing: 0.1em; }
+
+  .hud {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.7rem 1.2rem; margin-bottom: 1.5rem;
+  }
+  .lives-wrap { display: flex; align-items: center; gap: 0.5rem; }
+  .lives-label { font-size: 0.7rem; color: #4a6a7a; letter-spacing: 0.1em; }
+  .heart { font-size: 1.2rem; transition: all 0.3s; filter: drop-shadow(0 0 4px rgba(255,51,85,0.7)); }
+  .heart.lost { filter: none; opacity: 0.2; }
+  .heart.shake { animation: heartShake 0.5s ease; }
+  @keyframes heartShake { 0%,100%{transform:scale(1)} 20%{transform:scale(1.4)} 50%{transform:scale(0.8)} 80%{transform:scale(1.1)} }
+  .progress-wrap { display: flex; gap: 5px; align-items: center; }
+  .progress-pip {
+    width: 24px; height: 5px; border-radius: 3px;
+    background: var(--border); transition: background 0.4s, box-shadow 0.4s;
+  }
+  .progress-pip.done { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .progress-pip.active { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pip-pulse 1.2s infinite; }
+  @keyframes pip-pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .room-counter { font-size: 0.7rem; color: #4a6a7a; letter-spacing: 0.1em; }
+
+  .room {
+    display: none; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 2rem; position: relative; overflow: hidden;
+    animation: fadeIn 0.5s ease;
+  }
+  .room.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .room::before {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, transparent 50%, rgba(0,255,136,0.06) 50%);
+    pointer-events: none;
+  }
+  .room-header {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.5rem; padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .room-number { font-family: 'Orbitron', sans-serif; font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.2em; }
+  .room-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; color: white; }
+  .lock-icon { margin-left: auto; font-size: 1.5rem; }
+
+  .narrative {
+    background: rgba(0,207,255,0.05); border-left: 3px solid var(--cyan);
+    padding: 0.7rem 1rem; border-radius: 0 6px 6px 0;
+    margin-bottom: 1.5rem; font-size: 0.8rem; color: #88aabb; line-height: 1.6;
+  }
+  .question-label { font-size: 0.68rem; color: #4a6a7a; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .question {
+    font-size: 1.35rem; color: var(--yellow);
+    text-shadow: 0 0 10px rgba(255,204,0,0.3);
+    letter-spacing: 0.05em; margin-bottom: 0.3rem; min-height: 2rem;
+  }
+  .input-row { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 0.8rem; }
+
+  input[type="number"] {
+    background: #070d1a; border: 1px solid var(--border);
+    color: var(--green); font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem; padding: 0.6rem 1rem; border-radius: 6px;
+    width: 120px; text-align: center; outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  input:focus { border-color: var(--cyan); box-shadow: 0 0 12px rgba(0,207,255,0.2); }
+
+  .mc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.8rem; }
+  .mc-btn {
+    background: #070d1a; border: 1px solid var(--border);
+    color: #c8d8e8; font-family: 'Share Tech Mono', monospace;
+    font-size: 0.88rem; padding: 0.7rem 1rem; border-radius: 6px;
+    cursor: pointer; transition: all 0.2s; text-align: left;
+  }
+  .mc-btn:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); background: rgba(0,207,255,0.05); }
+  .mc-btn.correct-mc { border-color: var(--green); color: var(--green); background: rgba(0,255,136,0.08); pointer-events:none; }
+  .mc-btn.wrong-mc { border-color: var(--red); color: var(--red); background: rgba(255,51,85,0.08); pointer-events:none; }
+
+  .reorder-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
+  .drag-item {
+    background: #070d1a; border: 1px solid var(--border);
+    padding: 0.7rem 1rem; border-radius: 6px; cursor: grab;
+    font-size: 0.9rem; display: flex; align-items: center; gap: 0.8rem;
+    user-select: none; transition: border 0.2s, transform 0.1s;
+  }
+  .drag-item:active { cursor: grabbing; transform: scale(1.02); }
+  .drag-item.drag-over { border-color: var(--cyan); background: rgba(0,207,255,0.06); }
+  .drag-handle { color: #4a6a7a; font-size: 1rem; }
+
+  .expression-fill {
+    display: flex; align-items: center; gap: 0.4rem;
+    flex-wrap: wrap; font-size: 1.1rem; color: var(--yellow); margin-top: 0.7rem;
+  }
+  .blank-input {
+    width: 70px !important; font-size: 1rem !important;
+    padding: 0.4rem 0.5rem !important;
+    background: #0a1520 !important;
+    border: 1px dashed var(--yellow) !important;
+    color: var(--yellow) !important;
+  }
+
+  .tf-pair { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+  .tf-btn {
+    flex: 1; background: #070d1a; border: 1px solid var(--border);
+    color: #c8d8e8; font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem; padding: 0.8rem; border-radius: 6px;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .tf-btn:hover:not(:disabled) { border-color: var(--cyan); background: rgba(0,207,255,0.05); }
+
+  .match-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.8rem; }
+  .match-left, .match-right { display: flex; flex-direction: column; gap: 0.5rem; }
+  .match-expr {
+    background: #070d1a; border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem; border-radius: 6px; font-size: 0.85rem; color: var(--yellow);
+    display: flex; align-items: center; min-height: 2.4rem;
+  }
+  .match-select {
+    background: #070d1a; border: 1px solid var(--border);
+    color: var(--green); font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem; padding: 0.5rem 0.6rem; border-radius: 6px;
+    width: 100%; outline: none; cursor: pointer; min-height: 2.4rem;
+  }
+  .match-select:focus { border-color: var(--cyan); }
+  .match-select.correct-sel { border-color: var(--green); background: rgba(0,255,136,0.08); }
+  .match-select.wrong-sel { border-color: var(--red); background: rgba(255,51,85,0.08); }
+
+  .unlock-btn {
+    background: transparent; border: 1px solid var(--green);
+    color: var(--green); font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem; padding: 0.6rem 1.4rem; border-radius: 6px;
+    cursor: pointer; letter-spacing: 0.1em; transition: all 0.2s;
+  }
+  .unlock-btn:hover { background: rgba(0,255,136,0.1); box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+
+  .feedback { margin-top: 1rem; font-size: 0.82rem; min-height: 1.2rem; letter-spacing: 0.05em; line-height: 1.5; }
+  .feedback.success { color: var(--green); }
+  .feedback.error { color: var(--red); }
+
+  .hint-btn {
+    background: transparent; border: none; color: #4a6a7a;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.73rem;
+    cursor: pointer; letter-spacing: 0.1em; text-decoration: underline;
+    padding: 0; margin-top: 0.8rem; display: block; transition: color 0.2s;
+  }
+  .hint-btn:hover { color: var(--cyan); }
+  .hint-box {
+    display: none; background: rgba(0,207,255,0.04);
+    border: 1px dashed rgba(0,207,255,0.25); border-radius: 6px;
+    padding: 0.7rem; margin-top: 0.5rem; font-size: 0.78rem; color: #7aaabb; line-height: 1.6;
+  }
+
+  #gameover-screen {
+    display: none; text-align: center; padding: 3rem 2rem;
+    background: var(--panel); border: 1px solid var(--red);
+    border-radius: 12px; box-shadow: 0 0 40px rgba(255,51,85,0.15);
+    animation: fadeIn 0.6s ease;
+  }
+  .gameover-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--red); text-shadow: 0 0 20px rgba(255,51,85,0.5); margin-bottom: 0.5rem; }
+  .gameover-sub { color: #6a8a9a; font-size: 0.85rem; margin-bottom: 1.5rem; }
+  .restart-btn {
+    background: transparent; border: 1px solid var(--red); color: var(--red);
+    font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;
+    padding: 0.7rem 2rem; border-radius: 6px; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.1em;
+  }
+  .restart-btn:hover { background: rgba(255,51,85,0.1); }
+
+  #success-screen {
+    display: none; text-align: center; padding: 3rem 2rem;
+    background: var(--panel); border: 1px solid var(--green);
+    border-radius: 12px; box-shadow: 0 0 40px rgba(0,255,136,0.15);
+    animation: fadeIn 0.6s ease;
+  }
+  .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .success-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.5); margin-bottom: 0.5rem; }
+  .success-sub { color: #6a8a9a; font-size: 0.85rem; margin-bottom: 1rem; }
+  .score-display { font-size: 1.1rem; color: var(--yellow); margin-top: 0.5rem; }
+  .score-breakdown { font-size: 0.8rem; color: #6a8a9a; margin-top: 0.5rem; }
+
+  .error-shake { animation: shake 0.4s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+  .refresh-flash { animation: flashNew 0.6s ease; }
+  @keyframes flashNew { 0%{background:rgba(0,255,136,0.08)} 100%{background:var(--panel)} }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>⚡ ESCAPE THE ORDER LAB</h1>
+    <p>// SECURITY BREACH DETECTED — SOLVE TO RESTORE SYSTEMS //</p>
+  </div>
+
+  <div class="hud">
+    <div class="lives-wrap">
+      <span class="lives-label">LIVES:</span>
+      <span class="heart" id="h1">❤️</span>
+      <span class="heart" id="h2">❤️</span>
+      <span class="heart" id="h3">❤️</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+      <div class="room-counter" id="room-counter">LOCK 1 OF 10</div>
+      <div class="progress-wrap" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- ROOM 1 -->
+  <div class="room active" id="room1">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 01 — ENTRY NODE</div><div class="room-title">Power Entry Node</div></div>
+      <div class="lock-icon" id="icon1">🔒</div>
+    </div>
+    <div class="narrative">The lab door is sealed. A basic arithmetic lock blocks the entrance. Solve the expression using BIDMAS.</div>
+    <div class="question-label">EVALUATE:</div>
+    <div class="question" id="q1">8 + 2 × 5</div>
+    <div class="input-row">
+      <input type="number" id="ans1" placeholder="?">
+      <button class="unlock-btn" onclick="rooms[0].check()">UNLOCK</button>
+    </div>
+    <div class="feedback" id="fb1"></div>
+  </div>
+
+  <!-- ROOM 2 -->
+  <div class="room" id="room2">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 02 — BRACKET FIREWALL</div><div class="room-title">Bracket Firewall</div></div>
+      <div class="lock-icon" id="icon2">🔒</div>
+    </div>
+    <div class="narrative">Brackets change everything. Pick the correct answer. A wrong choice costs a life and a new question is generated.</div>
+    <div class="question-label">WHICH VALUE IS CORRECT?</div>
+    <div class="question" id="q2"></div>
+    <div class="mc-options" id="mc2"></div>
+    <div class="feedback" id="fb2"></div>
+    <button class="hint-btn" onclick="toggleHint(2)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint2">BIDMAS: Brackets are solved first, before any multiplication or addition outside them.</div>
+  </div>
+
+  <!-- ROOM 3 -->
+  <div class="room" id="room3">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 03 — INDEX RELAY</div><div class="room-title">Index Relay</div></div>
+      <div class="lock-icon" id="icon3">🔒</div>
+    </div>
+    <div class="narrative">The relay is missing working-out steps. Fill in all three blanks correctly to unlock. Wrong answers lose a life and generate a new expression.</div>
+    <div class="question-label">COMPLETE THE WORKING OUT:</div>
+    <div class="question" id="q3"></div>
+    <div id="fill3-lines"></div>
+    <div class="input-row" style="margin-top:1rem;">
+      <button class="unlock-btn" onclick="rooms[2].check()">UNLOCK</button>
+    </div>
+    <div class="feedback" id="fb3"></div>
+    <button class="hint-btn" onclick="toggleHint(3)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint3">Indices (powers) come before multiplication. Calculate the squared number first, then multiply.</div>
+  </div>
+
+  <!-- ROOM 4 -->
+  <div class="room" id="room4">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 04 — STEP SEQUENCER</div><div class="room-title">Step Sequencer</div></div>
+      <div class="lock-icon" id="icon4">🔒</div>
+    </div>
+    <div class="narrative">Drag the calculation steps into the correct BIDMAS order. Wrong order costs a life and the steps are reshuffled.</div>
+    <div class="question-label">ORDER THE STEPS FOR:</div>
+    <div class="question" id="q4"></div>
+    <div class="reorder-list" id="drag-list4"></div>
+    <div class="input-row" style="margin-top:1rem;">
+      <button class="unlock-btn" onclick="rooms[3].check()">UNLOCK</button>
+    </div>
+    <div class="feedback" id="fb4"></div>
+    <button class="hint-btn" onclick="toggleHint(4)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint4">BIDMAS order: Brackets → Indices → Multiply/Divide → Add/Subtract. Start from the innermost operation.</div>
+  </div>
+
+  <!-- ROOM 5 -->
+  <div class="room" id="room5">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 05 — ERROR SCANNER</div><div class="room-title">Error Detection Unit</div></div>
+      <div class="lock-icon" id="icon5">🔒</div>
+    </div>
+    <div class="narrative">A student's working has been corrupted. One line is wrong. Identify it — wrong answers lose a life and a new example loads.</div>
+    <div class="question-label">FIND THE FIRST INCORRECT LINE:</div>
+    <div id="err5-working" style="margin:1rem 0; line-height:2.1; font-size:0.9rem;"></div>
+    <div class="mc-options" id="mc5"></div>
+    <div class="feedback" id="fb5"></div>
+    <button class="hint-btn" onclick="toggleHint(5)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint5">Check each line against BIDMAS rules. Look for a place where multiplication or addition happened in the wrong order.</div>
+  </div>
+
+  <!-- ROOM 6 -->
+  <div class="room" id="room6">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 06 — TRUTH GATE</div><div class="room-title">Truth Gate</div></div>
+      <div class="lock-icon" id="icon6">🔒</div>
+    </div>
+    <div class="narrative">Is the student's statement true or false? Wrong answers lose a life and a new statement is generated.</div>
+    <div class="question-label">TRUE OR FALSE?</div>
+    <div class="question" id="q6" style="font-size:1rem; line-height:1.6;"></div>
+    <div class="tf-pair">
+      <button class="tf-btn" id="tf-true" onclick="rooms[5].answerTF(true)">✔ TRUE</button>
+      <button class="tf-btn" id="tf-false" onclick="rooms[5].answerTF(false)">✗ FALSE</button>
+    </div>
+    <div class="feedback" id="fb6"></div>
+    <button class="hint-btn" onclick="toggleHint(6)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint6">Evaluate the left side using BIDMAS and see if it really equals the value claimed.</div>
+  </div>
+
+  <!-- ROOM 7 -->
+  <div class="room" id="room7">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 07 — MATCH MATRIX</div><div class="room-title">Match Matrix</div></div>
+      <div class="lock-icon" id="icon7">🔒</div>
+    </div>
+    <div class="narrative">Match each expression to its correct value. All three must be right. Errors lose a life and generate a new set.</div>
+    <div class="question-label">MATCH EACH EXPRESSION TO ITS VALUE:</div>
+    <div class="match-wrap" style="margin-top:0.8rem;">
+      <div class="match-left" id="match-left7"></div>
+      <div class="match-right" id="match-right7"></div>
+    </div>
+    <div class="input-row" style="margin-top:1rem;">
+      <button class="unlock-btn" onclick="rooms[6].check()">UNLOCK</button>
+    </div>
+    <div class="feedback" id="fb7"></div>
+    <button class="hint-btn" onclick="toggleHint(7)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint7">Calculate each expression fully before matching. Don't guess — evaluate carefully using BIDMAS.</div>
+  </div>
+
+  <!-- ROOM 8 -->
+  <div class="room" id="room8">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 08 — BRACKET INJECTOR</div><div class="room-title">Bracket Injector</div></div>
+      <div class="lock-icon" id="icon8">🔒</div>
+    </div>
+    <div class="narrative">Choose which version has brackets placed correctly to produce the target value. Wrong = lose a life + new puzzle.</div>
+    <div class="question-label">WHICH VERSION EQUALS THE TARGET?</div>
+    <div class="question" id="q8-target" style="font-size:1rem; color:var(--cyan);"></div>
+    <div class="mc-options" id="mc8" style="margin-top:0.8rem;"></div>
+    <div class="feedback" id="fb8"></div>
+    <button class="hint-btn" onclick="toggleHint(8)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint8">Evaluate each option carefully. Brackets force operations to happen earlier — check which placement hits the target.</div>
+  </div>
+
+  <!-- ROOM 9 -->
+  <div class="room" id="room9">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 09 — REVERSE ENCODER</div><div class="room-title">Reverse Encoder</div></div>
+      <div class="lock-icon" id="icon9">🔒</div>
+    </div>
+    <div class="narrative">A number is missing from the equation. Work backwards using BIDMAS to find it. Wrong answers lose a life and change the equation.</div>
+    <div class="question-label">FIND THE MISSING NUMBER (□):</div>
+    <div class="question" id="q9"></div>
+    <div class="input-row">
+      <input type="number" id="ans9" placeholder="?">
+      <button class="unlock-btn" onclick="rooms[8].check()">UNLOCK</button>
+    </div>
+    <div class="feedback" id="fb9"></div>
+    <button class="hint-btn" onclick="toggleHint(9)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint9">Calculate all the parts you know first (using BIDMAS), then figure out what □ must be.</div>
+  </div>
+
+  <!-- ROOM 10 -->
+  <div class="room" id="room10">
+    <div class="room-header">
+      <div><div class="room-number">// LOCK 10 — MASTER OVERRIDE ⚠</div><div class="room-title">Master Override</div></div>
+      <div class="lock-icon" id="icon10">🔒</div>
+    </div>
+    <div class="narrative">⚠ FINAL BARRIER. The master lock requires full mastery of BIDMAS. Wrong answers lose a life — and a harder expression replaces it.</div>
+    <div class="question-label">EVALUATE:</div>
+    <div class="question" id="q10"></div>
+    <div class="input-row">
+      <input type="number" id="ans10" placeholder="?">
+      <button class="unlock-btn" onclick="rooms[9].check()">UNLOCK</button>
+    </div>
+    <div class="feedback" id="fb10"></div>
+    <button class="hint-btn" onclick="toggleHint(10)">▶ NEED A HINT?</button>
+    <div class="hint-box" id="hint10">Take it step by step: brackets → indices → × and ÷ left to right → + and − left to right.</div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="gameover-screen">
+    <div style="font-size:3rem;margin-bottom:1rem;">💀</div>
+    <div class="gameover-title">SYSTEM FAILURE</div>
+    <div class="gameover-sub">// You ran out of lives — the Order Lab remains locked //<br>Study your BIDMAS and try again!</div>
+    <button class="restart-btn" onclick="restartGame()">↺ TRY AGAIN</button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="success-screen">
+    <div class="success-icon">🔓</div>
+    <div class="success-title">SYSTEMS RESTORED</div>
+    <div class="success-sub">// All 10 locks defeated — Order Lab secure //</div>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-breakdown" id="score-breakdown"></div>
+  </div>
+
+</div>
+<script>
+// ═══ GLOBALS ═══
+const TOTAL = 10;
+let lives = 3, currentRoom = 1, totalWrong = 0, hintsUsed = 0;
+
+// ═══ LIVES ═══
+function loseLife() {
+  if (lives <= 0) return false;
+  lives--;
+  totalWrong++;
+  const h = document.getElementById('h' + (lives + 1));
+  h.classList.add('shake');
+  setTimeout(() => { h.classList.remove('shake'); h.classList.add('lost'); }, 500);
+  if (lives === 0) { setTimeout(triggerGameOver, 900); return false; }
+  return true;
+}
+
+function triggerGameOver() {
+  document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+  const go = document.getElementById('gameover-screen');
+  go.style.display = 'block';
+  go.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restartGame() {
+  lives = 3; currentRoom = 1; totalWrong = 0; hintsUsed = 0;
+  [1,2,3].forEach(i => { const h = document.getElementById('h'+i); h.classList.remove('lost','shake'); h.textContent='❤️'; });
+  document.getElementById('gameover-screen').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'none';
+  buildPips();
+  rooms.forEach(r => r.init());
+  document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('.hint-box').forEach(b => b.style.display = 'none');
+  document.getElementById('room1').classList.add('active');
+  updateHUD();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══ HUD ═══
+function buildPips() {
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const p = document.createElement('div');
+    p.className = 'progress-pip' + (i === 1 ? ' active' : '');
+    p.id = 'pip' + i;
+    bar.appendChild(p);
+  }
+}
+function updateHUD() {
+  document.getElementById('room-counter').textContent = `LOCK ${currentRoom} OF ${TOTAL}`;
+  for (let i = 1; i <= TOTAL; i++) {
+    const p = document.getElementById('pip' + i);
+    if (!p) continue;
+    p.className = 'progress-pip';
+    if (i < currentRoom) p.classList.add('done');
+    else if (i === currentRoom) p.classList.add('active');
+  }
+}
+function advanceRoom(n) {
+  document.getElementById('icon' + n).textContent = '🔓';
+  setTimeout(() => {
+    document.getElementById('room' + n).classList.remove('active');
+    if (n < TOTAL) {
+      currentRoom = n + 1;
+      updateHUD();
+      const next = document.getElementById('room' + currentRoom);
+      next.classList.add('active');
+      next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else { showSuccess(); }
+  }, 1200);
+}
+function showSuccess() {
+  const s = document.getElementById('success-screen');
+  s.style.display = 'block';
+  const livesLeft = lives;
+  const star = totalWrong === 0 ? '⭐⭐⭐ PERFECT RUN — flawless!' : totalWrong <= 3 ? '⭐⭐ Great work!' : '⭐ Good effort — keep practising BIDMAS!';
+  document.getElementById('final-score').textContent = star;
+  document.getElementById('score-breakdown').textContent = `Wrong answers: ${totalWrong} | Lives remaining: ${livesLeft} | Hints used: ${hintsUsed}`;
+  s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══ HELPERS ═══
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function setFB(id, msg, type) { const e = document.getElementById('fb'+id); e.textContent = msg; e.className = 'feedback ' + type; }
+function shakeEl(id) { const e = document.getElementById(id); if(!e)return; e.classList.add('error-shake'); setTimeout(()=>e.classList.remove('error-shake'),500); }
+function flashRoom(n) { const e = document.getElementById('room'+n); e.classList.add('refresh-flash'); setTimeout(()=>e.classList.remove('refresh-flash'),700); }
+function toggleHint(n) { const b=document.getElementById('hint'+n); if(b.style.display!=='block'){b.style.display='block';hintsUsed++;}else b.style.display='none'; }
+
+function initDrag(listId) {
+  let src = null;
+  const list = document.getElementById(listId);
+  list.querySelectorAll('.drag-item').forEach(item => {
+    item.addEventListener('dragstart', e => { src=item; e.dataTransfer.effectAllowed='move'; item.style.opacity='0.5'; });
+    item.addEventListener('dragend', () => item.style.opacity='1');
+    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+    item.addEventListener('drop', e => {
+      e.preventDefault(); item.classList.remove('drag-over');
+      if (src !== item) {
+        const all=[...list.querySelectorAll('.drag-item')], si=all.indexOf(src), ti=all.indexOf(item);
+        si<ti ? list.insertBefore(item,src) : list.insertBefore(src,item);
+      }
+    });
+  });
+}
+
+// ═══ ROOMS ═══
+const rooms = [];
+
+/* 1 — Simple type-in */
+rooms.push({
+  id:1,
+  init(){ document.getElementById('q1').textContent='8 + 2 × 5'; document.getElementById('ans1').value=''; setFB(1,'',''); },
+  check(){
+    if(Number(document.getElementById('ans1').value)===18){ setFB(1,'✓ Correct! Multiplication before addition.','success'); advanceRoom(1); }
+    else { setFB(1,'✗ Incorrect — remember: multiplication before addition (BIDMAS). Try again!','error'); shakeEl('ans1'); loseLife(); }
+  }
+});
+
+/* 2 — MC brackets */
+const r2v = [
+  { expr:'(6 + 4) × 3',  correct:30, wrong:[24,18,36] },
+  { expr:'(10 − 3) × 4', correct:28, wrong:[22,32,40] },
+  { expr:'(5 + 7) × 2',  correct:24, wrong:[19,14,30] },
+  { expr:'(9 − 2) × 5',  correct:35, wrong:[43,25,50] },
+  { expr:'(4 + 6) × 7',  correct:70, wrong:[46,64,58] },
+  { expr:'(8 − 3) × 6',  correct:30, wrong:[45,51,38] },
+];
+rooms.push({
+  id:2, cur:null,
+  init(){
+    this.cur=r2v[rand(0,r2v.length-1)];
+    document.getElementById('q2').textContent=this.cur.expr;
+    const mc=document.getElementById('mc2'); mc.innerHTML='';
+    const opts=[this.cur.correct,...this.cur.wrong].sort(()=>Math.random()-0.5);
+    opts.forEach(v=>{ const b=document.createElement('button'); b.className='mc-btn'; b.textContent=v; b.onclick=()=>this.ans(b,v===this.cur.correct); mc.appendChild(b); });
+    setFB(2,'','');
+  },
+  ans(btn, ok){
+    document.querySelectorAll('#mc2 .mc-btn').forEach(b=>b.disabled=true);
+    if(ok){ btn.classList.add('correct-mc'); setFB(2,'✓ Correct! Brackets solved first.','success'); advanceRoom(2); }
+    else { btn.classList.add('wrong-mc'); setFB(2,'✗ Wrong — losing a life. New question generating...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(2);},1400); }
+  }
+});
+
+/* 3 — Fill blanks */
+const r3v = [
+  { expr:'2 + 3² × 4', addend:'2', base:3, sqr:9,  mult:36, final:38, multiplier:'4' },
+  { expr:'5 + 2² × 3', addend:'5', base:2, sqr:4,  mult:12, final:17, multiplier:'3' },
+  { expr:'1 + 4² × 2', addend:'1', base:4, sqr:16, mult:32, final:33, multiplier:'2' },
+  { expr:'6 + 3² × 2', addend:'6', base:3, sqr:9,  mult:18, final:24, multiplier:'2' },
+  { expr:'4 + 5² × 1', addend:'4', base:5, sqr:25, mult:25, final:29, multiplier:'1' },
+  { expr:'3 + 6² × 1', addend:'3', base:6, sqr:36, mult:36, final:39, multiplier:'1' },
+];
+rooms.push({
+  id:3, cur:null,
+  init(){
+    this.cur=r3v[rand(0,r3v.length-1)];
+    const v=this.cur;
+    document.getElementById('q3').textContent=v.expr;
+    document.getElementById('fill3-lines').innerHTML=`
+      <div class="expression-fill">= ${v.addend} + <input type="number" class="blank-input" id="f3a" placeholder="?"> × ${v.multiplier}</div>
+      <div class="expression-fill" style="margin-top:0.4rem;">= ${v.addend} + <input type="number" class="blank-input" id="f3b" placeholder="?"></div>
+      <div class="expression-fill" style="margin-top:0.4rem;">= <input type="number" class="blank-input" id="f3c" placeholder="?"></div>`;
+    setFB(3,'','');
+  },
+  check(){
+    const v=this.cur, a=Number(document.getElementById('f3a').value), b=Number(document.getElementById('f3b').value), c=Number(document.getElementById('f3c').value);
+    if(a===v.sqr&&b===v.mult&&c===v.final){ setFB(3,'✓ All three steps correct!','success'); advanceRoom(3); }
+    else {
+      let msg='✗ ';
+      if(a!==v.sqr) msg+=`${v.base}² = ${v.sqr}, not ${a}. `;
+      else if(b!==v.mult) msg+=`${v.sqr} × ${v.multiplier} = ${v.mult}. `;
+      else msg+=`Final answer = ${v.final}. `;
+      msg+='Losing a life — new expression loading...';
+      setFB(3,msg,'error');
+      const alive=loseLife(); if(alive!==false) setTimeout(()=>{this.init();flashRoom(3);},1600);
+    }
+  }
+});
+
+/* 4 — Drag reorder */
+const r4v = [
+  { expr:'5 + 2 × (3² − 1)', steps:[{s:1,h:'3² = <strong>9</strong>'},{s:2,h:'9 − 1 = <strong>8</strong>'},{s:3,h:'2 × 8 = <strong>16</strong>'},{s:4,h:'5 + 16 = <strong>21</strong>'}] },
+  { expr:'4 + 3 × (2² + 1)', steps:[{s:1,h:'2² = <strong>4</strong>'},{s:2,h:'4 + 1 = <strong>5</strong>'},{s:3,h:'3 × 5 = <strong>15</strong>'},{s:4,h:'4 + 15 = <strong>19</strong>'}] },
+  { expr:'10 − 2 × (4² − 6)', steps:[{s:1,h:'4² = <strong>16</strong>'},{s:2,h:'16 − 6 = <strong>10</strong>'},{s:3,h:'2 × 10 = <strong>20</strong>'},{s:4,h:'10 − 20 = <strong>−10</strong>'}] },
+  { expr:'1 + 5 × (3² − 4)', steps:[{s:1,h:'3² = <strong>9</strong>'},{s:2,h:'9 − 4 = <strong>5</strong>'},{s:3,h:'5 × 5 = <strong>25</strong>'},{s:4,h:'1 + 25 = <strong>26</strong>'}] },
+];
+rooms.push({
+  id:4, cur:null,
+  init(){
+    this.cur=r4v[rand(0,r4v.length-1)];
+    document.getElementById('q4').textContent=this.cur.expr;
+    this.buildList(); setFB(4,'','');
+  },
+  buildList(){
+    const list=document.getElementById('drag-list4');
+    const sh=[...this.cur.steps].sort(()=>Math.random()-0.5);
+    list.innerHTML='';
+    sh.forEach(s=>{ const d=document.createElement('div'); d.className='drag-item'; d.draggable=true; d.setAttribute('data-step',s.s); d.innerHTML=`<span class="drag-handle">⠿</span><span>${s.h}</span>`; list.appendChild(d); });
+    initDrag('drag-list4');
+  },
+  check(){
+    const order=[...document.getElementById('drag-list4').querySelectorAll('.drag-item')].map(i=>Number(i.getAttribute('data-step')));
+    if(JSON.stringify(order)==='[1,2,3,4]'){ setFB(4,'✓ Correct order — BIDMAS followed perfectly!','success'); advanceRoom(4); }
+    else { setFB(4,'✗ Order wrong — losing a life. Steps reshuffled...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.buildList();flashRoom(4);setFB(4,'','');},1400); }
+  }
+});
+
+/* 5 — Spot the error */
+const r5v = [
+  { lines:['Line 1: &nbsp;2 × (3 + 4)² − 5','Line 2: &nbsp;= 2 × 7² − 5','Line 3: &nbsp;= 14² − 5 &nbsp;<span style="color:var(--border)">(multiplied before squaring)</span>','Line 4: &nbsp;= 196 − 5','Line 5: &nbsp;= 191'], errorLine:3, expl:'7² = 49 first (indices before ×), then 2 × 49 = 98, answer = 93.' },
+  { lines:['Line 1: &nbsp;3 + (2 + 1)² × 4','Line 2: &nbsp;= 3 + 3² × 4','Line 3: &nbsp;= 3 + 12 × 4 &nbsp;<span style="color:var(--border)">(added 3+3 before squaring)</span>','Line 4: &nbsp;= 3 + 48','Line 5: &nbsp;= 51'], errorLine:3, expl:'3² = 9 first, then 9 × 4 = 36, then 3 + 36 = 39.' },
+  { lines:['Line 1: &nbsp;5 × 3 + 4² ÷ 2','Line 2: &nbsp;= 15 + 4² ÷ 2','Line 3: &nbsp;= 15 + 16 ÷ 2','Line 4: &nbsp;= 31 ÷ 2 &nbsp;<span style="color:var(--border)">(added before dividing)</span>','Line 5: &nbsp;= 15.5'], errorLine:4, expl:'Division before addition: 16 ÷ 2 = 8 first, then 15 + 8 = 23.' },
+  { lines:['Line 1: &nbsp;6 + 2 × 3²','Line 2: &nbsp;= 6 + 2 × 9','Line 3: &nbsp;= 8 × 9 &nbsp;<span style="color:var(--border)">(added 6+2 before multiplying)</span>','Line 4: &nbsp;= 72','Line 5: &nbsp;= 72'], errorLine:3, expl:'Multiply before add: 2 × 9 = 18 first, then 6 + 18 = 24.' },
+];
+rooms.push({
+  id:5, cur:null,
+  init(){
+    this.cur=r5v[rand(0,r5v.length-1)];
+    document.getElementById('err5-working').innerHTML=this.cur.lines.map((l,i)=>`<div style="padding:0.25rem 0.6rem;border-radius:4px;" id="errline5-${i+1}">${l}</div>`).join('');
+    const mc=document.getElementById('mc5'); mc.innerHTML='';
+    [2,3,4,5].forEach(n=>{ const b=document.createElement('button'); b.className='mc-btn'; b.textContent='Line '+n; b.onclick=()=>this.ans(b,n===this.cur.errorLine); mc.appendChild(b); });
+    setFB(5,'','');
+  },
+  ans(btn,ok){
+    document.querySelectorAll('#mc5 .mc-btn').forEach(b=>b.disabled=true);
+    if(ok){ btn.classList.add('correct-mc'); document.getElementById('errline5-'+this.cur.errorLine).style.background='rgba(255,51,85,0.15)'; setFB(5,'✓ Correct! '+this.cur.expl,'success'); advanceRoom(5); }
+    else { btn.classList.add('wrong-mc'); setFB(5,'✗ That line is actually correct — losing a life. New example...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(5);},1600); }
+  }
+});
+
+/* 6 — True / False */
+const r6v = [
+  { s:'6 + 4 × 2 = 20 &nbsp;&nbsp; (add first, then multiply)', ans:false },
+  { s:'6 + 4 × 2 = 14 &nbsp;&nbsp; (multiply first: 4×2=8, then 6+8)', ans:true },
+  { s:'(5 + 3)² = 64 &nbsp;&nbsp; (brackets → 8, then 8²)', ans:true },
+  { s:'(5 + 3)² = 34 &nbsp;&nbsp; (because 5² + 3² = 25 + 9)', ans:false },
+  { s:'3 × 4² = 144 &nbsp;&nbsp; (3×4=12 first, then 12²)', ans:false },
+  { s:'3 × 4² = 48 &nbsp;&nbsp; (4²=16 first, then 3×16)', ans:true },
+  { s:'12 ÷ 4 + 2 = 5 &nbsp;&nbsp; (divide first: 12÷4=3, then +2)', ans:true },
+  { s:'12 ÷ (4 + 2) = 3 &nbsp;&nbsp; (brackets first: 4+2=6, then 12÷6)', ans:true },
+  { s:'2 + 3 × 0 = 5 &nbsp;&nbsp; (add first, then multiply by zero)', ans:false },
+  { s:'2 + 3 × 0 = 2 &nbsp;&nbsp; (3×0=0 first, then 2+0=2)', ans:true },
+  { s:'(2 + 3)² = 10 &nbsp;&nbsp; (because 2² + 3² = 4 + 9 − but that\'s wrong!)', ans:false },
+];
+let r6used=[];
+rooms.push({
+  id:6, cur:null,
+  init(){
+    if(r6used.length>=r6v.length) r6used=[];
+    let idx; do{idx=rand(0,r6v.length-1);}while(r6used.includes(idx));
+    r6used.push(idx); this.cur=r6v[idx];
+    document.getElementById('q6').innerHTML=this.cur.s;
+    ['tf-true','tf-false'].forEach(id=>{ const b=document.getElementById(id); b.disabled=false; b.className='tf-btn'; });
+    setFB(6,'','');
+  },
+  answerTF(userSays){
+    document.getElementById('tf-true').disabled=true; document.getElementById('tf-false').disabled=true;
+    if(userSays===this.cur.ans){ setFB(6,'✓ Correct!','success'); advanceRoom(6); }
+    else { setFB(6,'✗ Wrong — losing a life. New statement...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(6);},1400); }
+  }
+});
+
+/* 7 — Match */
+const r7v = [
+  [{expr:'2 + 3 × 4',val:14},{expr:'(2 + 3) × 4',val:20},{expr:'2 × 3² − 1',val:17}],
+  [{expr:'10 − 2 × 3',val:4},{expr:'(10 − 2) × 3',val:24},{expr:'4² ÷ 2 + 1',val:9}],
+  [{expr:'5 + 2²',val:9},{expr:'(5 + 2)²',val:49},{expr:'3 × (4 − 1)²',val:27}],
+  [{expr:'6 × 2 + 3',val:15},{expr:'6 × (2 + 3)',val:30},{expr:'2³ + 4',val:12}],
+  [{expr:'4 + 3²',val:13},{expr:'(4 + 3)²',val:49},{expr:'2 × 3 + 4²',val:22}],
+];
+rooms.push({
+  id:7, cur:null,
+  init(){
+    this.cur=r7v[rand(0,r7v.length-1)];
+    const left=document.getElementById('match-left7'), right=document.getElementById('match-right7');
+    left.innerHTML=''; right.innerHTML='';
+    const vals=[...this.cur].map(p=>p.val).sort(()=>Math.random()-0.5);
+    this.cur.forEach((p,i)=>{
+      const e=document.createElement('div'); e.className='match-expr'; e.textContent=p.expr; left.appendChild(e);
+      const s=document.createElement('select'); s.className='match-select'; s.id='ms7-'+i;
+      const blank=document.createElement('option'); blank.value=''; blank.textContent='— select —'; s.appendChild(blank);
+      vals.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; s.appendChild(o); });
+      right.appendChild(s);
+    });
+    setFB(7,'','');
+  },
+  check(){
+    let ok=true;
+    this.cur.forEach((p,i)=>{ const s=document.getElementById('ms7-'+i); s.className=Number(s.value)===p.val?'match-select correct-sel':'match-select wrong-sel'; if(Number(s.value)!==p.val) ok=false; });
+    if(ok){ setFB(7,'✓ All matched correctly!','success'); advanceRoom(7); }
+    else { setFB(7,'✗ Some matches wrong — losing a life. New set...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(7);},1600); }
+  }
+});
+
+/* 8 — Bracket placement MC */
+const r8v = [
+  { target:'Target = 30', opts:[{e:'3 × 4 + 6',v:18,ok:false},{e:'3 × (4 + 6)',v:30,ok:true},{e:'(3 × 4) + 6',v:18,ok:false},{e:'3 + 4 × 6',v:27,ok:false}] },
+  { target:'Target = 14', opts:[{e:'2 + 5 × 2',v:12,ok:false},{e:'(2 + 5) × 2',v:14,ok:true},{e:'2 × 5 + 2',v:12,ok:false},{e:'2 × 5 − 2',v:8,ok:false}] },
+  { target:'Target = 25', opts:[{e:'3 + 2²',v:7,ok:false},{e:'(3 + 2)²',v:25,ok:true},{e:'3² + 2',v:11,ok:false},{e:'3 × 2² + 1',v:13,ok:false}] },
+  { target:'Target = 50', opts:[{e:'5 × 4 + 6',v:26,ok:false},{e:'5 × (4 + 6)',v:50,ok:true},{e:'(5 × 4) + 6',v:26,ok:false},{e:'5 + 4 × 6',v:29,ok:false}] },
+  { target:'Target = 36', opts:[{e:'(3 + 3)²',v:36,ok:true},{e:'3 + 3²',v:12,ok:false},{e:'3² + 3',v:12,ok:false},{e:'3 × 3 + 2²',v:13,ok:false}] },
+];
+rooms.push({
+  id:8, cur:null,
+  init(){
+    this.cur=r8v[rand(0,r8v.length-1)];
+    document.getElementById('q8-target').textContent=this.cur.target;
+    const mc=document.getElementById('mc8'); mc.innerHTML='';
+    [...this.cur.opts].sort(()=>Math.random()-0.5).forEach(o=>{ const b=document.createElement('button'); b.className='mc-btn'; b.innerHTML=`${o.e} &nbsp;<span style="color:#4a6a7a">= ${o.v}</span>`; b.onclick=()=>this.ans(b,o.ok); mc.appendChild(b); });
+    setFB(8,'','');
+  },
+  ans(btn,ok){
+    document.querySelectorAll('#mc8 .mc-btn').forEach(b=>b.disabled=true);
+    if(ok){ btn.classList.add('correct-mc'); setFB(8,'✓ Correct bracket placement!','success'); advanceRoom(8); }
+    else { btn.classList.add('wrong-mc'); setFB(8,'✗ That doesn\'t hit the target — losing a life. New puzzle...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(8);},1600); }
+  }
+});
+
+/* 9 — Reverse / missing number */
+const r9v = [
+  { mk:(n)=>`□ + 3 × 4 = ${n+12}`,  nFn:()=>rand(2,9),  aFn:(n)=>n },
+  { mk:(n)=>`5 + □ × 3 = ${5+n*3}`,  nFn:()=>rand(2,8),  aFn:(n)=>n },
+  { mk:(n)=>`(□ + 2) × 3 = ${(n+2)*3}`, nFn:()=>rand(1,8), aFn:(n)=>n },
+  { mk:(n)=>`10 − 2 × □ = ${10-2*n}`, nFn:()=>rand(1,4), aFn:(n)=>n },
+  { mk:(n)=>`□² + 1 = ${n*n+1}`,     nFn:()=>rand(2,6),  aFn:(n)=>n },
+  { mk:(n)=>`2 × □² = ${2*n*n}`,     nFn:()=>rand(2,5),  aFn:(n)=>n },
+  { mk:(n)=>`3 × (□ − 1) = ${3*(n-1)}`, nFn:()=>rand(3,9), aFn:(n)=>n },
+];
+rooms.push({
+  id:9, nVal:null, ansVal:null,
+  init(){
+    const v=r9v[rand(0,r9v.length-1)];
+    this.nVal=v.nFn(); this.ansVal=v.aFn(this.nVal);
+    document.getElementById('q9').textContent=v.mk(this.nVal);
+    document.getElementById('ans9').value=''; setFB(9,'','');
+  },
+  check(){
+    if(Number(document.getElementById('ans9').value)===this.ansVal){ setFB(9,'✓ Correct! You reversed BIDMAS perfectly.','success'); advanceRoom(9); }
+    else { setFB(9,'✗ Not quite — losing a life. New equation...','error'); shakeEl('ans9'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(9);},1400); }
+  }
+});
+
+/* 10 — Final boss */
+const r10v = [
+  { expr:'3 × (2 + 4²) − 10 ÷ 2', ans:49 },
+  { expr:'(5 + 1)² ÷ 4 + 3 × 2',  ans:15 },
+  { expr:'2 × 3² + (8 − 2) ÷ 3',  ans:20 },
+  { expr:'4 × (1 + 2²) − 6 ÷ 2',  ans:17 },
+  { expr:'(7 − 3)² × 2 + 5 ÷ 5',  ans:33 },
+  { expr:'5 × (2² + 1) − 12 ÷ 4', ans:22 },
+  { expr:'(3 + 2)² − 4 × 3 + 10 ÷ 5', ans:15 },
+];
+rooms.push({
+  id:10, cur:null,
+  init(){
+    this.cur=r10v[rand(0,r10v.length-1)];
+    document.getElementById('q10').textContent=this.cur.expr;
+    document.getElementById('ans10').value=''; setFB(10,'','');
+  },
+  check(){
+    if(Number(document.getElementById('ans10').value)===this.cur.ans){ setFB(10,'✓ SYSTEMS RESTORED. Final lock disengaged!','success'); advanceRoom(10); }
+    else { setFB(10,'✗ Incorrect — losing a life. A new final expression has loaded...','error'); shakeEl('ans10'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(10);},1400); }
+  }
+});
+
+// ═══ BOOT ═══
+function boot() { buildPips(); rooms.forEach(r=>r.init()); updateHUD(); }
+
+document.addEventListener('keydown', e => {
+  if(e.key!=='Enter') return;
+  if(currentRoom===1) rooms[0].check();
+  else if(currentRoom===3) rooms[2].check();
+  else if(currentRoom===4) rooms[3].check();
+  else if(currentRoom===7) rooms[6].check();
+  else if(currentRoom===9) rooms[8].check();
+  else if(currentRoom===10) rooms[9].check();
+});
+
+boot();
+</script>
+</body>
+</html>
