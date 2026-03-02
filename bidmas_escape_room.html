@@ -268,7 +268,7 @@
       <div><div class="room-number">// LOCK 01 — ENTRY NODE</div><div class="room-title">Power Entry Node</div></div>
       <div class="lock-icon" id="icon1">🔒</div>
     </div>
-    <div class="narrative">The lab door is sealed. A basic arithmetic lock blocks the entrance. Solve the expression using BIDMAS.</div>
+    <div class="narrative">The lab door is sealed. A basic arithmetic lock blocks the entrance. Solve the expression using BODMAS.</div>
     <div class="question-label">EVALUATE:</div>
     <div class="question" id="q1">8 + 2 × 5</div>
     <div class="input-row">
@@ -290,7 +290,7 @@
     <div class="mc-options" id="mc2"></div>
     <div class="feedback" id="fb2"></div>
     <button class="hint-btn" onclick="toggleHint(2)">▶ NEED A HINT?</button>
-    <div class="hint-box" id="hint2">BIDMAS: Brackets are solved first, before any multiplication or addition outside them.</div>
+    <div class="hint-box" id="hint2">BODMAS: Brackets are solved first, before any multiplication or addition outside them.</div>
   </div>
 
   <!-- ROOM 3 -->
@@ -317,7 +317,7 @@
       <div><div class="room-number">// LOCK 04 — STEP SEQUENCER</div><div class="room-title">Step Sequencer</div></div>
       <div class="lock-icon" id="icon4">🔒</div>
     </div>
-    <div class="narrative">Drag the calculation steps into the correct BIDMAS order. Wrong order costs a life and the steps are reshuffled.</div>
+    <div class="narrative">Drag the calculation steps into the correct BODMAS order. Wrong order costs a life and the steps are reshuffled.</div>
     <div class="question-label">ORDER THE STEPS FOR:</div>
     <div class="question" id="q4"></div>
     <div class="reorder-list" id="drag-list4"></div>
@@ -326,7 +326,7 @@
     </div>
     <div class="feedback" id="fb4"></div>
     <button class="hint-btn" onclick="toggleHint(4)">▶ NEED A HINT?</button>
-    <div class="hint-box" id="hint4">BIDMAS order: Brackets → Indices → Multiply/Divide → Add/Subtract. Start from the innermost operation.</div>
+    <div class="hint-box" id="hint4">BODMAS order: Brackets → Indices → Multiply/Divide → Add/Subtract. Start from the innermost operation.</div>
   </div>
 
   <!-- ROOM 5 -->
@@ -341,7 +341,7 @@
     <div class="mc-options" id="mc5"></div>
     <div class="feedback" id="fb5"></div>
     <button class="hint-btn" onclick="toggleHint(5)">▶ NEED A HINT?</button>
-    <div class="hint-box" id="hint5">Check each line against BIDMAS rules. Look for a place where multiplication or addition happened in the wrong order.</div>
+    <div class="hint-box" id="hint5">Check each line against BODMAS rules. Look for a place where multiplication or addition happened in the wrong order.</div>
   </div>
 
   <!-- ROOM 6 -->
@@ -359,7 +359,7 @@
     </div>
     <div class="feedback" id="fb6"></div>
     <button class="hint-btn" onclick="toggleHint(6)">▶ NEED A HINT?</button>
-    <div class="hint-box" id="hint6">Evaluate the left side using BIDMAS and see if it really equals the value claimed.</div>
+    <div class="hint-box" id="hint6">Evaluate the left side using BODMAS and see if it really equals the value claimed.</div>
   </div>
 
   <!-- ROOM 7 -->
@@ -379,7 +379,7 @@
     </div>
     <div class="feedback" id="fb7"></div>
     <button class="hint-btn" onclick="toggleHint(7)">▶ NEED A HINT?</button>
-    <div class="hint-box" id="hint7">Calculate each expression fully before matching. Don't guess — evaluate carefully using BIDMAS.</div>
+    <div class="hint-box" id="hint7">Calculate each expression fully before matching. Don't guess — evaluate carefully using BODMAS.</div>
   </div>
 
   <!-- ROOM 8 -->
@@ -403,7 +403,7 @@
       <div><div class="room-number">// LOCK 09 — REVERSE ENCODER</div><div class="room-title">Reverse Encoder</div></div>
       <div class="lock-icon" id="icon9">🔒</div>
     </div>
-    <div class="narrative">A number is missing from the equation. Work backwards using BIDMAS to find it. Wrong answers lose a life and change the equation.</div>
+    <div class="narrative">A number is missing from the equation. Work backwards using BODMAS to find it. Wrong answers lose a life and change the equation.</div>
     <div class="question-label">FIND THE MISSING NUMBER (□):</div>
     <div class="question" id="q9"></div>
     <div class="input-row">
@@ -412,7 +412,7 @@
     </div>
     <div class="feedback" id="fb9"></div>
     <button class="hint-btn" onclick="toggleHint(9)">▶ NEED A HINT?</button>
-    <div class="hint-box" id="hint9">Calculate all the parts you know first (using BIDMAS), then figure out what □ must be.</div>
+    <div class="hint-box" id="hint9">Calculate all the parts you know first (using BODMAS), then figure out what □ must be.</div>
   </div>
 
   <!-- ROOM 10 -->
@@ -421,7 +421,7 @@
       <div><div class="room-number">// LOCK 10 — MASTER OVERRIDE ⚠</div><div class="room-title">Master Override</div></div>
       <div class="lock-icon" id="icon10">🔒</div>
     </div>
-    <div class="narrative">⚠ FINAL BARRIER. The master lock requires full mastery of BIDMAS. Wrong answers lose a life — and a harder expression replaces it.</div>
+    <div class="narrative">⚠ FINAL BARRIER. The master lock requires full mastery of BODMAS. Wrong answers lose a life — and a harder expression replaces it.</div>
     <div class="question-label">EVALUATE:</div>
     <div class="question" id="q10"></div>
     <div class="input-row">
@@ -437,7 +437,7 @@
   <div id="gameover-screen">
     <div style="font-size:3rem;margin-bottom:1rem;">💀</div>
     <div class="gameover-title">SYSTEM FAILURE</div>
-    <div class="gameover-sub">// You ran out of lives — the Order Lab remains locked //<br>Study your BIDMAS and try again!</div>
+    <div class="gameover-sub">// You ran out of lives — the Order Lab remains locked //<br>Study your BODMAS and try again!</div>
     <button class="restart-btn" onclick="restartGame()">↺ TRY AGAIN</button>
   </div>
 
@@ -527,7 +527,7 @@ function showSuccess() {
   const s = document.getElementById('success-screen');
   s.style.display = 'block';
   const livesLeft = lives;
-  const star = totalWrong === 0 ? '⭐⭐⭐ PERFECT RUN — flawless!' : totalWrong <= 3 ? '⭐⭐ Great work!' : '⭐ Good effort — keep practising BIDMAS!';
+  const star = totalWrong === 0 ? '⭐⭐⭐ PERFECT RUN — flawless!' : totalWrong <= 3 ? '⭐⭐ Great work!' : '⭐ Good effort — keep practising BODMAS!';
   document.getElementById('final-score').textContent = star;
   document.getElementById('score-breakdown').textContent = `Wrong answers: ${totalWrong} | Lives remaining: ${livesLeft} | Hints used: ${hintsUsed}`;
   s.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -535,6 +535,25 @@ function showSuccess() {
 
 // ═══ HELPERS ═══
 function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+// Fisher-Yates shuffle — returns a new shuffled copy
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Deck picker — no repeats until every item has been drawn once
+function makeDeck(pool) {
+  let deck = [];
+  return function draw() {
+    if (deck.length === 0) deck = shuffle(pool);
+    return deck.pop();
+  };
+}
 function setFB(id, msg, type) { const e = document.getElementById('fb'+id); e.textContent = msg; e.className = 'feedback ' + type; }
 function shakeEl(id) { const e = document.getElementById(id); if(!e)return; e.classList.add('error-shake'); setTimeout(()=>e.classList.remove('error-shake'),500); }
 function flashRoom(n) { const e = document.getElementById('room'+n); e.classList.add('refresh-flash'); setTimeout(()=>e.classList.remove('refresh-flash'),700); }
@@ -567,7 +586,7 @@ rooms.push({
   init(){ document.getElementById('q1').textContent='8 + 2 × 5'; document.getElementById('ans1').value=''; setFB(1,'',''); },
   check(){
     if(Number(document.getElementById('ans1').value)===18){ setFB(1,'✓ Correct! Multiplication before addition.','success'); advanceRoom(1); }
-    else { setFB(1,'✗ Incorrect — remember: multiplication before addition (BIDMAS). Try again!','error'); shakeEl('ans1'); loseLife(); }
+    else { setFB(1,'✗ Incorrect — remember: multiplication before addition (BODMAS). Try again!','error'); shakeEl('ans1'); loseLife(); }
   }
 });
 
@@ -580,10 +599,11 @@ const r2v = [
   { expr:'(4 + 6) × 7',  correct:70, wrong:[46,64,58] },
   { expr:'(8 − 3) × 6',  correct:30, wrong:[45,51,38] },
 ];
+const pick2 = makeDeck(r2v);
 rooms.push({
   id:2, cur:null,
   init(){
-    this.cur=r2v[rand(0,r2v.length-1)];
+    this.cur=pick2();
     document.getElementById('q2').textContent=this.cur.expr;
     const mc=document.getElementById('mc2'); mc.innerHTML='';
     const opts=[this.cur.correct,...this.cur.wrong].sort(()=>Math.random()-0.5);
@@ -606,10 +626,11 @@ const r3v = [
   { expr:'4 + 5² × 1', addend:'4', base:5, sqr:25, mult:25, final:29, multiplier:'1' },
   { expr:'3 + 6² × 1', addend:'3', base:6, sqr:36, mult:36, final:39, multiplier:'1' },
 ];
+const pick3 = makeDeck(r3v);
 rooms.push({
   id:3, cur:null,
   init(){
-    this.cur=r3v[rand(0,r3v.length-1)];
+    this.cur=pick3();
     const v=this.cur;
     document.getElementById('q3').textContent=v.expr;
     document.getElementById('fill3-lines').innerHTML=`
@@ -640,10 +661,11 @@ const r4v = [
   { expr:'10 − 2 × (4² − 6)', steps:[{s:1,h:'4² = <strong>16</strong>'},{s:2,h:'16 − 6 = <strong>10</strong>'},{s:3,h:'2 × 10 = <strong>20</strong>'},{s:4,h:'10 − 20 = <strong>−10</strong>'}] },
   { expr:'1 + 5 × (3² − 4)', steps:[{s:1,h:'3² = <strong>9</strong>'},{s:2,h:'9 − 4 = <strong>5</strong>'},{s:3,h:'5 × 5 = <strong>25</strong>'},{s:4,h:'1 + 25 = <strong>26</strong>'}] },
 ];
+const pick4 = makeDeck(r4v);
 rooms.push({
   id:4, cur:null,
   init(){
-    this.cur=r4v[rand(0,r4v.length-1)];
+    this.cur=pick4();
     document.getElementById('q4').textContent=this.cur.expr;
     this.buildList(); setFB(4,'','');
   },
@@ -656,7 +678,7 @@ rooms.push({
   },
   check(){
     const order=[...document.getElementById('drag-list4').querySelectorAll('.drag-item')].map(i=>Number(i.getAttribute('data-step')));
-    if(JSON.stringify(order)==='[1,2,3,4]'){ setFB(4,'✓ Correct order — BIDMAS followed perfectly!','success'); advanceRoom(4); }
+    if(JSON.stringify(order)==='[1,2,3,4]'){ setFB(4,'✓ Correct order — BODMAS followed perfectly!','success'); advanceRoom(4); }
     else { setFB(4,'✗ Order wrong — losing a life. Steps reshuffled...','error'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.buildList();flashRoom(4);setFB(4,'','');},1400); }
   }
 });
@@ -668,10 +690,11 @@ const r5v = [
   { lines:['Line 1: &nbsp;5 × 3 + 4² ÷ 2','Line 2: &nbsp;= 15 + 4² ÷ 2','Line 3: &nbsp;= 15 + 16 ÷ 2','Line 4: &nbsp;= 31 ÷ 2 &nbsp;<span style="color:var(--border)">(added before dividing)</span>','Line 5: &nbsp;= 15.5'], errorLine:4, expl:'Division before addition: 16 ÷ 2 = 8 first, then 15 + 8 = 23.' },
   { lines:['Line 1: &nbsp;6 + 2 × 3²','Line 2: &nbsp;= 6 + 2 × 9','Line 3: &nbsp;= 8 × 9 &nbsp;<span style="color:var(--border)">(added 6+2 before multiplying)</span>','Line 4: &nbsp;= 72','Line 5: &nbsp;= 72'], errorLine:3, expl:'Multiply before add: 2 × 9 = 18 first, then 6 + 18 = 24.' },
 ];
+const pick5 = makeDeck(r5v);
 rooms.push({
   id:5, cur:null,
   init(){
-    this.cur=r5v[rand(0,r5v.length-1)];
+    this.cur=pick5();
     document.getElementById('err5-working').innerHTML=this.cur.lines.map((l,i)=>`<div style="padding:0.25rem 0.6rem;border-radius:4px;" id="errline5-${i+1}">${l}</div>`).join('');
     const mc=document.getElementById('mc5'); mc.innerHTML='';
     [2,3,4,5].forEach(n=>{ const b=document.createElement('button'); b.className='mc-btn'; b.textContent='Line '+n; b.onclick=()=>this.ans(b,n===this.cur.errorLine); mc.appendChild(b); });
@@ -698,13 +721,11 @@ const r6v = [
   { s:'2 + 3 × 0 = 2 &nbsp;&nbsp; (3×0=0 first, then 2+0=2)', ans:true },
   { s:'(2 + 3)² = 10 &nbsp;&nbsp; (because 2² + 3² = 4 + 9 − but that\'s wrong!)', ans:false },
 ];
-let r6used=[];
+const pick6 = makeDeck(r6v);
 rooms.push({
   id:6, cur:null,
   init(){
-    if(r6used.length>=r6v.length) r6used=[];
-    let idx; do{idx=rand(0,r6v.length-1);}while(r6used.includes(idx));
-    r6used.push(idx); this.cur=r6v[idx];
+    this.cur=pick6();
     document.getElementById('q6').innerHTML=this.cur.s;
     ['tf-true','tf-false'].forEach(id=>{ const b=document.getElementById(id); b.disabled=false; b.className='tf-btn'; });
     setFB(6,'','');
@@ -724,10 +745,11 @@ const r7v = [
   [{expr:'6 × 2 + 3',val:15},{expr:'6 × (2 + 3)',val:30},{expr:'2³ + 4',val:12}],
   [{expr:'4 + 3²',val:13},{expr:'(4 + 3)²',val:49},{expr:'2 × 3 + 4²',val:22}],
 ];
+const pick7 = makeDeck(r7v);
 rooms.push({
   id:7, cur:null,
   init(){
-    this.cur=r7v[rand(0,r7v.length-1)];
+    this.cur=pick7();
     const left=document.getElementById('match-left7'), right=document.getElementById('match-right7');
     left.innerHTML=''; right.innerHTML='';
     const vals=[...this.cur].map(p=>p.val).sort(()=>Math.random()-0.5);
@@ -756,10 +778,11 @@ const r8v = [
   { target:'Target = 50', opts:[{e:'5 × 4 + 6',v:26,ok:false},{e:'5 × (4 + 6)',v:50,ok:true},{e:'(5 × 4) + 6',v:26,ok:false},{e:'5 + 4 × 6',v:29,ok:false}] },
   { target:'Target = 36', opts:[{e:'(3 + 3)²',v:36,ok:true},{e:'3 + 3²',v:12,ok:false},{e:'3² + 3',v:12,ok:false},{e:'3 × 3 + 2²',v:13,ok:false}] },
 ];
+const pick8 = makeDeck(r8v);
 rooms.push({
   id:8, cur:null,
   init(){
-    this.cur=r8v[rand(0,r8v.length-1)];
+    this.cur=pick8();
     document.getElementById('q8-target').textContent=this.cur.target;
     const mc=document.getElementById('mc8'); mc.innerHTML='';
     [...this.cur.opts].sort(()=>Math.random()-0.5).forEach(o=>{ const b=document.createElement('button'); b.className='mc-btn'; b.innerHTML=`${o.e} &nbsp;<span style="color:#4a6a7a">= ${o.v}</span>`; b.onclick=()=>this.ans(b,o.ok); mc.appendChild(b); });
@@ -782,16 +805,17 @@ const r9v = [
   { mk:(n)=>`2 × □² = ${2*n*n}`,     nFn:()=>rand(2,5),  aFn:(n)=>n },
   { mk:(n)=>`3 × (□ − 1) = ${3*(n-1)}`, nFn:()=>rand(3,9), aFn:(n)=>n },
 ];
+const pick9 = makeDeck(r9v);
 rooms.push({
   id:9, nVal:null, ansVal:null,
   init(){
-    const v=r9v[rand(0,r9v.length-1)];
+    const v=pick9();
     this.nVal=v.nFn(); this.ansVal=v.aFn(this.nVal);
     document.getElementById('q9').textContent=v.mk(this.nVal);
     document.getElementById('ans9').value=''; setFB(9,'','');
   },
   check(){
-    if(Number(document.getElementById('ans9').value)===this.ansVal){ setFB(9,'✓ Correct! You reversed BIDMAS perfectly.','success'); advanceRoom(9); }
+    if(Number(document.getElementById('ans9').value)===this.ansVal){ setFB(9,'✓ Correct! You reversed BODMAS perfectly.','success'); advanceRoom(9); }
     else { setFB(9,'✗ Not quite — losing a life. New equation...','error'); shakeEl('ans9'); const a=loseLife(); if(a!==false) setTimeout(()=>{this.init();flashRoom(9);},1400); }
   }
 });
@@ -806,10 +830,11 @@ const r10v = [
   { expr:'5 × (2² + 1) − 12 ÷ 4', ans:22 },
   { expr:'(3 + 2)² − 4 × 3 + 10 ÷ 5', ans:15 },
 ];
+const pick10 = makeDeck(r10v);
 rooms.push({
   id:10, cur:null,
   init(){
-    this.cur=r10v[rand(0,r10v.length-1)];
+    this.cur=pick10();
     document.getElementById('q10').textContent=this.cur.expr;
     document.getElementById('ans10').value=''; setFB(10,'','');
   },
