@@ -24,4 +24,4 @@ New projects are added whenever something is worth shipping. Check the site.
 
 ## License
 
-Do whatever you want with it.
+[MIT](./LICENSE) — use it, adapt it, do whatever you want with it.
