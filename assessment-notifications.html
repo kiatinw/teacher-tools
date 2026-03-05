@@ -372,7 +372,7 @@ async function generateDocx(){
 
     const CN='2a588d',CW='FFFFFF',CS='cbedfd',CM='7b9ecd',CT='1a2e44',CL='e4f2fc';
     const F='Public Sans';
-    const PW=9638,LW=2900,VW=PW-LW,OCW=1900,ODW=PW-OCW;
+    const PW=10466, LW=2900, VW=PW-LW, OCW=1900, ODW=PW-OCW;
 
     const bdr={style:BorderStyle.SINGLE,size:4,color:'D0E2F3'};
     const borders={top:bdr,bottom:bdr,left:bdr,right:bdr};
@@ -498,7 +498,7 @@ async function generateDocx(){
           style:{paragraph:{indent:{left:720,hanging:220}},run:{font:F,size:18,color:CM}}},
       ]}]},
       styles:{default:{document:{run:{font:F,size:20}}}},
-      sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,right:1134,bottom:1134,left:1134}}},children:docChildren}]
+      sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:720,right:720,bottom:720,left:720}}},children:docChildren}]
     });
 
     const blob=await Packer.toBlob(theDoc);
