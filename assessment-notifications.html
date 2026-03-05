@@ -4,684 +4,418 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Assessment Notification Generator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-<script>
-  window._docxReady = new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js';
-    s.onload = resolve;
-    s.onerror = () => reject(new Error('Failed to load docx library'));
-    document.head.appendChild(s);
-  });
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0a0a0d; color: #e5e7eb; font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-  input, select, textarea, button { font-family: 'DM Sans', sans-serif; }
+  :root {
+    --navy:  #2a588d;
+    --white: #ffffff;
+    --sky:   #cbedfd;
+    --mid:   #7b9ecd;
+    --bg:    #eef4fb;
+    --border:#c2d6ec;
+    --text:  #1a2e44;
+    --muted: #5a7898;
+    --light: #e4f2fc;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Public Sans',sans-serif;min-height:100vh;}
+  input,select,textarea,button{font-family:'Public Sans',sans-serif;}
 
-  /* ── Login ── */
-  #login-screen {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  }
-  .login-card {
-    background: #18181b; border: 1px solid #2a2a2f; border-radius: 16px;
-    padding: 48px 40px; width: 360px; text-align: center;
-    animation: fadeUp 0.4s ease;
-  }
-  .login-card h1 { font-family: 'Syne', sans-serif; font-size: 22px; color: #fff; margin: 8px 0 4px; }
-  .login-card p.sub { color: #666; font-size: 13px; margin-bottom: 28px; }
-  .login-card input {
-    width: 100%; padding: 12px 16px; border-radius: 8px;
-    background: #0d0d0f; border: 1px solid #2a2a2f; color: #fff;
-    font-size: 15px; margin-bottom: 8px; transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .login-card input:focus { outline: none; border-color: #e05c2e; box-shadow: 0 0 0 3px rgba(224,92,46,0.2); }
-  .login-card input.error { border-color: #ef476f; }
-  .login-card .err-msg { color: #ef476f; font-size: 12px; margin-bottom: 10px; min-height: 18px; }
-  .login-card button {
-    width: 100%; padding: 12px; border-radius: 8px; background: #e05c2e;
-    color: #fff; border: none; font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: background 0.2s;
-  }
-  .login-card button:hover { background: #c44e24; }
-  @keyframes shake {
-    0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)}
-  }
-  .shake { animation: shake 0.4s ease !important; }
+  .topbar{background:var(--navy);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(42,88,141,.25);}
+  .topbar-title{font-size:16px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:9px;}
+  .topbar-sub{font-size:12px;color:var(--mid);}
 
-  /* ── App ── */
-  #app-screen { display: none; }
-  .topbar {
-    background: #0f0f14; border-bottom: 1px solid #1e1e26;
-    padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between;
-  }
-  .topbar-left { display: flex; align-items: center; gap: 10px; }
-  .topbar-left span.icon { font-size: 20px; }
-  .topbar-left span.title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #fff; }
-  .topbar-right { font-size: 12px; color: #555; }
-  .main { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+  .main{max-width:880px;margin:0 auto;padding:28px 24px 56px;}
+  .section{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 22px 6px;margin-bottom:16px;box-shadow:0 1px 4px rgba(42,88,141,.07);}
+  .section-title{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid var(--sky);padding-bottom:7px;}
 
-  .section {
-    background: #0f0f14; border: 1px solid #1e1e26; border-radius: 12px;
-    padding: 24px 24px 8px; margin-bottom: 20px;
-  }
-  .section-title {
-    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-    color: #1a4f8c; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .field { margin-bottom: 18px; }
-  .field label {
-    display: block; color: #9ca3af; font-size: 11px; font-weight: 500;
-    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .field label .req { color: #e05c2e; margin-left: 3px; }
-  .field input, .field select, .field textarea {
-    width: 100%; padding: 9px 12px; border-radius: 7px;
-    background: #0f0f11; border: 1px solid #2a2a30; color: #e5e7eb;
-    font-size: 14px; transition: border-color 0.15s; appearance: none;
-  }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    outline: none; border-color: #1a4f8c; box-shadow: 0 0 0 2px rgba(26,79,140,0.2);
-  }
-  .field textarea { resize: vertical; min-height: 80px; }
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+  .field{margin-bottom:14px;}
+  .field label{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:11px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+  .field label .opt{font-weight:400;text-transform:none;letter-spacing:0;color:#aab8c8;font-size:10px;}
+  .field input,.field select,.field textarea{width:100%;padding:8px 10px;border-radius:6px;background:#f5f9fe;border:1px solid var(--border);color:var(--text);font-size:13.5px;transition:border-color .15s,box-shadow .15s;appearance:none;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(42,88,141,.12);background:var(--white);}
+  .field textarea{resize:vertical;min-height:78px;line-height:1.55;}
 
-  /* Outcomes */
-  .outcome-list { display: flex; flex-direction: column; gap: 8px; }
-  .outcome-chip {
-    display: flex; align-items: center; gap: 12; padding: 10px 14px; border-radius: 8px;
-    border: 1px solid #2a2a30; background: #0f0f11; cursor: pointer;
-    transition: border-color 0.15s, background 0.15s; gap: 12px;
-  }
-  .outcome-chip:hover { border-color: #1a4f8c; }
-  .outcome-chip.selected { border-color: #1a4f8c; background: rgba(26,79,140,0.12); }
-  .outcome-chip .oc-code { min-width: 88px; font-weight: 700; font-size: 12px; color: #555; }
-  .outcome-chip.selected .oc-code { color: #6da4e8; }
-  .outcome-chip .oc-desc { font-size: 13px; color: #666; line-height: 1.4; flex: 1; }
-  .outcome-chip.selected .oc-desc { color: #cbd5e1; }
-  .outcome-chip .oc-check {
-    min-width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
-    border: 1px solid #3a3a42; display: flex; align-items: center; justify-content: center;
-    font-size: 12px; color: #fff;
-  }
-  .outcome-chip.selected .oc-check { background: #1a4f8c; border-color: #1a4f8c; }
-  .outcome-count { color: #1a4f8c; font-size: 12px; margin-top: 10px; }
-  .outcome-hint { color: #555; font-size: 12px; margin-bottom: 14px; }
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:13px;}
+  .toggle-label{font-size:13px;color:var(--muted);}
+  .toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+  .toggle input{opacity:0;width:0;height:0;}
+  .toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s;}
+  .toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:var(--white);border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15);}
+  .toggle input:checked+.toggle-slider{background:var(--navy);}
+  .toggle input:checked+.toggle-slider:before{transform:translateX(16px);}
 
-  /* Generate button */
-  .gen-wrap { text-align: center; margin-top: 32px; margin-bottom: 40px; }
-  .gen-btn {
-    background: #1a4f8c; color: #fff; border: none; border-radius: 10px;
-    padding: 14px 48px; font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: background 0.2s; min-width: 220px;
-  }
-  .gen-btn:hover { background: #153f72; }
-  .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .gen-btn.success { background: #065f46; }
-  .gen-hint { color: #555; font-size: 12px; margin-top: 10px; }
+  .school-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .school-display{font-size:15px;font-weight:600;color:var(--text);flex:1;}
+  .btn-link{background:none;border:none;color:var(--navy);font-size:12px;cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap;}
+  .btn-link:hover{color:#1e3f68;}
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-  .main { animation: fadeUp 0.4s ease; }
+  .date-row{display:flex;gap:8px;align-items:flex-end;}
+  .date-row>.field{flex:1;margin-bottom:0;}
+
+  .outcome-list{display:flex;flex-direction:column;gap:6px;}
+  .outcome-chip{display:flex;align-items:center;gap:11px;padding:8px 12px;border-radius:7px;border:1px solid var(--border);background:#f5f9fe;cursor:pointer;transition:border-color .15s,background .15s;}
+  .outcome-chip:hover{border-color:var(--mid);background:var(--sky);}
+  .outcome-chip.selected{border-color:var(--navy);background:var(--sky);}
+  .oc-code{min-width:90px;font-weight:700;font-size:11.5px;color:var(--mid);}
+  .outcome-chip.selected .oc-code{color:var(--navy);}
+  .oc-desc{font-size:12.5px;color:var(--muted);line-height:1.4;flex:1;}
+  .outcome-chip.selected .oc-desc{color:var(--text);}
+  .oc-check{min-width:18px;height:18px;border-radius:4px;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--white);transition:all .15s;}
+  .outcome-chip.selected .oc-check{background:var(--navy);border-color:var(--navy);}
+  .outcome-count{color:var(--navy);font-size:12px;margin-top:8px;font-weight:600;}
+  .outcome-hint{color:#aab8c8;font-size:12px;margin-bottom:11px;}
+
+  .notes-area{width:100%;min-height:180px;padding:12px;border-radius:6px;background:#f5f9fe;border:1px solid var(--border);color:var(--text);font-size:13px;line-height:1.6;resize:vertical;}
+  .notes-area:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(42,88,141,.12);background:var(--white);}
+
+  .gen-wrap{text-align:center;margin-top:24px;}
+  .gen-btn{background:var(--navy);color:var(--white);border:none;border-radius:8px;padding:12px 44px;font-size:14.5px;font-weight:600;cursor:pointer;transition:background .2s;min-width:210px;box-shadow:0 2px 8px rgba(42,88,141,.22);}
+  .gen-btn:hover{background:#1e3f68;}
+  .gen-btn:disabled{opacity:.55;cursor:not-allowed;}
+  .gen-btn.success{background:#0d7a55;}
+  .gen-hint{color:#aab8c8;font-size:11.5px;margin-top:7px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .main{animation:fadeUp .3s ease;}
 </style>
 </head>
 <body>
 
-<!-- ══════════════ LOGIN ══════════════ -->
-<div id="login-screen">
-  <div class="login-card" id="login-card">
-    <div style="font-size:40px">🏫</div>
-    <h1>Maths Tools</h1>
-    <p class="sub">Staff access only</p>
-    <input type="password" id="pw-input" placeholder="Enter password" />
-    <p class="err-msg" id="err-msg"></p>
-    <button onclick="tryLogin()">Sign In</button>
-  </div>
+<div class="topbar">
+  <div class="topbar-title">📋 Assessment Notification Generator</div>
+  <div class="topbar-sub">Maths · Years 7–12</div>
 </div>
 
-<!-- ══════════════ APP ══════════════ -->
-<div id="app-screen">
-  <div class="topbar">
-    <div class="topbar-left">
-      <span class="icon">📋</span>
-      <span class="title">Assessment Notification Generator</span>
+<div class="main">
+
+  <div class="section">
+    <div class="section-title">School</div>
+    <div class="school-row">
+      <div class="school-display" id="school-display">St Ives High School</div>
+      <button class="btn-link" onclick="toggleSchoolEdit()">Override</button>
     </div>
-    <div class="topbar-right">Maths · Years 7–12</div>
+    <div class="field" id="school-edit-row" style="display:none;margin-bottom:14px;">
+      <input type="text" id="f-school" value="St Ives High School" placeholder="School name" oninput="syncSchool()" />
+    </div>
   </div>
 
-  <div class="main">
-
-    <!-- School -->
-    <div class="section">
-      <div class="section-title">School</div>
-      <div class="field">
-        <label>School Name <span class="req">*</span></label>
-        <input type="text" id="f-school" placeholder="e.g. Leeton High School" />
-      </div>
+  <div class="section">
+    <div class="section-title">Course</div>
+    <div class="grid-2">
+      <div class="field"><label>Year Group</label><select id="f-year" onchange="onYearChange()"></select></div>
+      <div class="field"><label>Course</label><select id="f-course" onchange="onCourseChange()"></select></div>
     </div>
-
-    <!-- Course -->
-    <div class="section">
-      <div class="section-title">Course</div>
-      <div class="grid-2">
-        <div class="field">
-          <label>Year Group <span class="req">*</span></label>
-          <select id="f-year" onchange="onYearChange()"></select>
-        </div>
-        <div class="field">
-          <label>Course <span class="req">*</span></label>
-          <select id="f-course" onchange="onCourseChange()"></select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Task Details -->
-    <div class="section">
-      <div class="section-title">Task Details</div>
-      <div class="grid-2">
-        <div class="field">
-          <label>Task Name <span class="req">*</span></label>
-          <input type="text" id="f-taskname" placeholder="e.g. Algebraic Techniques Test" />
-        </div>
-        <div class="field">
-          <label>Task Type <span class="req">*</span></label>
-          <select id="f-tasktype"></select>
-        </div>
-        <div class="field">
-          <label>Task Number</label>
-          <select id="f-tasknum"></select>
-        </div>
-        <div class="field">
-          <label>Term</label>
-          <select id="f-term"></select>
-        </div>
-        <div class="field">
-          <label>Due Date <span class="req">*</span></label>
-          <input type="date" id="f-duedate" />
-        </div>
-        <div class="field">
-          <label>Duration / Length</label>
-          <input type="text" id="f-duration" placeholder="e.g. 50 minutes / 3 pages" />
-        </div>
-        <div class="field">
-          <label>Weighting (%)</label>
-          <input type="number" id="f-weighting" min="0" max="100" placeholder="e.g. 20" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Outcomes -->
-    <div class="section">
-      <div class="section-title">Syllabus Outcomes</div>
-      <p class="outcome-hint">Select all outcomes assessed by this task</p>
-      <div class="outcome-list" id="outcome-list"></div>
-      <p class="outcome-count" id="outcome-count"></p>
-    </div>
-
-    <!-- Description -->
-    <div class="section">
-      <div class="section-title">Task Description</div>
-      <div class="field">
-        <label>Description of Task</label>
-        <textarea id="f-desc" placeholder="Describe what students need to do, the format of the task, and any special conditions..."></textarea>
-      </div>
-      <div class="field">
-        <label>Topics / Content Covered</label>
-        <textarea id="f-topics" style="min-height:70px" placeholder="e.g. Linear equations, substitution, expanding brackets..."></textarea>
-      </div>
-    </div>
-
-    <!-- Generate -->
-    <div class="gen-wrap">
-      <button class="gen-btn" id="gen-btn" onclick="generateDocx()">⬇  Generate .docx</button>
-      <p class="gen-hint">Downloads a formatted Word document ready to print or share</p>
-    </div>
-
   </div>
+
+  <div class="section">
+    <div class="section-title">Task Details</div>
+
+    <div class="toggle-row">
+      <label class="toggle"><input type="checkbox" id="toggle-taskname" onchange="toggleTaskName()" /><span class="toggle-slider"></span></label>
+      <span class="toggle-label">Include task name</span>
+    </div>
+    <div class="field" id="taskname-field" style="display:none;">
+      <label>Task Name</label>
+      <input type="text" id="f-taskname" placeholder="e.g. Algebraic Techniques Test" />
+    </div>
+
+    <div class="grid-2">
+      <div class="field"><label>Format</label><select id="f-tasktype"></select></div>
+      <div class="field"><label>Task Number</label><select id="f-tasknum"></select></div>
+    </div>
+
+    <div class="grid-3">
+      <div class="field"><label>Term</label><select id="f-term"></select></div>
+      <div class="field"><label>Week</label><select id="f-week"></select></div>
+      <div class="field"><label>Weighting (%)</label><input type="number" id="f-weighting" min="0" max="100" placeholder="e.g. 20" /></div>
+    </div>
+
+    <div class="field">
+      <label>Due Date</label>
+      <div class="date-row">
+        <div class="field" id="date-picker-wrap" style="margin-bottom:0;"><input type="date" id="f-duedate" /></div>
+        <div class="field" id="date-text-wrap" style="display:none;margin-bottom:0;"><input type="text" id="f-duedate-text" placeholder="e.g. See examination timetable" /></div>
+        <button class="btn-link" onclick="toggleDateOverride()">Override</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field"><label>Period / Time <span class="opt">(optional)</span></label><input type="text" id="f-period" placeholder="e.g. Period 3 or 9:05am–10:05am" /></div>
+      <div class="field"><label>Duration <span class="opt">(optional)</span></label><input type="text" id="f-duration" placeholder="e.g. 50 minutes" /></div>
+    </div>
+
+    <div class="field">
+      <label>Topics / Content Covered</label>
+      <textarea id="f-topics" style="min-height:65px" placeholder="e.g. Linear equations, substitution, expanding brackets..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Task Description <span class="opt">(optional)</span></label>
+      <textarea id="f-desc" placeholder="Any additional description of the task..."></textarea>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Syllabus Outcomes</div>
+    <p class="outcome-hint">Select all outcomes assessed by this task</p>
+    <div class="outcome-list" id="outcome-list"></div>
+    <p class="outcome-count" id="outcome-count"></p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Notes</div>
+    <p style="font-size:11.5px;color:#aab8c8;margin-bottom:10px;">Auto-populated based on year group — edit as needed.</p>
+    <textarea class="notes-area" id="f-notes"></textarea>
+  </div>
+
+  <div class="gen-wrap">
+    <button class="gen-btn" id="gen-btn" onclick="generateDocx()">⬇  Generate .docx</button>
+    <p class="gen-hint">Downloads a formatted Word document ready to print or share</p>
+  </div>
+
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════
-// DATA
-// ══════════════════════════════════════════════════════
-const PASSWORD = "school2024";
-
-const COURSES = {
-  "Year 7":  ["Mathematics Year 7"],
-  "Year 8":  ["Mathematics Year 8"],
-  "Year 9":  ["Mathematics Year 9"],
-  "Year 10": ["Mathematics Year 10","Mathematics 5.1","Mathematics 5.2","Mathematics 5.3"],
-  "Year 11": ["Mathematics Standard 1","Mathematics Advanced","Mathematics Extension 1"],
-  "Year 12": ["Mathematics Standard 1","Mathematics Standard 2","Mathematics Advanced","Mathematics Extension 1","Mathematics Extension 2"],
+const COURSES={"Year 7":["Mathematics Year 7"],"Year 8":["Mathematics Year 8"],"Year 9":["Mathematics Year 9"],"Year 10":["Mathematics Year 10","Mathematics 5.1","Mathematics 5.2","Mathematics 5.3"],"Year 11":["Mathematics Standard 1","Mathematics Advanced","Mathematics Extension 1"],"Year 12":["Mathematics Standard 1","Mathematics Standard 2","Mathematics Advanced","Mathematics Extension 1","Mathematics Extension 2"]};
+const TASK_TYPES=["In-class test","Assignment","Investigation","Project","Practical task","Open-book test","Research task","Portfolio","Examination","Other"];
+const OUTCOMES={
+"Mathematics Year 7":[{code:"MA4-1WM",desc:"communicates and connects mathematical ideas using appropriate terminology, diagrams and symbols"},{code:"MA4-2WM",desc:"applies appropriate mathematical techniques to solve problems"},{code:"MA4-3WM",desc:"recognises and explains mathematical relationships using reasoning"},{code:"MA4-4NA",desc:"compares, orders and calculates with integers, applying a range of strategies"},{code:"MA4-5NA",desc:"operates with fractions, decimals and percentages"},{code:"MA4-6NA",desc:"solves financial problems involving purchasing goods"},{code:"MA4-7NA",desc:"operates with ratios and rates, and explores their graphical representation"},{code:"MA4-8NA",desc:"generalises number properties to operate with algebraic expressions"},{code:"MA4-9NA",desc:"operates with positive-integer and zero indices of numerical bases"},{code:"MA4-10MG",desc:"uses formulas to calculate the perimeters of plane shapes and the circumferences of circles"},{code:"MA4-11MG",desc:"uses formulas to calculate the areas of quadrilaterals and circles, and converts between units of area"},{code:"MA4-12MG",desc:"calculates the volumes of prisms and cylinders, and converts between units of volume"},{code:"MA4-14MG",desc:"identifies and uses angle relationships, including those related to transversals on sets of parallel lines"},{code:"MA4-17SP",desc:"collects, represents and interprets single sets of data, using appropriate statistical displays"},{code:"MA4-18SP",desc:"uses appropriate methods to collect data and constructs, interprets and evaluates data displays"},{code:"MA4-19SP",desc:"calculates the probability of simple and complementary events"},{code:"MA4-20SP",desc:"analyses single sets of data using measures of location, and range"}],
+"Mathematics Year 8":[{code:"MA4-1WM",desc:"communicates and connects mathematical ideas using appropriate terminology, diagrams and symbols"},{code:"MA4-2WM",desc:"applies appropriate mathematical techniques to solve problems"},{code:"MA4-3WM",desc:"recognises and explains mathematical relationships using reasoning"},{code:"MA4-4NA",desc:"compares, orders and calculates with integers, applying a range of strategies"},{code:"MA4-5NA",desc:"operates with fractions, decimals and percentages"},{code:"MA4-6NA",desc:"solves financial problems involving purchasing goods"},{code:"MA4-7NA",desc:"operates with ratios and rates, and explores their graphical representation"},{code:"MA4-8NA",desc:"generalises number properties to operate with algebraic expressions"},{code:"MA4-9NA",desc:"operates with positive-integer and zero indices of numerical bases"},{code:"MA4-10MG",desc:"uses formulas to calculate the perimeters of plane shapes and the circumferences of circles"},{code:"MA4-11MG",desc:"uses formulas to calculate the areas of quadrilaterals and circles, and converts between units of area"},{code:"MA4-12MG",desc:"calculates the volumes of prisms and cylinders, and converts between units of volume"},{code:"MA4-15MG",desc:"performs transformations on the Cartesian plane"},{code:"MA4-16MG",desc:"applies Pythagoras' theorem to find unknown lengths"},{code:"MA4-17SP",desc:"collects, represents and interprets single sets of data, using appropriate statistical displays"},{code:"MA4-19SP",desc:"calculates the probability of simple and complementary events"},{code:"MA4-20SP",desc:"analyses single sets of data using measures of location, and range"}],
+"Mathematics Year 9":[{code:"MA5.1-1WM",desc:"uses appropriate terminology, diagrams and symbols in mathematical contexts"},{code:"MA5.1-2WM",desc:"selects and uses appropriate strategies to solve problems"},{code:"MA5.1-3WM",desc:"provides reasoning to support conclusions that are appropriate to the context"},{code:"MA5.2-1WM",desc:"selects appropriate notations and conventions to communicate mathematical ideas and solutions"},{code:"MA5.2-2WM",desc:"interprets mathematical or real-life situations, systematically applying problem-solving strategies"},{code:"MA5.2-3WM",desc:"constructs arguments to prove and justify results"},{code:"MA5.1-4NA",desc:"solves financial problems involving earning, spending and investing money"},{code:"MA5.1-5NA",desc:"operates with algebraic expressions involving positive-integer and zero indices"},{code:"MA5.2-4NA",desc:"solves financial problems involving compound interest"},{code:"MA5.2-5NA",desc:"recognises direct and indirect proportion, and solves problems involving direct proportion"},{code:"MA5.2-6NA",desc:"simplifies algebraic fractions, and expands and factorises quadratic expressions"},{code:"MA5.1-6MG",desc:"calculates the surface areas of right prisms and cylinders, and the volumes of right pyramids, cones and spheres"},{code:"MA5.2-7MG",desc:"describes and applies the properties of similarity and congruence of triangles"},{code:"MA5.1-7SP",desc:"uses statistical displays to compare sets of data, and evaluates statistical claims made in the media"},{code:"MA5.2-15SP",desc:"calculates probabilities associated with two-step chance experiments"}],
+"Mathematics Year 10":[{code:"MA5.1-1WM",desc:"uses appropriate terminology, diagrams and symbols in mathematical contexts"},{code:"MA5.1-2WM",desc:"selects and uses appropriate strategies to solve problems"},{code:"MA5.1-3WM",desc:"provides reasoning to support conclusions that are appropriate to the context"},{code:"MA5.2-1WM",desc:"selects appropriate notations and conventions to communicate mathematical ideas and solutions"},{code:"MA5.2-2WM",desc:"interprets mathematical or real-life situations, systematically applying problem-solving strategies"},{code:"MA5.2-3WM",desc:"constructs arguments to prove and justify results"},{code:"MA5.3-1WM",desc:"uses and interprets formal definitions and generalisations when explaining solutions and/or conjectures"},{code:"MA5.3-2WM",desc:"generalises mathematical ideas and techniques to analyse and solve problems efficiently"},{code:"MA5.3-3WM",desc:"uses deductive reasoning in presenting arguments and formal proofs"},{code:"MA5.2-4NA",desc:"solves financial problems involving compound interest"},{code:"MA5.2-6NA",desc:"simplifies algebraic fractions, and expands and factorises quadratic expressions"},{code:"MA5.3-4NA",desc:"draws and interprets a variety of graphs and applies coordinate geometry techniques to solve problems"},{code:"MA5.3-5NA",desc:"selects and applies appropriate algebraic techniques to operate with algebraic expressions"},{code:"MA5.2-11MG",desc:"applies trigonometry to solve problems, including problems involving bearings"},{code:"MA5.3-13MG",desc:"applies formulas to find the surface areas of right pyramids, right cones, spheres and related composite solids"},{code:"MA5.2-15SP",desc:"calculates probabilities associated with two-step chance experiments"},{code:"MA5.2-16SP",desc:"investigates relationships between two statistical variables, including their relationship over time"},{code:"MA5.3-19SP",desc:"uses the statistical processes of collect, display, analyse and interpret to investigate statistical claims"}],
+"Mathematics 5.1":[{code:"MA5.1-1WM",desc:"uses appropriate terminology, diagrams and symbols in mathematical contexts"},{code:"MA5.1-2WM",desc:"selects and uses appropriate strategies to solve problems"},{code:"MA5.1-3WM",desc:"provides reasoning to support conclusions that are appropriate to the context"},{code:"MA5.1-4NA",desc:"solves financial problems involving earning, spending and investing money"},{code:"MA5.1-5NA",desc:"operates with algebraic expressions involving positive-integer and zero indices"},{code:"MA5.1-6MG",desc:"calculates the surface areas of right prisms and cylinders, and volumes of right pyramids, cones and spheres"},{code:"MA5.1-7SP",desc:"uses statistical displays to compare sets of data, and evaluates statistical claims made in the media"}],
+"Mathematics 5.2":[{code:"MA5.2-1WM",desc:"selects appropriate notations and conventions to communicate mathematical ideas and solutions"},{code:"MA5.2-2WM",desc:"interprets mathematical or real-life situations, systematically applying problem-solving strategies"},{code:"MA5.2-3WM",desc:"constructs arguments to prove and justify results"},{code:"MA5.2-4NA",desc:"solves financial problems involving compound interest"},{code:"MA5.2-5NA",desc:"recognises direct and indirect proportion, and solves problems involving direct proportion"},{code:"MA5.2-6NA",desc:"simplifies algebraic fractions, and expands and factorises quadratic expressions"},{code:"MA5.2-7MG",desc:"describes and applies the properties of similarity and congruence of triangles"},{code:"MA5.2-15SP",desc:"calculates probabilities associated with two-step chance experiments"}],
+"Mathematics 5.3":[{code:"MA5.3-1WM",desc:"uses and interprets formal definitions and generalisations when explaining solutions and/or conjectures"},{code:"MA5.3-2WM",desc:"generalises mathematical ideas and techniques to analyse and solve problems efficiently"},{code:"MA5.3-3WM",desc:"uses deductive reasoning in presenting arguments and formal proofs"},{code:"MA5.3-4NA",desc:"draws and interprets a variety of graphs and applies coordinate geometry techniques to solve problems"},{code:"MA5.3-5NA",desc:"selects and applies appropriate algebraic techniques to operate with algebraic expressions"},{code:"MA5.3-6NA",desc:"performs operations with surds and indices"},{code:"MA5.3-13MG",desc:"applies formulas to find the surface areas of right pyramids, right cones, spheres and related composite solids"},{code:"MA5.3-19SP",desc:"uses the statistical processes of collect, display, analyse and interpret to investigate statistical claims"}],
+"Mathematics Standard 1":[{code:"MS11-1",desc:"uses algebraic and graphical techniques to evaluate and construct arguments in a range of familiar contexts"},{code:"MS11-2",desc:"represents information in symbolic, graphical and tabular form"},{code:"MS11-3",desc:"constructs relevant mathematical models to solve unfamiliar problems"},{code:"MS11-4",desc:"performs calculations in relation to two-dimensional and three-dimensional figures"},{code:"MS11-5",desc:"interprets the results of measurements and calculations and makes judgements about reasonableness"},{code:"MS11-6",desc:"makes predictions about everyday situations based on simple mathematical models"},{code:"MS11-7",desc:"develops and carries out simple statistical processes to answer questions posed"},{code:"MS11-8",desc:"solves probability problems involving multistage events"},{code:"MS11-9",desc:"uses appropriate technology to investigate, organise and interpret information in a range of contexts"}],
+"Mathematics Standard 2":[{code:"MS11-1",desc:"uses algebraic and graphical techniques to evaluate and construct arguments in a range of familiar contexts"},{code:"MS11-2",desc:"represents information in symbolic, graphical and tabular form"},{code:"MS11-3",desc:"constructs relevant mathematical models to solve unfamiliar problems"},{code:"MS11-4",desc:"performs calculations in relation to two-dimensional and three-dimensional figures"},{code:"MS11-5",desc:"interprets the results of measurements and calculations and makes judgements about reasonableness"},{code:"MS11-6",desc:"makes predictions about everyday situations based on simple mathematical models"},{code:"MS11-7",desc:"develops and carries out simple statistical processes to answer questions posed"},{code:"MS11-8",desc:"solves probability problems involving multistage events"},{code:"MS11-9",desc:"uses appropriate technology to investigate, organise and interpret information in a range of contexts"}],
+"Mathematics Advanced":[{code:"MA11-1",desc:"uses algebraic and graphical concepts in the modelling and solving of problems, and communicates solutions in appropriate form"},{code:"MA11-2",desc:"uses the concepts of functions, inverse functions and composition of functions to model, analyse and solve problems"},{code:"MA11-3",desc:"uses the concepts and techniques of trigonometry in the solution of equations and problems involving both 2D and 3D situations"},{code:"MA11-4",desc:"uses the concepts and techniques of calculus to model, analyse and solve problems"},{code:"MA11-5",desc:"interprets the meaning of the derivative, determines the derivative of functions and applies these to solve problems"},{code:"MA11-6",desc:"manipulates, solves and models relationships and expressions using exponential, logarithmic, and trigonometric functions"},{code:"MA11-7",desc:"uses statistical concepts and methods to evaluate and construct arguments in a range of familiar and unfamiliar contexts"},{code:"MA11-8",desc:"solves probability problems involving multistage events and applies the concepts of conditional probability and independence"},{code:"MA11-9",desc:"uses appropriate technology to investigate, organise, model and interpret information in a range of contexts"}],
+"Mathematics Extension 1":[{code:"ME11-1",desc:"uses algebraic and graphical concepts in the modelling and solving of problems, and communicates solutions in appropriate form"},{code:"ME11-2",desc:"manipulates algebraic expressions and graphical functions to solve problems"},{code:"ME11-3",desc:"applies concepts and techniques of inverse trigonometric functions and simplifying expressions involving compound angles in the solution of problems"},{code:"ME11-4",desc:"applies understanding of the concept of a derivative in the solution of problems, including rates of change, exponential growth and decay and the motion of a particle"},{code:"ME11-5",desc:"uses concepts of permutations and combinations to solve problems involving counting or ordering"},{code:"ME11-6",desc:"uses appropriate technology to investigate, organise and interpret information to solve problems in a range of contexts"},{code:"ME11-7",desc:"evaluates and justifies conclusions, communicating a position clearly in appropriate mathematical forms"}],
+"Mathematics Extension 2":[{code:"MEX12-1",desc:"understands and uses different representations of numbers and functions to model, prove results and find solutions to problems in a variety of contexts"},{code:"MEX12-2",desc:"chooses appropriate strategies to construct proofs and to find solutions to problems in a variety of contexts"},{code:"MEX12-3",desc:"uses the properties of complex numbers and vectors to model and solve problems"},{code:"MEX12-4",desc:"uses the concepts of proof, and the relationship between a function and its derivative, to model and solve problems"},{code:"MEX12-5",desc:"applies techniques of integration to solve problems in appropriate contexts"},{code:"MEX12-6",desc:"uses mechanics to model and solve practical problems"},{code:"MEX12-7",desc:"applies various mathematical techniques and concepts to model and solve structured, unstructured and multi-step problems"},{code:"MEX12-8",desc:"communicates and justifies abstract ideas and relationships using appropriate language, notation and logical argument"}]
 };
 
-const TASK_TYPES = ["In-class test","Assignment","Investigation","Project","Practical task","Open-book test","Research task","Portfolio","Examination","Other"];
+const NOTES_7_10=`Only NESA approved calculators may be used in this assessment.
+Students need to bring all necessary equipment, including pen, pencil, ruler, eraser, and calculator. No equipment may be borrowed from the school.
+Unless a prior arrangement has been made with the Head Teacher Mathematics, students who are absent on the day of this assessment task:
+  \u2022 must be prepared to sit the test on the day they return to school
+  \u2022 should provide appropriate documentation to explain their absence to the class teacher
+Failure to do so may result in a zero or reduced mark being awarded. Repeated absences will be monitored by the school.`;
 
-const OUTCOMES = {
-  "Mathematics Year 7": [
-    {code:"MA4-1WM",desc:"communicates and connects mathematical ideas using appropriate terminology, diagrams and symbols"},
-    {code:"MA4-2WM",desc:"applies appropriate mathematical techniques to solve problems"},
-    {code:"MA4-3WM",desc:"recognises and explains mathematical relationships using reasoning"},
-    {code:"MA4-4NA",desc:"compares, orders and calculates with integers, applying a range of strategies"},
-    {code:"MA4-5NA",desc:"operates with fractions, decimals and percentages"},
-    {code:"MA4-6NA",desc:"solves financial problems involving purchasing goods"},
-    {code:"MA4-7NA",desc:"operates with ratios and rates, and explores their graphical representation"},
-    {code:"MA4-8NA",desc:"generalises number properties to operate with algebraic expressions"},
-    {code:"MA4-9NA",desc:"operates with positive-integer and zero indices of numerical bases"},
-    {code:"MA4-10MG",desc:"uses formulas to calculate the perimeters of plane shapes and the circumferences of circles"},
-    {code:"MA4-11MG",desc:"uses formulas to calculate the areas of quadrilaterals and circles, and converts between units of area"},
-    {code:"MA4-12MG",desc:"calculates the volumes of prisms and cylinders, and converts between units of volume"},
-    {code:"MA4-14MG",desc:"identifies and uses angle relationships, including those related to transversals on sets of parallel lines"},
-    {code:"MA4-17SP",desc:"collects, represents and interprets single sets of data, using appropriate statistical displays"},
-    {code:"MA4-18SP",desc:"uses appropriate methods to collect data and constructs, interprets and evaluates data displays"},
-    {code:"MA4-19SP",desc:"calculates the probability of simple and complementary events"},
-    {code:"MA4-20SP",desc:"analyses single sets of data using measures of location, and range"},
-  ],
-  "Mathematics Year 8": [
-    {code:"MA4-1WM",desc:"communicates and connects mathematical ideas using appropriate terminology, diagrams and symbols"},
-    {code:"MA4-2WM",desc:"applies appropriate mathematical techniques to solve problems"},
-    {code:"MA4-3WM",desc:"recognises and explains mathematical relationships using reasoning"},
-    {code:"MA4-4NA",desc:"compares, orders and calculates with integers, applying a range of strategies"},
-    {code:"MA4-5NA",desc:"operates with fractions, decimals and percentages"},
-    {code:"MA4-6NA",desc:"solves financial problems involving purchasing goods"},
-    {code:"MA4-7NA",desc:"operates with ratios and rates, and explores their graphical representation"},
-    {code:"MA4-8NA",desc:"generalises number properties to operate with algebraic expressions"},
-    {code:"MA4-9NA",desc:"operates with positive-integer and zero indices of numerical bases"},
-    {code:"MA4-10MG",desc:"uses formulas to calculate the perimeters of plane shapes and the circumferences of circles"},
-    {code:"MA4-11MG",desc:"uses formulas to calculate the areas of quadrilaterals and circles, and converts between units of area"},
-    {code:"MA4-12MG",desc:"calculates the volumes of prisms and cylinders, and converts between units of volume"},
-    {code:"MA4-15MG",desc:"performs transformations on the Cartesian plane"},
-    {code:"MA4-16MG",desc:"applies Pythagoras' theorem to find unknown lengths"},
-    {code:"MA4-17SP",desc:"collects, represents and interprets single sets of data, using appropriate statistical displays"},
-    {code:"MA4-19SP",desc:"calculates the probability of simple and complementary events"},
-    {code:"MA4-20SP",desc:"analyses single sets of data using measures of location, and range"},
-  ],
-  "Mathematics Year 9": [
-    {code:"MA5.1-1WM",desc:"uses appropriate terminology, diagrams and symbols in mathematical contexts"},
-    {code:"MA5.1-2WM",desc:"selects and uses appropriate strategies to solve problems"},
-    {code:"MA5.1-3WM",desc:"provides reasoning to support conclusions that are appropriate to the context"},
-    {code:"MA5.2-1WM",desc:"selects appropriate notations and conventions to communicate mathematical ideas and solutions"},
-    {code:"MA5.2-2WM",desc:"interprets mathematical or real-life situations, systematically applying problem-solving strategies"},
-    {code:"MA5.2-3WM",desc:"constructs arguments to prove and justify results"},
-    {code:"MA5.1-4NA",desc:"solves financial problems involving earning, spending and investing money"},
-    {code:"MA5.1-5NA",desc:"operates with algebraic expressions involving positive-integer and zero indices"},
-    {code:"MA5.2-4NA",desc:"solves financial problems involving compound interest"},
-    {code:"MA5.2-5NA",desc:"recognises direct and indirect proportion, and solves problems involving direct proportion"},
-    {code:"MA5.2-6NA",desc:"simplifies algebraic fractions, and expands and factorises quadratic expressions"},
-    {code:"MA5.1-6MG",desc:"calculates the surface areas of right prisms and cylinders, and the volumes of right pyramids, cones and spheres"},
-    {code:"MA5.2-7MG",desc:"describes and applies the properties of similarity and congruence of triangles"},
-    {code:"MA5.1-7SP",desc:"uses statistical displays to compare sets of data, and evaluates statistical claims made in the media"},
-    {code:"MA5.2-15SP",desc:"calculates probabilities associated with two-step chance experiments"},
-  ],
-  "Mathematics Year 10": [
-    {code:"MA5.1-1WM",desc:"uses appropriate terminology, diagrams and symbols in mathematical contexts"},
-    {code:"MA5.1-2WM",desc:"selects and uses appropriate strategies to solve problems"},
-    {code:"MA5.1-3WM",desc:"provides reasoning to support conclusions that are appropriate to the context"},
-    {code:"MA5.2-1WM",desc:"selects appropriate notations and conventions to communicate mathematical ideas and solutions"},
-    {code:"MA5.2-2WM",desc:"interprets mathematical or real-life situations, systematically applying problem-solving strategies"},
-    {code:"MA5.2-3WM",desc:"constructs arguments to prove and justify results"},
-    {code:"MA5.3-1WM",desc:"uses and interprets formal definitions and generalisations when explaining solutions and/or conjectures"},
-    {code:"MA5.3-2WM",desc:"generalises mathematical ideas and techniques to analyse and solve problems efficiently"},
-    {code:"MA5.3-3WM",desc:"uses deductive reasoning in presenting arguments and formal proofs"},
-    {code:"MA5.2-4NA",desc:"solves financial problems involving compound interest"},
-    {code:"MA5.2-6NA",desc:"simplifies algebraic fractions, and expands and factorises quadratic expressions"},
-    {code:"MA5.3-4NA",desc:"draws and interprets a variety of graphs and applies coordinate geometry techniques to solve problems"},
-    {code:"MA5.3-5NA",desc:"selects and applies appropriate algebraic techniques to operate with algebraic expressions"},
-    {code:"MA5.2-11MG",desc:"applies trigonometry to solve problems, including problems involving bearings"},
-    {code:"MA5.3-13MG",desc:"applies formulas to find the surface areas of right pyramids, right cones, spheres and related composite solids"},
-    {code:"MA5.2-15SP",desc:"calculates probabilities associated with two-step chance experiments"},
-    {code:"MA5.2-16SP",desc:"investigates relationships between two statistical variables, including their relationship over time"},
-    {code:"MA5.3-19SP",desc:"uses the statistical processes of collect, display, analyse and interpret to investigate statistical claims"},
-  ],
-  "Mathematics 5.1": [
-    {code:"MA5.1-1WM",desc:"uses appropriate terminology, diagrams and symbols in mathematical contexts"},
-    {code:"MA5.1-2WM",desc:"selects and uses appropriate strategies to solve problems"},
-    {code:"MA5.1-3WM",desc:"provides reasoning to support conclusions that are appropriate to the context"},
-    {code:"MA5.1-4NA",desc:"solves financial problems involving earning, spending and investing money"},
-    {code:"MA5.1-5NA",desc:"operates with algebraic expressions involving positive-integer and zero indices"},
-    {code:"MA5.1-6MG",desc:"calculates the surface areas of right prisms and cylinders, and volumes of right pyramids, cones and spheres"},
-    {code:"MA5.1-7SP",desc:"uses statistical displays to compare sets of data, and evaluates statistical claims made in the media"},
-  ],
-  "Mathematics 5.2": [
-    {code:"MA5.2-1WM",desc:"selects appropriate notations and conventions to communicate mathematical ideas and solutions"},
-    {code:"MA5.2-2WM",desc:"interprets mathematical or real-life situations, systematically applying problem-solving strategies"},
-    {code:"MA5.2-3WM",desc:"constructs arguments to prove and justify results"},
-    {code:"MA5.2-4NA",desc:"solves financial problems involving compound interest"},
-    {code:"MA5.2-5NA",desc:"recognises direct and indirect proportion, and solves problems involving direct proportion"},
-    {code:"MA5.2-6NA",desc:"simplifies algebraic fractions, and expands and factorises quadratic expressions"},
-    {code:"MA5.2-7MG",desc:"describes and applies the properties of similarity and congruence of triangles"},
-    {code:"MA5.2-15SP",desc:"calculates probabilities associated with two-step chance experiments"},
-  ],
-  "Mathematics 5.3": [
-    {code:"MA5.3-1WM",desc:"uses and interprets formal definitions and generalisations when explaining solutions and/or conjectures"},
-    {code:"MA5.3-2WM",desc:"generalises mathematical ideas and techniques to analyse and solve problems efficiently"},
-    {code:"MA5.3-3WM",desc:"uses deductive reasoning in presenting arguments and formal proofs"},
-    {code:"MA5.3-4NA",desc:"draws and interprets a variety of graphs and applies coordinate geometry techniques to solve problems"},
-    {code:"MA5.3-5NA",desc:"selects and applies appropriate algebraic techniques to operate with algebraic expressions"},
-    {code:"MA5.3-6NA",desc:"performs operations with surds and indices"},
-    {code:"MA5.3-13MG",desc:"applies formulas to find the surface areas of right pyramids, right cones, spheres and related composite solids"},
-    {code:"MA5.3-19SP",desc:"uses the statistical processes of collect, display, analyse and interpret to investigate statistical claims"},
-  ],
-  "Mathematics Standard 1": [
-    {code:"MS11-1",desc:"uses algebraic and graphical techniques to evaluate and construct arguments in a range of familiar contexts"},
-    {code:"MS11-2",desc:"represents information in symbolic, graphical and tabular form"},
-    {code:"MS11-3",desc:"constructs relevant mathematical models to solve unfamiliar problems"},
-    {code:"MS11-4",desc:"performs calculations in relation to two-dimensional and three-dimensional figures"},
-    {code:"MS11-5",desc:"interprets the results of measurements and calculations and makes judgements about reasonableness"},
-    {code:"MS11-6",desc:"makes predictions about everyday situations based on simple mathematical models"},
-    {code:"MS11-7",desc:"develops and carries out simple statistical processes to answer questions posed"},
-    {code:"MS11-8",desc:"solves probability problems involving multistage events"},
-    {code:"MS11-9",desc:"uses appropriate technology to investigate, organise and interpret information in a range of contexts"},
-  ],
-  "Mathematics Standard 2": [
-    {code:"MS11-1",desc:"uses algebraic and graphical techniques to evaluate and construct arguments in a range of familiar contexts"},
-    {code:"MS11-2",desc:"represents information in symbolic, graphical and tabular form"},
-    {code:"MS11-3",desc:"constructs relevant mathematical models to solve unfamiliar problems"},
-    {code:"MS11-4",desc:"performs calculations in relation to two-dimensional and three-dimensional figures"},
-    {code:"MS11-5",desc:"interprets the results of measurements and calculations and makes judgements about reasonableness"},
-    {code:"MS11-6",desc:"makes predictions about everyday situations based on simple mathematical models"},
-    {code:"MS11-7",desc:"develops and carries out simple statistical processes to answer questions posed"},
-    {code:"MS11-8",desc:"solves probability problems involving multistage events"},
-    {code:"MS11-9",desc:"uses appropriate technology to investigate, organise and interpret information in a range of contexts"},
-  ],
-  "Mathematics Advanced": [
-    {code:"MA11-1",desc:"uses algebraic and graphical concepts in the modelling and solving of problems, and communicates solutions in appropriate form"},
-    {code:"MA11-2",desc:"uses the concepts of functions, inverse functions and composition of functions to model, analyse and solve problems"},
-    {code:"MA11-3",desc:"uses the concepts and techniques of trigonometry in the solution of equations and problems involving both 2D and 3D situations"},
-    {code:"MA11-4",desc:"uses the concepts and techniques of calculus to model, analyse and solve problems"},
-    {code:"MA11-5",desc:"interprets the meaning of the derivative, determines the derivative of functions and applies these to solve problems"},
-    {code:"MA11-6",desc:"manipulates, solves and models relationships and expressions using exponential, logarithmic, and trigonometric functions"},
-    {code:"MA11-7",desc:"uses statistical concepts and methods to evaluate and construct arguments in a range of familiar and unfamiliar contexts"},
-    {code:"MA11-8",desc:"solves probability problems involving multistage events and applies the concepts of conditional probability and independence"},
-    {code:"MA11-9",desc:"uses appropriate technology to investigate, organise, model and interpret information in a range of contexts"},
-  ],
-  "Mathematics Extension 1": [
-    {code:"ME11-1",desc:"uses algebraic and graphical concepts in the modelling and solving of problems, and communicates solutions in appropriate form"},
-    {code:"ME11-2",desc:"manipulates algebraic expressions and graphical functions to solve problems"},
-    {code:"ME11-3",desc:"applies concepts and techniques of inverse trigonometric functions and simplifying expressions involving compound angles in the solution of problems"},
-    {code:"ME11-4",desc:"applies understanding of the concept of a derivative in the solution of problems, including rates of change, exponential growth and decay and the motion of a particle"},
-    {code:"ME11-5",desc:"uses concepts of permutations and combinations to solve problems involving counting or ordering"},
-    {code:"ME11-6",desc:"uses appropriate technology to investigate, organise and interpret information to solve problems in a range of contexts"},
-    {code:"ME11-7",desc:"evaluates and justifies conclusions, communicating a position clearly in appropriate mathematical forms"},
-  ],
-  "Mathematics Extension 2": [
-    {code:"MEX12-1",desc:"understands and uses different representations of numbers and functions to model, prove results and find solutions to problems in a variety of contexts"},
-    {code:"MEX12-2",desc:"chooses appropriate strategies to construct proofs and to find solutions to problems in a variety of contexts"},
-    {code:"MEX12-3",desc:"uses the properties of complex numbers and vectors to model and solve problems"},
-    {code:"MEX12-4",desc:"uses the concepts of proof, and the relationship between a function and its derivative, to model and solve problems"},
-    {code:"MEX12-5",desc:"applies techniques of integration to solve problems in appropriate contexts"},
-    {code:"MEX12-6",desc:"uses mechanics to model and solve practical problems"},
-    {code:"MEX12-7",desc:"applies various mathematical techniques and concepts to model and solve structured, unstructured and multi-step problems"},
-    {code:"MEX12-8",desc:"communicates and justifies abstract ideas and relationships using appropriate language, notation and logical argument"},
-  ],
-};
+const NOTES_11_12=`Only NESA approved calculators may be used in this assessment.
+Students need to bring all necessary equipment, including pen, pencil, ruler, eraser, and calculator. No equipment may be borrowed from the school.
+The NESA reference sheet will be provided.
+Students who are away on the day of an assessment must bring a completed SIHS "Explanation of Absence Form" and any other documentation evidence such as a medical certificate on the day they return to school. This needs to be given to the Mathematics Head Teacher on this day. A copy of the absence form can be found in the Assessment Booklet on Sentral.
+Students must be prepared to sit the assessment task on the day they return to school.
+Failure to follow the above may result in a zero or reduced mark and an N-Award warning letter being issued.`;
 
-// ══════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════
-let selectedOutcomes = new Set();
+let selectedOutcomes=new Set(), dateOverrideActive=false, schoolEditActive=false;
 
-// ══════════════════════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════════════════════
-function tryLogin() {
-  const val = document.getElementById('pw-input').value;
-  const card = document.getElementById('login-card');
-  const err = document.getElementById('err-msg');
-  const inp = document.getElementById('pw-input');
-  if (val === PASSWORD) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    initApp();
-  } else {
-    err.textContent = 'Incorrect password. Try again.';
-    inp.classList.add('error');
-    card.classList.add('shake');
-    setTimeout(() => card.classList.remove('shake'), 500);
-  }
-}
-document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-document.getElementById('pw-input').addEventListener('input', () => {
-  document.getElementById('err-msg').textContent = '';
-  document.getElementById('pw-input').classList.remove('error');
+window.addEventListener('DOMContentLoaded',()=>{
+  const add=(id,vals,fn)=>{const s=document.getElementById(id);vals.forEach(v=>{const o=document.createElement('option');o.value=fn?fn(v):v;o.textContent=fn?fn(v):v;s.appendChild(o);});};
+  add('f-year',Object.keys(COURSES));
+  add('f-tasktype',TASK_TYPES);
+  add('f-tasknum',[1,2,3,4,5,6]);
+  add('f-term',[1,2,3,4]);
+  const ws=document.getElementById('f-week');
+  for(let w=1;w<=11;w++){const o=document.createElement('option');o.value=w;o.textContent='Week '+w;ws.appendChild(o);}
+  onYearChange();
 });
 
-// ══════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════
-function initApp() {
-  // Year dropdown
-  const yearSel = document.getElementById('f-year');
-  Object.keys(COURSES).forEach(y => {
-    const o = document.createElement('option'); o.value = y; o.textContent = y; yearSel.appendChild(o);
+function syncSchool(){document.getElementById('school-display').textContent=document.getElementById('f-school').value||'St Ives High School';}
+function toggleSchoolEdit(){schoolEditActive=!schoolEditActive;document.getElementById('school-edit-row').style.display=schoolEditActive?'block':'none';}
+function toggleTaskName(){document.getElementById('taskname-field').style.display=document.getElementById('toggle-taskname').checked?'block':'none';}
+function toggleDateOverride(){
+  dateOverrideActive=!dateOverrideActive;
+  document.getElementById('date-picker-wrap').style.display=dateOverrideActive?'none':'block';
+  document.getElementById('date-text-wrap').style.display=dateOverrideActive?'block':'none';
+}
+function onYearChange(){
+  const y=document.getElementById('f-year').value;
+  const cs=document.getElementById('f-course');cs.innerHTML='';
+  COURSES[y].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});
+  selectedOutcomes.clear();renderOutcomes();updateNotes();
+}
+function onCourseChange(){selectedOutcomes.clear();renderOutcomes();updateNotes();}
+function updateNotes(){
+  const y=document.getElementById('f-year').value;
+  document.getElementById('f-notes').value=(y==='Year 11'||y==='Year 12')?NOTES_11_12:NOTES_7_10;
+}
+function renderOutcomes(){
+  const course=document.getElementById('f-course').value;
+  const list=document.getElementById('outcome-list');
+  const ce=document.getElementById('outcome-count');
+  list.innerHTML='';
+  (OUTCOMES[course]||[]).forEach(o=>{
+    const d=document.createElement('div');
+    d.className='outcome-chip'+(selectedOutcomes.has(o.code)?' selected':'');
+    d.innerHTML=`<span class="oc-code">${o.code}</span><span class="oc-desc">${o.desc}</span><span class="oc-check">${selectedOutcomes.has(o.code)?'✓':''}</span>`;
+    d.addEventListener('click',()=>{selectedOutcomes.has(o.code)?selectedOutcomes.delete(o.code):selectedOutcomes.add(o.code);renderOutcomes();});
+    list.appendChild(d);
   });
-
-  // Task types
-  const typeSel = document.getElementById('f-tasktype');
-  TASK_TYPES.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; typeSel.appendChild(o); });
-
-  // Task number
-  const numSel = document.getElementById('f-tasknum');
-  [1,2,3,4,5,6].forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; numSel.appendChild(o); });
-
-  // Term
-  const termSel = document.getElementById('f-term');
-  [1,2,3,4].forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; termSel.appendChild(o); });
-
-  onYearChange();
+  const n=selectedOutcomes.size;ce.textContent=n>0?n+' outcome'+(n!==1?'s':'')+' selected':'';
 }
 
-function onYearChange() {
-  const year = document.getElementById('f-year').value;
-  const courseSel = document.getElementById('f-course');
-  courseSel.innerHTML = '';
-  COURSES[year].forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; courseSel.appendChild(o); });
-  selectedOutcomes.clear();
-  renderOutcomes();
-}
+async function generateDocx(){
+  const btn=document.getElementById('gen-btn');
+  btn.disabled=true;btn.textContent='Generating...';
+  try{
+    if(typeof docx==='undefined') throw new Error('docx library not loaded — check internet connection and refresh.');
+    const{Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,AlignmentType,BorderStyle,WidthType,ShadingType,VerticalAlign}=docx;
 
-function onCourseChange() {
-  selectedOutcomes.clear();
-  renderOutcomes();
-}
+    const v=id=>document.getElementById(id).value;
+    const school  =v('f-school')||'St Ives High School';
+    const year    =v('f-year');
+    const course  =v('f-course');
+    const taskName=document.getElementById('toggle-taskname').checked?v('f-taskname'):'';
+    const taskType=v('f-tasktype');
+    const taskNum =v('f-tasknum');
+    const term    =v('f-term');
+    const week    =v('f-week');
+    const dueDate =dateOverrideActive?v('f-duedate-text'):fmtDate(v('f-duedate'));
+    const period  =v('f-period');
+    const weight  =v('f-weighting');
+    const duration=v('f-duration');
+    const topics  =v('f-topics');
+    const desc    =v('f-desc');
+    const notes   =v('f-notes');
 
-function renderOutcomes() {
-  const course = document.getElementById('f-course').value;
-  const list = document.getElementById('outcome-list');
-  const count = document.getElementById('outcome-count');
-  list.innerHTML = '';
-  const outcomes = OUTCOMES[course] || [];
-  outcomes.forEach(o => {
-    const div = document.createElement('div');
-    div.className = 'outcome-chip' + (selectedOutcomes.has(o.code) ? ' selected' : '');
-    div.innerHTML = `
-      <span class="oc-code">${o.code}</span>
-      <span class="oc-desc">${o.desc}</span>
-      <span class="oc-check">${selectedOutcomes.has(o.code) ? '✓' : ''}</span>
-    `;
-    div.addEventListener('click', () => {
-      if (selectedOutcomes.has(o.code)) selectedOutcomes.delete(o.code);
-      else selectedOutcomes.add(o.code);
-      renderOutcomes();
-    });
-    list.appendChild(div);
-  });
-  const n = selectedOutcomes.size;
-  count.textContent = n > 0 ? `${n} outcome${n !== 1 ? 's' : ''} selected` : '';
-}
+    function fmtDate(d){if(!d)return'';return new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'});}
 
-// ══════════════════════════════════════════════════════
-// GENERATE DOCX
-// ══════════════════════════════════════════════════════
-async function generateDocx() {
-  const btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.textContent = 'Generating...';
+    // Colours & font
+    const CN='2a588d', CW='FFFFFF', CS='cbedfd', CM='7b9ecd', CT='1a2e44', CL='e4f2fc';
+    const F='Public Sans';
 
-  try {
-    await window._docxReady;
-    const {
-      Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-      AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign,
-    } = window.docx;
+    // A4, 2cm margins → content width = 11906 - 2*1134 = 9638 DXA
+    const PW=9638, LW=2900, VW=PW-LW, OCW=1800, ODW=PW-OCW;
 
-    const school    = document.getElementById('f-school').value;
-    const year      = document.getElementById('f-year').value;
-    const course    = document.getElementById('f-course').value;
-    const taskName  = document.getElementById('f-taskname').value;
-    const taskType  = document.getElementById('f-tasktype').value;
-    const taskNum   = document.getElementById('f-tasknum').value;
-    const term      = document.getElementById('f-term').value;
-    const dueDateRaw= document.getElementById('f-duedate').value;
-    const weighting = document.getElementById('f-weighting').value;
-    const duration  = document.getElementById('f-duration').value;
-    const desc      = document.getElementById('f-desc').value;
-    const topics    = document.getElementById('f-topics').value;
+    const bdr={style:BorderStyle.SINGLE,size:4,color:'D0E2F3'};
+    const borders={top:bdr,bottom:bdr,left:bdr,right:bdr};
 
-    const formatDate = (d) => {
-      if (!d) return '';
-      const dt = new Date(d + 'T00:00:00');
-      return dt.toLocaleDateString('en-AU', { day: '2-digit', month: 'long', year: 'numeric' });
-    };
-
-    const bdr = { style: BorderStyle.SINGLE, size: 4, color: 'CCCCCC' };
-    const borders = { top: bdr, bottom: bdr, left: bdr, right: bdr };
-
-    const cell = (text, opts = {}) => new TableCell({
+    const mkCell=(text,opts={})=>new TableCell({
       borders,
-      width: opts.width ? { size: opts.width, type: WidthType.DXA } : undefined,
-      shading: opts.shade ? { fill: opts.shade, type: ShadingType.CLEAR } : undefined,
-      verticalAlign: VerticalAlign.CENTER,
-      margins: { top: 80, bottom: 80, left: 120, right: 120 },
-      children: [new Paragraph({
-        alignment: opts.align || AlignmentType.LEFT,
-        children: [new TextRun({ text: String(text || ''), bold: opts.bold, size: opts.size || 20, font: 'Arial', color: opts.color || '000000' })]
+      width:{size:opts.w||PW,type:WidthType.DXA},
+      shading:opts.shade?{fill:opts.shade,type:ShadingType.CLEAR}:undefined,
+      verticalAlign:VerticalAlign.CENTER,
+      margins:{top:90,bottom:90,left:130,right:130},
+      children:[new Paragraph({
+        alignment:opts.align||AlignmentType.LEFT,
+        children:[new TextRun({text:String(text||''),bold:!!opts.bold,size:opts.sz||20,font:F,color:opts.color||CT})]
       })]
     });
 
-    const row = (label, value) => new TableRow({ children: [
-      cell(label, { width: 3000, shade: 'EBF2FA', bold: true, size: 19 }),
-      cell(value,  { width: 6026 }),
+    const mkRow=(label,value,i)=>new TableRow({children:[
+      mkCell(label,{w:LW,shade:CS,bold:true,sz:19,color:CN}),
+      mkCell(value,{w:VW,shade:i%2===0?CW:CL}),
     ]});
 
-    const heading = (text) => new Paragraph({
-      spacing: { before: 200, after: 100 },
-      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '1a4f8c', space: 4 } },
-      children: [new TextRun({ text, bold: true, size: 22, font: 'Arial', color: '1a4f8c' })]
+    const mkH=text=>new Paragraph({spacing:{before:220,after:100},children:[new TextRun({text,bold:true,size:24,font:F,color:CN})]});
+    const gap=()=>new Paragraph({spacing:{after:140},children:[]});
+    const wrapBox=text=>new Table({
+      width:{size:PW,type:WidthType.DXA},columnWidths:[PW],
+      rows:[new TableRow({children:[new TableCell({
+        borders,width:{size:PW,type:WidthType.DXA},
+        shading:{fill:CL,type:ShadingType.CLEAR},
+        margins:{top:120,bottom:120,left:160,right:160},
+        children:[new Paragraph({children:[new TextRun({text:text||'',size:20,font:F,color:CT})]})]
+      })]})]
     });
 
     // Outcomes
-    const allOutcomes = OUTCOMES[course] || [];
-    const selOutcomes = allOutcomes.filter(o => selectedOutcomes.has(o.code));
-    const outcomeRows = selOutcomes.length > 0
-      ? [
-          new TableRow({ children: [
-            cell('Code',        { width: 1800, shade: '1a4f8c', bold: true, color: 'FFFFFF', size: 18 }),
-            cell('Description', { width: 7226, shade: '1a4f8c', bold: true, color: 'FFFFFF', size: 18 }),
-          ]}),
-          ...selOutcomes.map((o, i) => new TableRow({ children: [
-            cell(o.code, { width: 1800, shade: i % 2 === 0 ? 'FFFFFF' : 'F4F8FD', bold: true, size: 18 }),
-            cell(o.desc, { width: 7226, shade: i % 2 === 0 ? 'FFFFFF' : 'F4F8FD', size: 18 }),
-          ]}))
-        ]
-      : [new TableRow({ children: [cell('No outcomes selected', { width: 9026, size: 19, color: '999999' })] })];
+    const selO=(OUTCOMES[course]||[]).filter(o=>selectedOutcomes.has(o.code));
+    const outcomeRows=selO.length>0
+      ?[new TableRow({children:[mkCell('Code',{w:OCW,shade:CN,bold:true,color:CW,sz:18}),mkCell('Description',{w:ODW,shade:CN,bold:true,color:CW,sz:18})]}),
+        ...selO.map((o,i)=>new TableRow({children:[mkCell(o.code,{w:OCW,shade:i%2===0?CW:CL,bold:true,sz:18,color:CN}),mkCell(o.desc,{w:ODW,shade:i%2===0?CW:CL,sz:18})]}))]
+      :[new TableRow({children:[mkCell('No outcomes selected',{w:PW,sz:19,color:'999999'})]})];
 
-    const children = [
-      new Paragraph({
-        alignment: AlignmentType.CENTER, spacing: { after: 0 },
-        children: [new TextRun({ text: school || 'School Name', bold: true, size: 28, font: 'Arial', color: '1a4f8c' })]
-      }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER, spacing: { after: 80 },
-        children: [new TextRun({ text: 'Mathematics Department', size: 22, font: 'Arial', color: '555555' })]
-      }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        border: {
-          top:    { style: BorderStyle.SINGLE, size: 12, color: '1a4f8c', space: 4 },
-          bottom: { style: BorderStyle.SINGLE, size: 12, color: '1a4f8c', space: 4 },
-        },
-        spacing: { before: 80, after: 200 },
-        children: [new TextRun({ text: `ASSESSMENT NOTIFICATION — TASK ${taskNum}`, bold: true, size: 26, font: 'Arial', color: '1a4f8c' })]
-      }),
+    // Detail rows
+    let ri=0; const dr=[];
+    if(taskName) dr.push(mkRow('Task Name',taskName,ri++));
+    dr.push(mkRow('Format',taskType,ri++));
+    dr.push(mkRow('Task Number','Task '+taskNum,ri++));
+    dr.push(mkRow('Term / Week','Term '+term+', Week '+week,ri++));
+    dr.push(mkRow('Due Date',[dueDate,period].filter(Boolean).join('  —  '),ri++));
+    if(weight)   dr.push(mkRow('Weighting',weight+'%',ri++));
+    if(duration) dr.push(mkRow('Duration',duration,ri++));
 
-      heading('Task Details'),
-      new Table({
-        width: { size: 9026, type: WidthType.DXA }, columnWidths: [3000, 6026],
-        rows: [
-          row('Course', course), row('Year', year), row('Task Name', taskName),
-          row('Task Type', taskType), row('Task Number', `Task ${taskNum}`),
-          row('Term', `Term ${term}`), row('Due Date', formatDate(dueDateRaw)),
-          row('Weighting', weighting ? `${weighting}%` : ''), row('Duration / Length', duration),
-        ]
-      }),
-
-      new Paragraph({ spacing: { after: 120 }, children: [] }),
-      heading('Syllabus Outcomes Assessed'),
-      new Table({ width: { size: 9026, type: WidthType.DXA }, columnWidths: [1800, 7226], rows: outcomeRows }),
-
-      new Paragraph({ spacing: { after: 120 }, children: [] }),
-      heading('Task Description'),
-      new Table({
-        width: { size: 9026, type: WidthType.DXA }, columnWidths: [9026],
-        rows: [new TableRow({ children: [new TableCell({
-          borders, width: { size: 9026, type: WidthType.DXA },
-          margins: { top: 120, bottom: 120, left: 160, right: 160 },
-          children: [new Paragraph({ children: [new TextRun({ text: desc || '', size: 20, font: 'Arial' })] })]
-        })]})]
-      }),
-
-      new Paragraph({ spacing: { after: 120 }, children: [] }),
-
-      ...(topics ? [
-        heading('Topics / Content Covered'),
-        new Table({
-          width: { size: 9026, type: WidthType.DXA }, columnWidths: [9026],
-          rows: [new TableRow({ children: [new TableCell({
-            borders, width: { size: 9026, type: WidthType.DXA },
-            margins: { top: 120, bottom: 120, left: 160, right: 160 },
-            children: [new Paragraph({ children: [new TextRun({ text: topics, size: 20, font: 'Arial' })] })]
-          })]})]
-        }),
-        new Paragraph({ spacing: { after: 120 }, children: [] }),
-      ] : []),
-
-      new Paragraph({ spacing: { after: 200 }, children: [] }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        border: { top: { style: BorderStyle.SINGLE, size: 4, color: 'CCCCCC', space: 4 } },
-        spacing: { before: 100 },
-        children: [new TextRun({
-          text: `Issued: ${new Date().toLocaleDateString('en-AU', { day: '2-digit', month: 'long', year: 'numeric' })}`,
-          size: 16, font: 'Arial', color: '888888'
-        })]
-      }),
-    ];
-
-    const doc = new Document({
-      styles: { default: { document: { run: { font: 'Arial', size: 20 } } } },
-      sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }]
+    // Notes parser — plain lines = body; •/- lines = bullets; indented = sub-bullets
+    const noteParas=notes.split('\n').map(line=>{
+      const isSubBullet=/^ {2,}[•\-\*]/.test(line);
+      const isBullet=/^\s*[•\-\*]/.test(line);
+      const cleanText=line.replace(/^\s*[•\-\*]\s*/,'').trimEnd();
+      if(!cleanText&&!isBullet) return new Paragraph({spacing:{after:30},children:[]});
+      if(isBullet){
+        return new Paragraph({
+          spacing:{after:60},
+          numbering:{reference:'noteBullets',level:isSubBullet?1:0},
+          children:[new TextRun({text:cleanText,size:18,font:F,color:CT})]
+        });
+      }
+      return new Paragraph({
+        spacing:{after:80},
+        children:[new TextRun({text:line.trimStart(),size:18,font:F,color:CT})]
+      });
     });
 
-    const buffer = await Packer.toBuffer(doc);
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    const url = URL.createObjectURL(blob);
-    const a = window.document.createElement('a');
-    a.href = url;
-    a.download = `Assessment_Notification_${year.replace(' ','')}${taskName ? '_' + taskName.replace(/[^a-zA-Z0-9]/g,'_') : ''}.docx`;
-    window.document.body.appendChild(a);
-    a.click();
-    window.document.body.removeChild(a);
+    const divider=new Paragraph({spacing:{before:80,after:80},border:{bottom:{style:BorderStyle.SINGLE,size:6,color:CS,space:4}},children:[]});
+
+    // Smart subtitle — avoid "Year 7  ·  Mathematics Year 7" duplication
+    const courseHasYear=course.toLowerCase().includes(year.toLowerCase());
+    const courseSubtitle=courseHasYear?course:year+'  \u00B7  '+course;
+
+    const docChildren=[
+      new Paragraph({alignment:AlignmentType.CENTER,spacing:{after:50},
+        children:[new TextRun({text:school,bold:true,size:40,font:F,color:CN})]}),
+      new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},
+        shading:{fill:CS,type:ShadingType.CLEAR},
+        border:{top:{style:BorderStyle.SINGLE,size:12,color:CN,space:4},bottom:{style:BorderStyle.SINGLE,size:12,color:CN,space:4}},
+        children:[new TextRun({text:'ASSESSMENT NOTIFICATION \u2014 TASK '+taskNum,bold:true,size:28,font:F,color:CN})]}),
+      new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:100,after:220},
+        children:[new TextRun({text:courseSubtitle,bold:true,size:24,font:F,color:CT})]}),
+
+      mkH('Task Details'),
+      new Table({width:{size:PW,type:WidthType.DXA},columnWidths:[LW,VW],rows:dr}),
+      gap(),
+
+      mkH('Syllabus Outcomes Assessed'),
+      new Table({width:{size:PW,type:WidthType.DXA},columnWidths:[OCW,ODW],rows:outcomeRows}),
+      gap(),
+
+      ...(topics?[mkH('Topics / Content Covered'),wrapBox(topics),gap()]:[]),
+      ...(desc?[mkH('Task Description'),wrapBox(desc),gap()]:[]),
+
+      divider,
+      mkH('Notes'),
+      ...noteParas,
+      new Paragraph({spacing:{after:120},children:[]}),
+    ];
+
+    const theDoc=new Document({
+      numbering:{config:[{reference:'noteBullets',levels:[
+        {level:0,format:'bullet',text:'\u2022',alignment:AlignmentType.LEFT,
+          style:{paragraph:{indent:{left:360,hanging:220}},run:{font:F,size:18,color:CN,bold:true}}},
+        {level:1,format:'bullet',text:'\u25E6',alignment:AlignmentType.LEFT,
+          style:{paragraph:{indent:{left:720,hanging:220}},run:{font:F,size:18,color:CM}}},
+      ]}]},
+      styles:{default:{document:{run:{font:F,size:20}}}},
+      sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,right:1134,bottom:1134,left:1134}}},children:docChildren}]
+    });
+
+    const blob=await Packer.toBlob(theDoc);
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='Assessment_Notification_'+year.replace(' ','')+'_Task'+taskNum+'_'+(taskName||course).replace(/[^a-zA-Z0-9]/g,'_')+'.docx';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    btn.textContent = '✓ Downloaded!';
-    btn.classList.add('success');
-    setTimeout(() => { btn.textContent = '⬇  Generate .docx'; btn.classList.remove('success'); btn.disabled = false; }, 3000);
-  } catch (e) {
-    console.error(e);
-    alert('Error generating document: ' + e.message);
-    btn.textContent = '⬇  Generate .docx';
-    btn.disabled = false;
+    btn.textContent='✓ Downloaded!';btn.classList.add('success');
+    setTimeout(()=>{btn.textContent='⬇  Generate .docx';btn.classList.remove('success');btn.disabled=false;},3000);
+  }catch(e){
+    console.error(e);alert('Error generating document: '+e.message);
+    btn.textContent='⬇  Generate .docx';btn.disabled=false;
   }
 }
 </script>
