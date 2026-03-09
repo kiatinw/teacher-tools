@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Year 12 Exam Rules — Scavenger Hunt</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #0a0a14 0%, #0d1a2e 60%, #0a0a14 100%);
+    color: #e8e0d0;
+    font-family: Georgia, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  #app { width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+  .school-label {
+    font-size: 0.75rem; letter-spacing: 0.35em; color: #6a8fa8;
+    text-transform: uppercase; margin-bottom: 0.4rem; text-align: center;
+  }
+  h1.title {
+    font-size: 1.4rem; color: #c8dce8; font-weight: normal;
+    letter-spacing: 0.05em; text-align: center; margin-bottom: 2rem;
+  }
+  .progress-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.78rem; color: #6a8fa8; margin-bottom: 0.4rem;
+    width: 100%; max-width: 620px;
+  }
+  .progress-bar-bg {
+    height: 5px; background: #1a2a3a; border-radius: 3px;
+    overflow: hidden; width: 100%; max-width: 620px; margin-bottom: 1.5rem;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3a7bd5, #7ec8a0);
+    border-radius: 3px; transition: width 0.4s ease;
+  }
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 2rem 2.5rem;
+    max-width: 620px; width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .question-text {
+    font-size: 1.2rem; line-height: 1.6; margin-bottom: 1.5rem; color: #ddd8c8; font-weight: normal;
+  }
+  .options { display: flex; flex-direction: column; gap: 0.7rem; }
+  .option-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #c8c0b0; border-radius: 8px; padding: 0.75rem 1rem;
+    text-align: left; cursor: pointer; font-size: 0.95rem;
+    line-height: 1.5; transition: all 0.15s; font-family: Georgia, serif;
+    width: 100%;
+  }
+  .option-btn.selected {
+    background: rgba(60,120,200,0.2);
+    border-color: #3a7bd5; color: #a8ccf0;
+  }
+  .option-letter { opacity: 0.5; margin-right: 0.6rem; }
+  .btn-row { margin-top: 1.5rem; display: flex; justify-content: flex-end; }
+  .next-btn {
+    background: #3a7bd5; color: #fff; border: none; border-radius: 8px;
+    padding: 0.7rem 1.6rem; font-size: 0.95rem; cursor: pointer;
+    transition: background 0.2s; font-family: Georgia, serif;
+  }
+  .next-btn:disabled { background: #2a3a4a; color: #556; cursor: default; }
+
+  /* Results */
+  .results-wrap { max-width: 560px; width: 100%; text-align: center; }
+  .results-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .results-title { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .results-label { color: #9a8f7a; margin-bottom: 0.3rem; }
+  .results-score { font-size: 3.5rem; font-weight: bold; margin: 0.3rem 0 0.5rem; }
+  .review-list { margin: 1.5rem 0; text-align: left; }
+  .review-item {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.85rem;
+  }
+  .review-num { color: #9a8f7a; flex-shrink: 0; margin-right: 0.2rem; }
+  .review-q { color: #c8c0b0; }
+  .results-msg { color: #9a8f7a; margin-bottom: 1.5rem; line-height: 1.6; }
+  .name-input {
+    width: 100%; padding: 0.8rem 1rem; font-size: 1.1rem;
+    background: #1a1a2e; border: 1px solid #f0c040; border-radius: 6px;
+    color: #fef9e7; outline: none; margin-bottom: 1rem;
+    font-family: Georgia, serif; text-align: center;
+  }
+  .cert-btn {
+    background: #f0c040; color: #1a1200; border: none; border-radius: 6px;
+    padding: 0.8rem 2rem; font-size: 1rem; cursor: pointer;
+    font-weight: bold; transition: background 0.2s;
+    margin-bottom: 1rem; display: block; width: 100%;
+    font-family: Georgia, serif;
+  }
+  .cert-btn:disabled { background: #555; cursor: default; }
+  .try-again-btn {
+    background: transparent; color: #6a8fa8;
+    border: 1px solid #2a4a6a; border-radius: 6px;
+    padding: 0.7rem 2rem; font-size: 0.95rem; cursor: pointer;
+    width: 100%; font-family: Georgia, serif;
+  }
+
+  /* Certificate */
+  #cert-screen {
+    min-height: 100vh; background: #0a0a14;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; padding: 2rem;
+    width: 100%;
+  }
+  .cert-box {
+    background: linear-gradient(135deg, #fefce8 0%, #fef9c3 40%, #fefce8 100%);
+    border: 12px double #b8860b; border-radius: 4px;
+    padding: 3.5rem 4rem; max-width: 720px; width: 100%;
+    text-align: center; position: relative;
+    box-shadow: 0 0 60px rgba(184,134,11,0.4), inset 0 0 80px rgba(255,255,255,0.5);
+  }
+  .cert-corner {
+    position: absolute; font-size: 1.8rem; color: #b8860b; line-height: 1;
+  }
+  .cert-school {
+    font-size: 0.85rem; letter-spacing: 0.3em; color: #7c5d0a;
+    text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .cert-divider { width: 60px; height: 2px; background: #b8860b; margin: 0.75rem auto; }
+  .cert-heading {
+    font-size: 1.1rem; letter-spacing: 0.2em; color: #4a3500;
+    text-transform: uppercase; font-weight: normal; margin: 0 0 1.5rem;
+  }
+  .cert-certifies { color: #5a4200; font-size: 1rem; margin: 0 0 0.5rem; }
+  .cert-name {
+    font-size: 2.4rem; color: #2d1a00; font-style: italic;
+    margin: 0.4rem 0; border-bottom: 1px solid #c9a227; padding-bottom: 0.3rem;
+  }
+  .cert-body { color: #5a4200; font-size: 1rem; margin: 0.8rem 0 1.5rem; line-height: 1.7; }
+  .cert-score { font-size: 1.6rem; color: #b8860b; font-weight: bold; }
+  .cert-date { color: #7c5d0a; font-size: 0.85rem; letter-spacing: 0.1em; }
+  .cert-btns { margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .print-btn {
+    background: #b8860b; color: #fff; border: none; border-radius: 4px;
+    padding: 0.6rem 1.5rem; cursor: pointer; font-size: 0.85rem;
+    letter-spacing: 0.1em; font-family: Georgia, serif;
+  }
+  .cert-again-btn {
+    background: transparent; color: #b8860b; border: 1px solid #b8860b;
+    border-radius: 4px; padding: 0.6rem 1.5rem; cursor: pointer;
+    font-size: 0.85rem; letter-spacing: 0.1em; font-family: Georgia, serif;
+  }
+  @media print {
+    body { background: white; }
+    .cert-btns { display: none; }
+  }
+  @media (max-width: 500px) {
+    .card { padding: 1.5rem; }
+    .cert-box { padding: 2rem 1.5rem; }
+    .cert-name { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const questions = [
+  {
+    q: "What dates does the exam block run?",
+    options: ["Mon 18th Mar – Fri 27th Mar", "Wed 18th Mar – Fri 27th Mar", "Mon 11th Mar – Fri 22nd Mar", "Wed 18th Mar – Fri 28th Mar"],
+    answer: 1
+  },
+  {
+    q: "Which weeks of Term 1 does the exam block fall in?",
+    options: ["Weeks 7 and 8", "Weeks 8 and 9", "Weeks 9 and 10", "Weeks 6 and 7"],
+    answer: 1
+  },
+  {
+    q: "How early should you arrive before each exam?",
+    options: ["10 minutes", "15 minutes", "20 minutes", "30 minutes"],
+    answer: 2
+  },
+  {
+    q: "During what periods are students NOT allowed to visit the bathroom?",
+    options: ["First or last 10 minutes", "First or last 15 minutes", "First or last 30 minutes", "First or last 20 minutes"],
+    answer: 3
+  },
+  {
+    q: "What type of pen must you always write with?",
+    options: ["Blue pen", "Black pen", "Red pen", "Any colour pen"],
+    answer: 1
+  },
+  {
+    q: "What is the minimum pencil grade required?",
+    options: ["HB", "B", "2B", "4B"],
+    answer: 2
+  },
+  {
+    q: "What kind of watch is permitted during exams?",
+    options: ["Smart watch", "Digital watch", "Analog watch", "Programmable watch"],
+    answer: 2
+  },
+  {
+    q: "Where must you place your watch once you sit down?",
+    options: ["In your clear bag", "Under your chair", "In clear view on your desk", "With the invigilator"],
+    answer: 2
+  },
+  {
+    q: "What must you NOT have in your hands during reading time?",
+    options: ["A pencil", "Your exam paper", "A ruler", "Anything at all"],
+    answer: 3
+  },
+  {
+    q: "What will a blank/NO response be treated as?",
+    options: ["An automatic zero", "Malpractice", "A non-serious attempt leading to an N award warning", "An excused absence"],
+    answer: 2
+  },
+  {
+    q: "What should you do if you feel unwell during an exam?",
+    options: ["Leave the exam quietly", "Continue and report after", "Ask to call your parents", "Notify an invigilator immediately"],
+    answer: 3
+  },
+  {
+    q: "Where should your mobile phone be left if brought to school?",
+    options: ["On your desk face-down", "Switched OFF in your bag", "With the invigilator", "In your locker"],
+    answer: 1
+  },
+  {
+    q: "Malpractice is defined as…",
+    options: ["Arriving late to an exam", "Using the wrong type of pen", "Any attempt to gain an unfair advantage over other students", "Leaving early without permission"],
+    answer: 2
+  },
+  {
+    q: "Who should you contact so that missed exams can be rescheduled?",
+    options: ["The Deputy Principal and your class teacher", "The Head Teacher of the course AND Ms Morante-Wong", "NESA directly", "Your year advisor"],
+    answer: 1
+  },
+  {
+    q: "Which form should you use for your actual HSC examination misadventure?",
+    options: ["The school's illness/misadventure form", "An email is sufficient", "A NESA-issued separate misadventure form", "Any form works"],
+    answer: 2
+  }
+];
+
+const TODAY = new Date().toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
+let current = 0, selected = null, answers = [], studentName = "";
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  if (window.showCert) { renderCert(app); return; }
+  if (window.finished) { renderResults(app); return; }
+  renderQuiz(app);
+}
+
+function renderQuiz(app) {
+  const q = questions[current];
+  const pct = (current / questions.length) * 100;
+
+  app.innerHTML = `
+    <div class="school-label">St Ives High School</div>
+    <h1 class="title">Year 12 Exam Rules — Scavenger Hunt</h1>
+    <div class="progress-row">
+      <span>Question ${current + 1} of ${questions.length}</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" style="width:${pct}%"></div>
+    </div>
+    <div class="card">
+      <h2 class="question-text">${q.q}</h2>
+      <div class="options">
+        ${q.options.map((opt, i) => `
+          <button class="option-btn ${selected === i ? 'selected' : ''}" onclick="selectOption(${i})">
+            <span class="option-letter">${['A','B','C','D'][i]}.</span>${opt}
+          </button>
+        `).join('')}
+      </div>
+      <div class="btn-row">
+        <button class="next-btn" onclick="nextQuestion()" ${selected === null ? 'disabled' : ''}>
+          ${current + 1 >= questions.length ? 'Finish →' : 'Next →'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderResults(app) {
+  const score = answers.filter(Boolean).length;
+  const perfect = score === questions.length;
+  const scoreColor = perfect ? "#f0c040" : score >= 10 ? "#e8c060" : "#e87060";
+  const emoji = perfect ? "🏆" : score >= 10 ? "📋" : "📖";
+
+  const reviewHTML = questions.map((q, i) => `
+    <div class="review-item">
+      <span>${answers[i] ? '✅' : '❌'}</span>
+      <span class="review-num">Q${i+1}.</span>
+      <span class="review-q">${q.q}</span>
+    </div>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="results-wrap">
+      <div class="results-emoji">${emoji}</div>
+      <h2 class="results-title" style="color:${perfect ? '#f0c040' : '#e8e0d0'}">${perfect ? 'Perfect Score!' : 'Quiz Complete'}</h2>
+      <p class="results-label">You scored</p>
+      <div class="results-score" style="color:${scoreColor}">${score} / ${questions.length}</div>
+      <div class="review-list">${reviewHTML}</div>
+      ${perfect ? `
+        <p class="results-label" style="margin-bottom:1rem">Enter your name to generate your certificate:</p>
+        <input class="name-input" id="nameInput" placeholder="Your full name..." value="${studentName}" oninput="studentName=this.value" onkeydown="if(event.key==='Enter' && studentName.trim()){window.showCert=true;render()}" />
+        <button class="cert-btn" id="certBtn" onclick="if(studentName.trim()){window.showCert=true;render()}" ${studentName.trim() ? '' : 'disabled'}>Generate Certificate ✨</button>
+      ` : `
+        <p class="results-msg">Review the exam rules document and try again to earn a perfect score!</p>
+      `}
+      <button class="try-again-btn" onclick="restartQuiz()">↩ Try Again</button>
+    </div>
+  `;
+
+  // Live enable/disable cert button
+  const input = document.getElementById("nameInput");
+  const btn = document.getElementById("certBtn");
+  if (input && btn) {
+    input.addEventListener("input", () => {
+      studentName = input.value;
+      btn.disabled = !studentName.trim();
+    });
+  }
+}
+
+function renderCert(app) {
+  app.innerHTML = `
+    <div id="cert-screen">
+      <div class="cert-box">
+        <div class="cert-corner" style="top:10px;left:10px">✦</div>
+        <div class="cert-corner" style="top:10px;right:10px">✦</div>
+        <div class="cert-corner" style="bottom:10px;left:10px">✦</div>
+        <div class="cert-corner" style="bottom:10px;right:10px">✦</div>
+        <div class="cert-school">St Ives High School</div>
+        <div class="cert-divider"></div>
+        <h1 class="cert-heading">Certificate of Achievement</h1>
+        <p class="cert-certifies">This certifies that</p>
+        <div class="cert-name">${studentName}</div>
+        <p class="cert-body">
+          has successfully completed the<br>
+          <strong>Year 12 Half-Yearly HSC Exam Rules</strong><br>
+          Scavenger Hunt Quiz with a perfect score of<br>
+          <span class="cert-score">15 / 15</span>
+        </p>
+        <div class="cert-divider"></div>
+        <p class="cert-date">Awarded on ${TODAY}</p>
+        <div class="cert-btns">
+          <button class="print-btn" onclick="window.print()">🖨 Print Certificate</button>
+          <button class="cert-again-btn" onclick="restartQuiz()">Try Again</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function selectOption(i) {
+  selected = i;
+  render();
+}
+
+function nextQuestion() {
+  if (selected === null) return;
+  answers.push(selected === questions[current].answer);
+  if (current + 1 >= questions.length) {
+    window.finished = true;
+  } else {
+    current++;
+    selected = null;
+  }
+  render();
+}
+
+function restartQuiz() {
+  current = 0; selected = null; answers = []; studentName = "";
+  window.finished = false; window.showCert = false;
+  render();
+}
+
+window.finished = false;
+window.showCert = false;
+render();
+</script>
+</body>
+</html>
