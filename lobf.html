@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Line of Best Fit</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:   #f5f0e8;
+  --paper2:  #ede7d9;
+  --ink:     #1a1510;
+  --ink2:    #3d3529;
+  --dim:     #8a7d6b;
+  --rule:    rgba(26,21,16,0.1);
+  --red:     #c0392b;
+  --green:   #27624a;
+  --amber:   #b8640a;
+  --blue:    #1a4a7a;
+  --border:  rgba(26,21,16,0.15);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+}
+
+/* ruled paper lines */
+body::before {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: repeating-linear-gradient(
+    to bottom, transparent, transparent 27px,
+    rgba(26,21,16,0.05) 27px, rgba(26,21,16,0.05) 28px
+  );
+}
+/* red margin */
+body::after {
+  content:''; position:fixed; top:0; left:58px; bottom:0; width:1px;
+  z-index:0; pointer-events:none;
+  background: rgba(192,57,43,0.18);
+}
+
+.page {
+  position:relative; z-index:1;
+  max-width: 960px; margin:0 auto;
+  padding: 0 2.5rem 6rem;
+}
+
+/* ── HEADER ── */
+.header {
+  padding: 3rem 0 1.8rem;
+  border-bottom: 2px solid var(--ink);
+  display:flex; align-items:flex-end; justify-content:space-between; gap:2rem;
+}
+.eyebrow {
+  font-size: 0.58rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 0.4rem;
+}
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 7vw, 4.8rem);
+  font-weight: 900; line-height: 0.9; color: var(--ink);
+}
+h1 em { font-style:italic; color:var(--red); }
+
+.stat-row { display:flex; border:1px solid var(--border); border-radius:3px; overflow:hidden; }
+.stat-box {
+  padding:0.6rem 1rem; text-align:center;
+  border-right:1px solid var(--border); background:var(--paper2);
+}
+.stat-box:last-child { border-right:none; }
+.stat-lbl { font-size:0.4rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--dim); display:block; margin-bottom:0.15rem; }
+.stat-val { font-family:'Playfair Display',serif; font-weight:700; font-size:1.65rem; line-height:1; color:var(--ink2); }
+#stat-avg  { color:var(--blue); }
+#stat-best { color:var(--green); }
+
+/* ── DATASET BAR ── */
+.ds-bar {
+  margin-top:1.5rem; padding:0.9rem 1.1rem 0.9rem 1.4rem;
+  border:1px solid var(--border); border-radius:3px; background:var(--paper2);
+  display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  position:relative;
+}
+.ds-bar::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--red); border-radius:3px 0 0 3px;
+}
+.ds-name {
+  font-family:'Playfair Display',serif; font-weight:700;
+  font-size:1.2rem; color:var(--ink);
+}
+.ds-vars { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem; }
+.ax-chip {
+  background:rgba(26,21,16,0.06); border:1px solid var(--border);
+  border-radius:2px; padding:0.15rem 0.45rem; font-size:0.55rem; color:var(--ink2);
+}
+.ax-chip b { display:block; font-size:0.4rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--dim); font-weight:400; margin-bottom:1px; }
+.c-tag {
+  font-size:0.5rem; letter-spacing:0.08em; padding:0.18rem 0.5rem;
+  border-radius:99px; font-weight:500;
+}
+.c-tag.pos { background:rgba(39,98,74,0.12); color:var(--green); border:1px solid rgba(39,98,74,0.28); }
+.c-tag.neg { background:rgba(192,57,43,0.09); color:var(--red);   border:1px solid rgba(192,57,43,0.22); }
+
+.new-btn {
+  padding:0.45rem 0.9rem; background:transparent;
+  border:1px solid var(--border); border-radius:2px; cursor:pointer;
+  font-family:'DM Mono',monospace; font-size:0.53rem;
+  letter-spacing:0.16em; text-transform:uppercase; color:var(--dim);
+  transition:all 0.16s; white-space:nowrap; flex-shrink:0;
+}
+.new-btn:hover { border-color:var(--ink); color:var(--ink); }
+
+/* ── CANVAS ── */
+.canvas-wrap {
+  margin-top:1.1rem; border:1px solid var(--border); border-radius:3px;
+  overflow:hidden; background:#fff; user-select:none;
+  box-shadow:2px 3px 14px rgba(26,21,16,0.09);
+}
+canvas { display:block; width:100%; cursor:default; touch-action:none; }
+.hint {
+  text-align:center; margin-top:0.55rem;
+  font-size:0.46rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim);
+}
+
+/* ── BOTTOM ROW ── */
+.bottom-row {
+  margin-top:1.1rem;
+  display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:stretch;
+}
+@media(max-width:560px){ .bottom-row{grid-template-columns:1fr;} }
+
+/* Score box */
+.score-box {
+  background:var(--paper2); border:1px solid var(--border); border-radius:3px;
+  padding:1rem 1.2rem; display:flex; flex-direction:column; justify-content:center;
+  position:relative; overflow:hidden; min-height:84px;
+}
+.score-box::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--dim); border-radius:3px 0 0 3px;
+  transition:background 0.5s;
+}
+.score-box.revealed::before { background:var(--rc, var(--green)); }
+
+.s-wait {
+  font-size:0.57rem; letter-spacing:0.22em; text-transform:uppercase;
+  color:var(--dim); padding:0.3rem 0;
+}
+.s-result { display:none; }
+.s-result.on { display:block; }
+
+.s-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem; }
+.s-lbl { font-size:0.45rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--dim); }
+.s-num {
+  font-family:'Playfair Display',serif; font-weight:900;
+  font-size:2.6rem; line-height:1;
+}
+.s-track { height:5px; background:rgba(26,21,16,0.1); border-radius:99px; overflow:hidden; margin-bottom:0.5rem; }
+.s-fill  { height:100%; border-radius:99px; width:0%; transition:width 0.85s cubic-bezier(0.16,1,0.3,1); }
+.s-remark { font-size:0.53rem; color:var(--dim); line-height:1.55; }
+
+/* Submit button */
+.sub-btn {
+  padding:0 1.8rem; min-width:130px;
+  background:var(--ink); color:var(--paper);
+  border:none; border-radius:3px; cursor:pointer;
+  font-family:'Playfair Display',serif; font-weight:700;
+  font-size:1.25rem; letter-spacing:0.01em; line-height:1;
+  box-shadow:3px 3px 0 rgba(26,21,16,0.22);
+  transition:background 0.15s, transform 0.15s cubic-bezier(0.16,1,0.3,1), box-shadow 0.15s;
+}
+.sub-btn:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 rgba(26,21,16,0.28); }
+.sub-btn:active { transform:translate(1px,1px); box-shadow:1px 1px 0 rgba(26,21,16,0.18); }
+.sub-btn.is-next { background:var(--red); }
+.sub-btn.is-next:hover { background:#a53224; }
+
+/* ── FOOT ── */
+.foot { max-width:960px; margin:0 auto; padding:0 2.5rem 3rem; }
+.foot-inner { border-top:1px solid var(--border); padding-top:1rem; }
+.foot-copy { font-size:0.44rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--dim); }
+
+@media(max-width:600px){
+  body::after{left:36px;}
+  .page{padding:0 1.1rem 5rem;}
+  .header{flex-direction:column;align-items:flex-start;gap:1rem;}
+  .ds-bar{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="eyebrow">Statistics · Activity</div>
+      <h1>Line of<br><em>Best Fit</em></h1>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box">
+        <span class="stat-lbl">Rounds</span>
+        <span class="stat-val" id="stat-n">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-lbl">Average</span>
+        <span class="stat-val" id="stat-avg">—</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-lbl">Best</span>
+        <span class="stat-val" id="stat-best">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-bar">
+    <div>
+      <div class="ds-name" id="ds-name">Loading…</div>
+      <div class="ds-vars" id="ds-vars"></div>
+    </div>
+    <button class="new-btn" onclick="newDataset()">↺ New Dataset</button>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="plot" height="520"></canvas>
+  </div>
+  <div class="hint">Drag the <span style="color:var(--red);font-weight:500">● red handles</span> to draw your line &nbsp;·&nbsp; hit <strong>Submit</strong> when ready</div>
+
+  <div class="bottom-row">
+    <div class="score-box" id="score-box">
+      <div class="s-wait" id="s-wait">Position your line, then hit Submit to reveal your score</div>
+      <div class="s-result" id="s-result">
+        <div class="s-top">
+          <span class="s-lbl">Accuracy Score</span>
+          <span class="s-num" id="s-num">—</span>
+        </div>
+        <div class="s-track"><div class="s-fill" id="s-fill"></div></div>
+        <div class="s-remark" id="s-remark"></div>
+      </div>
+    </div>
+    <button class="sub-btn" id="sub-btn" onclick="doSubmit()">Submit</button>
+  </div>
+
+</div>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span class="foot-copy">© 2026 K Williamson</span>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATASETS
+// ═══════════════════════════════════════════════
+const DS = [
+  { name:"Plant Growth",        xLabel:"Sunlight (hrs/day)",    yLabel:"Height (cm)",           slope:3.2,   intercept:5,    noise:4,   n:28, xMin:1,   xMax:10,  pos:true  },
+  { name:"Boiling Point",       xLabel:"Altitude (km)",         yLabel:"Boiling Pt (°C)",        slope:-3.4,  intercept:100,  noise:2,   n:24, xMin:0,   xMax:8,   pos:false },
+  { name:"Spring Extension",    xLabel:"Mass (g)",              yLabel:"Extension (mm)",         slope:0.8,   intercept:0,    noise:3,   n:30, xMin:10,  xMax:200, pos:true  },
+  { name:"Lung Capacity",       xLabel:"Age (years)",           yLabel:"Lung Cap. (L)",          slope:-0.03, intercept:5.5,  noise:0.4, n:35, xMin:20,  xMax:80,  pos:false },
+  { name:"Cooling Rate",        xLabel:"Time (min)",            yLabel:"Temperature (°C)",       slope:-2.8,  intercept:95,   noise:3,   n:25, xMin:0,   xMax:30,  pos:false },
+  { name:"Heart Rate",          xLabel:"Exercise Intensity (1–10)", yLabel:"Heart Rate (bpm)",   slope:12,    intercept:60,   noise:8,   n:32, xMin:1,   xMax:10,  pos:true  },
+  { name:"Reaction Time",       xLabel:"Hours of Sleep",        yLabel:"Reaction Time (ms)",     slope:-18,   intercept:420,  noise:25,  n:30, xMin:4,   xMax:10,  pos:false },
+  { name:"Photosynthesis",      xLabel:"CO₂ Conc. (ppm)",       yLabel:"O₂ Output (mL/min)",     slope:0.04,  intercept:1,    noise:0.5, n:28, xMin:200, xMax:600, pos:true  },
+  { name:"Bird Wingspan",       xLabel:"Body Length (cm)",      yLabel:"Wingspan (cm)",          slope:2.1,   intercept:8,    noise:5,   n:26, xMin:10,  xMax:50,  pos:true  },
+  { name:"Soil pH vs Crop Yield",xLabel:"Soil pH",              yLabel:"Crop Yield (t/ha)",      slope:1.8,   intercept:-5,   noise:1.2, n:30, xMin:5,   xMax:8,   pos:true  },
+  { name:"Enzyme Activity",     xLabel:"Temperature (°C)",      yLabel:"Reaction Rate (U/mL)",   slope:0.9,   intercept:-5,   noise:3,   n:30, xMin:10,  xMax:45,  pos:true  },
+  { name:"Pendulum Period",     xLabel:"Pendulum Length (cm)",  yLabel:"Period (s)",             slope:0.02,  intercept:0.3,  noise:0.05,n:25, xMin:10,  xMax:100, pos:true  },
+  { name:"House Prices",        xLabel:"Floor Area (m²)",       yLabel:"Price ($000s)",          slope:3.2,   intercept:80,   noise:30,  n:35, xMin:60,  xMax:300, pos:true  },
+  { name:"Wage vs Education",   xLabel:"Years of Education",    yLabel:"Hourly Wage ($)",        slope:2.4,   intercept:8,    noise:4,   n:40, xMin:8,   xMax:20,  pos:true  },
+  { name:"Unemployment Rate",   xLabel:"Interest Rate (%)",     yLabel:"Unemployment (%)",       slope:0.6,   intercept:2,    noise:1,   n:28, xMin:1,   xMax:12,  pos:true  },
+  { name:"Ad Spend vs Sales",   xLabel:"Ad Budget ($000s)",     yLabel:"Sales ($000s)",          slope:5.5,   intercept:40,   noise:20,  n:32, xMin:5,   xMax:80,  pos:true  },
+  { name:"Fuel Economy",        xLabel:"Engine Size (L)",       yLabel:"Fuel Use (L/100km)",     slope:2.1,   intercept:3,    noise:1.2, n:30, xMin:1,   xMax:5,   pos:true  },
+  { name:"Car Age vs Value",    xLabel:"Car Age (years)",       yLabel:"Value ($000s)",          slope:-2.8,  intercept:35,   noise:4,   n:30, xMin:0,   xMax:12,  pos:false },
+  { name:"Interest vs Spending",xLabel:"Interest Rate (%)",     yLabel:"Consumer Spend ($B)",    slope:-8,    intercept:200,  noise:12,  n:28, xMin:1,   xMax:10,  pos:false },
+  { name:"Tourism Revenue",     xLabel:"Marketing Budget ($M)", yLabel:"Revenue ($B)",           slope:0.12,  intercept:1.5,  noise:0.3, n:25, xMin:5,   xMax:80,  pos:true  },
+  { name:"Training & Sprint Speed",xLabel:"Training Hrs/Week",  yLabel:"100m Time (s)",          slope:-0.15, intercept:13.5, noise:0.3, n:30, xMin:5,   xMax:25,  pos:false },
+  { name:"BMI & Blood Pressure",xLabel:"BMI",                   yLabel:"Systolic BP (mmHg)",     slope:2.2,   intercept:90,   noise:8,   n:38, xMin:18,  xMax:38,  pos:true  },
+  { name:"Protein & Muscle Gain",xLabel:"Protein Intake (g)",   yLabel:"Muscle Gain (kg/mo)",    slope:0.04,  intercept:0,    noise:0.3, n:30, xMin:40,  xMax:200, pos:true  },
+  { name:"Step Count & Weight", xLabel:"Steps per Day (000s)",  yLabel:"Weight (kg)",            slope:-1.2,  intercept:95,   noise:5,   n:35, xMin:2,   xMax:15,  pos:false },
+  { name:"Sleep & Academic GPA",xLabel:"Sleep (hrs/night)",     yLabel:"GPA",                    slope:0.35,  intercept:0.5,  noise:0.3, n:32, xMin:4,   xMax:10,  pos:true  },
+  { name:"Swim Sessions & Time",xLabel:"Pool Sessions/Week",    yLabel:"50m Time (s)",           slope:-1.8,  intercept:48,   noise:1.5, n:28, xMin:1,   xMax:12,  pos:false },
+  { name:"Marathon Training",   xLabel:"Weekly Distance (km)",  yLabel:"Marathon Time (min)",    slope:-1.1,  intercept:320,  noise:15,  n:30, xMin:20,  xMax:120, pos:false },
+  { name:"Strength & Jump",     xLabel:"Squat 1RM (kg)",        yLabel:"Vertical Jump (cm)",     slope:0.28,  intercept:20,   noise:4,   n:30, xMin:40,  xMax:160, pos:true  },
+  { name:"CO₂ & Global Temp.",  xLabel:"CO₂ (ppm)",             yLabel:"Temp Anomaly (°C)",      slope:0.01,  intercept:-3.2, noise:0.15,n:30, xMin:310, xMax:420, pos:true  },
+  { name:"Rainfall & River Flow",xLabel:"Annual Rainfall (mm)", yLabel:"River Flow (m³/s)",      slope:0.45,  intercept:10,   noise:20,  n:28, xMin:300, xMax:1200,pos:true  },
+  { name:"Deforestation",       xLabel:"Forest Lost (000 ha)",  yLabel:"Species Decline (%)",    slope:1.8,   intercept:2,    noise:4,   n:25, xMin:1,   xMax:40,  pos:true  },
+  { name:"UV Index & Skin Cancer",xLabel:"Average UV Index",    yLabel:"Incidence (per 100k)",   slope:3.5,   intercept:5,    noise:5,   n:28, xMin:2,   xMax:12,  pos:true  },
+  { name:"Ocean Acidification", xLabel:"Atmospheric CO₂ (ppm)",yLabel:"Ocean pH",               slope:-0.002,intercept:8.6,  noise:0.04,n:28, xMin:310, xMax:420, pos:false },
+  { name:"Screen Time & Sleep", xLabel:"Screen Time (hrs/day)", yLabel:"Sleep Quality (1–10)",   slope:-0.7,  intercept:9,    noise:0.8, n:35, xMin:1,   xMax:10,  pos:false },
+  { name:"Followers & Post Reach",xLabel:"Followers (000s)",    yLabel:"Post Reach (000s)",      slope:0.85,  intercept:2,    noise:8,   n:30, xMin:1,   xMax:200, pos:true  },
+  { name:"Coding Practice",     xLabel:"Practice Hours/Week",   yLabel:"Problems Solved/Day",    slope:2.2,   intercept:0,    noise:2,   n:30, xMin:1,   xMax:20,  pos:true  },
+  { name:"Page Load & Bounce",  xLabel:"Page Load Time (s)",    yLabel:"Bounce Rate (%)",        slope:8,     intercept:20,   noise:6,   n:30, xMin:0.5, xMax:8,   pos:true  },
+  { name:"Broadband Access & GDP",xLabel:"Broadband Coverage (%)",yLabel:"GDP per Capita ($000s)",slope:0.55, intercept:5,    noise:8,   n:30, xMin:10,  xMax:95,  pos:true  },
+  { name:"Study Hours & Exam Score",xLabel:"Study Hrs/Week",    yLabel:"Exam Score (%)",         slope:2.8,   intercept:30,   noise:8,   n:35, xMin:0,   xMax:25,  pos:true  },
+  { name:"Class Size & Test Scores",xLabel:"Students per Class",yLabel:"Avg Test Score (%)",     slope:-0.9,  intercept:92,   noise:5,   n:30, xMin:10,  xMax:35,  pos:false },
+  { name:"Absenteeism & Grades",xLabel:"Days Absent",           yLabel:"Final Grade (%)",        slope:-2.1,  intercept:90,   noise:6,   n:35, xMin:0,   xMax:20,  pos:false },
+  { name:"Reading & Writing",   xLabel:"Books Read/Year",       yLabel:"Writing Score (/50)",    slope:1.2,   intercept:18,   noise:4,   n:30, xMin:0,   xMax:24,  pos:true  },
+  { name:"Parent Education",    xLabel:"Parent Edu. (years)",   yLabel:"Child's GPA",            slope:0.22,  intercept:1.0,  noise:0.4, n:32, xMin:8,   xMax:22,  pos:true  },
+  { name:"Tutoring & Grades",   xLabel:"Tutoring (hrs/term)",   yLabel:"Grade Improvement (%)",  slope:1.4,   intercept:2,    noise:3,   n:30, xMin:0,   xMax:30,  pos:true  },
+  { name:"Homework Completion", xLabel:"Homework Done (%)",     yLabel:"Unit Score (%)",         slope:0.6,   intercept:25,   noise:7,   n:35, xMin:20,  xMax:100, pos:true  },
+  { name:"Coffee & Focus",      xLabel:"Coffee (cups/day)",     yLabel:"Focus Score (1–10)",     slope:0.9,   intercept:3,    noise:1.2, n:30, xMin:0,   xMax:6,   pos:true  },
+  { name:"Commute & Stress",    xLabel:"Commute Time (min)",    yLabel:"Stress Level (1–10)",    slope:0.05,  intercept:3,    noise:1,   n:32, xMin:5,   xMax:90,  pos:true  },
+  { name:"Price & Demand",      xLabel:"Price ($)",             yLabel:"Units Sold (000s)",      slope:-0.4,  intercept:50,   noise:5,   n:30, xMin:10,  xMax:100, pos:false },
+  { name:"Distance & Rent",     xLabel:"Commute Distance (km)", yLabel:"Monthly Rent ($)",       slope:-12,   intercept:2200, noise:150, n:30, xMin:2,   xMax:60,  pos:false },
+  { name:"Shoe Size & Height",  xLabel:"Shoe Size (AU)",        yLabel:"Height (cm)",            slope:3.8,   intercept:130,  noise:4,   n:35, xMin:5,   xMax:14,  pos:true  },
+  { name:"Age & Reaction Time", xLabel:"Age (years)",           yLabel:"Reaction Time (ms)",     slope:2.5,   intercept:180,  noise:20,  n:35, xMin:18,  xMax:80,  pos:true  },
+  { name:"Restaurant Revenue",  xLabel:"Seating Capacity",      yLabel:"Revenue ($000s/mo)",     slope:1.8,   intercept:10,   noise:15,  n:28, xMin:20,  xMax:200, pos:true  },
+  { name:"Temp & Ice Cream Sales",xLabel:"Max Temp (°C)",       yLabel:"Ice Cream Sales ($00s)", slope:8.5,   intercept:-50,  noise:15,  n:30, xMin:15,  xMax:40,  pos:true  },
+  { name:"Humidity & Mould",    xLabel:"Humidity (%)",          yLabel:"Mould Index (1–10)",     slope:0.12,  intercept:-4,   noise:0.8, n:30, xMin:40,  xMax:95,  pos:true  },
+  { name:"Dog Age & Vet Bills", xLabel:"Dog Age (years)",       yLabel:"Annual Vet Cost ($)",    slope:45,    intercept:200,  noise:80,  n:30, xMin:1,   xMax:15,  pos:true  },
+  { name:"Tree Age & Trunk Size",xLabel:"Tree Age (years)",     yLabel:"Trunk Diameter (cm)",    slope:0.55,  intercept:2,    noise:4,   n:28, xMin:5,   xMax:150, pos:true  },
+  { name:"Wind Speed & Power",  xLabel:"Wind Speed (km/h)",     yLabel:"Power Output (kW)",      slope:2.2,   intercept:-10,  noise:8,   n:30, xMin:10,  xMax:60,  pos:true  },
+  { name:"Altitude & Oxygen",   xLabel:"Altitude (m)",          yLabel:"O₂ Saturation (%)",     slope:-0.003,intercept:98,   noise:0.5, n:30, xMin:0,   xMax:5000,pos:false },
+  { name:"Noise Exposure & Hearing",xLabel:"Noise Exposure (yrs)",yLabel:"Hearing Loss (dB)",   slope:0.9,   intercept:5,    noise:3,   n:30, xMin:0,   xMax:40,  pos:true  },
+  { name:"Income & Happiness",  xLabel:"Monthly Budget ($)",    yLabel:"Life Satisfaction (1–10)",slope:0.003,intercept:4,   noise:1,   n:35, xMin:500, xMax:5000,pos:true  },
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let dataset, points, trueM, trueB;
+let rounds=0, total=0, best=null, lastIdx=-1;
+let submitted=false, moved=false;
+
+const canvas = document.getElementById('plot');
+const ctx    = canvas.getContext('2d');
+let W, H, PAD, bounds={};
+let handles=[null,null], drag=null, stored=[null,null];
+
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+function lcg(s){ return ()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;}; }
+
+function makePoints(d,seed){
+  const r=lcg(seed),pts=[];
+  for(let i=0;i<d.n;i++){
+    const x=d.xMin+r()*(d.xMax-d.xMin);
+    pts.push({x, y:d.slope*x+d.intercept+(r()-0.5)*2*d.noise});
+  }
+  return pts;
+}
+
+function ols(pts){
+  const n=pts.length,mx=pts.reduce((s,p)=>s+p.x,0)/n,my=pts.reduce((s,p)=>s+p.y,0)/n;
+  const num=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0),den=pts.reduce((s,p)=>s+(p.x-mx)**2,0);
+  const m=num/den; return{m, b:my-m*mx};
+}
+
+function mkBounds(pts,d){
+  const ys=pts.map(p=>p.y),yR=Math.max(...ys)-Math.min(...ys);
+  return{
+    xMin:d.xMin-(d.xMax-d.xMin)*0.05, xMax:d.xMax+(d.xMax-d.xMin)*0.05,
+    yMin:Math.min(...ys)-yR*0.14,      yMax:Math.max(...ys)+yR*0.14
+  };
+}
+
+// ═══════════════════════════════════════════════
+// COORDS
+// ═══════════════════════════════════════════════
+function d2c(dx,dy){
+  const{xMin,xMax,yMin,yMax}=bounds;
+  return{x:PAD+(dx-xMin)/(xMax-xMin)*(W-2*PAD), y:H-PAD-(dy-yMin)/(yMax-yMin)*(H-2*PAD)};
+}
+function c2d(cx,cy){
+  const{xMin,xMax,yMin,yMax}=bounds;
+  return{x:xMin+(cx-PAD)/(W-2*PAD)*(xMax-xMin), y:yMin+(H-PAD-cy)/(H-2*PAD)*(yMax-yMin)};
+}
+
+// ═══════════════════════════════════════════════
+// SCORE
+// ═══════════════════════════════════════════════
+function score(){
+  const p0=c2d(handles[0].x,handles[0].y),p1=c2d(handles[1].x,handles[1].y);
+  let us,ub;
+  if(Math.abs(p1.x-p0.x)<1e-9){us=0;ub=(p0.y+p1.y)/2;}
+  else{us=(p1.y-p0.y)/(p1.x-p0.x);ub=p0.y-us*p0.x;}
+  const n=points.length,my=points.reduce((s,p)=>s+p.y,0)/n;
+  const ss=points.reduce((s,p)=>s+(p.y-my)**2,0);
+  if(ss<1e-12)return 100;
+  const st=points.reduce((s,p)=>s+(p.y-(trueM*p.x+trueB))**2,0);
+  const su=points.reduce((s,p)=>s+(p.y-(us*p.x+ub))**2,0);
+  const ratio=st>0?su/st:su+1;
+  return Math.round(Math.max(0,Math.min(100,100-55*Math.log(Math.max(ratio,1)))));
+}
+
+function sCol(s){ return s>=85?'#27624a':s>=65?'#b8640a':s>=40?'#b05a0a':'#c0392b'; }
+function sMsg(s){
+  if(s>=95)return"Outstanding — almost exactly right!";
+  if(s>=85)return"Excellent. Very close to the true line of best fit.";
+  if(s>=72)return"Good work — your slope is nearly right.";
+  if(s>=58)return"Getting there — does your line match the trend?";
+  if(s>=40)return"Try adjusting the angle of your line.";
+  return"Keep practising — try to match the overall direction of the data.";
+}
+
+// ═══════════════════════════════════════════════
+// DRAW
+// ═══════════════════════════════════════════════
+function resize(){
+  const r=canvas.parentElement.getBoundingClientRect();
+  W=Math.max(360,r.width); H=Math.round(W*0.56);
+  canvas.width=W; canvas.height=H;
+  PAD=Math.round(W*0.115);
+  if(stored[0])handles[0]=d2c(stored[0].x,stored[0].y);
+  if(stored[1])handles[1]=d2c(stored[1].x,stored[1].y);
+  draw();
+}
+
+function initH(){
+  const{xMin,xMax,yMin,yMax}=bounds,my=(yMin+yMax)/2;
+  const x0=xMin+(xMax-xMin)*0.15,x1=xMin+(xMax-xMin)*0.85;
+  stored=[{x:x0,y:my},{x:x1,y:my}];
+  handles=[d2c(x0,my),d2c(x1,my)];
+}
+
+function draw(){
+  if(!ctx||!points)return;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+  drawGrid();
+
+  // dots
+  for(const p of points){
+    const c=d2c(p.x,p.y);
+    ctx.beginPath(); ctx.arc(c.x,c.y,5,0,Math.PI*2);
+    ctx.fillStyle='rgba(26,21,16,0.72)'; ctx.fill();
+    ctx.strokeStyle='rgba(26,21,16,0.15)'; ctx.lineWidth=1; ctx.stroke();
+  }
+
+  if(handles[0]&&handles[1]){
+    const p0=handles[0],p1=handles[1],dx=p1.x-p0.x,dy=p1.y-p0.y;
+    const t0=(PAD-p0.x)/(dx||1e-9),t1=(W-PAD-p0.x)/(dx||1e-9);
+    const tA=Math.min(t0,t1),tB=Math.max(t0,t1);
+
+    // user line
+    ctx.beginPath(); ctx.moveTo(p0.x+tA*dx,p0.y+tA*dy); ctx.lineTo(p0.x+tB*dx,p0.y+tB*dy);
+    ctx.strokeStyle='rgba(192,57,43,0.88)'; ctx.lineWidth=2.5; ctx.setLineDash([]); ctx.stroke();
+
+    // true line (post-submit)
+    if(submitted){
+      const a=d2c(bounds.xMin,trueM*bounds.xMin+trueB),b=d2c(bounds.xMax,trueM*bounds.xMax+trueB);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle='rgba(39,98,74,0.9)'; ctx.lineWidth=2.2; ctx.setLineDash([10,6]); ctx.stroke();
+      ctx.setLineDash([]);
+      drawLegend();
+    }
+
+    // handles
+    for(let i=0;i<2;i++){
+      const h=handles[i],hot=drag===i;
+      ctx.beginPath(); ctx.arc(h.x,h.y,hot?17:13,0,Math.PI*2);
+      ctx.fillStyle=hot?'rgba(192,57,43,0.16)':'rgba(192,57,43,0.09)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(h.x,h.y,hot?8:6,0,Math.PI*2);
+      ctx.fillStyle='#c0392b'; ctx.fill();
+      ctx.strokeStyle='#ffffff'; ctx.lineWidth=2.2; ctx.stroke();
+    }
+  }
+  drawAxes();
+}
+
+function drawLegend(){
+  const fs=Math.round(W*0.012)+8;
+  ctx.font=`${fs}px 'DM Mono',monospace`; ctx.textAlign='left';
+  const lx=W-PAD*1.55, ly=PAD*0.48;
+  ctx.setLineDash([]); ctx.strokeStyle='rgba(192,57,43,0.88)'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(lx+18,ly); ctx.stroke();
+  ctx.fillStyle='rgba(26,21,16,0.55)'; ctx.fillText('Your line',lx+24,ly+4);
+  ctx.strokeStyle='rgba(39,98,74,0.9)'; ctx.lineWidth=2; ctx.setLineDash([8,5]);
+  ctx.beginPath(); ctx.moveTo(lx,ly+15); ctx.lineTo(lx+18,ly+15); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillText('Best fit',lx+24,ly+19);
+}
+
+function drawGrid(){
+  const{xMin,xMax,yMin,yMax}=bounds;
+  ctx.strokeStyle='rgba(26,21,16,0.06)'; ctx.lineWidth=1;
+  for(let i=0;i<=6;i++){const c=d2c(xMin+(xMax-xMin)*i/6,yMin);ctx.beginPath();ctx.moveTo(c.x,PAD*0.35);ctx.lineTo(c.x,H-PAD*0.65);ctx.stroke();}
+  for(let i=0;i<=5;i++){const c=d2c(xMin,yMin+(yMax-yMin)*i/5);ctx.beginPath();ctx.moveTo(PAD*0.55,c.y);ctx.lineTo(W-PAD*0.3,c.y);ctx.stroke();}
+}
+
+function fmt(n){
+  if(Math.abs(n)>=10000)return(n/1000).toFixed(0)+'k';
+  if(Math.abs(n)>=1000) return(n/1000).toFixed(1)+'k';
+  if(Math.abs(n)>=10)   return n.toFixed(0);
+  if(Math.abs(n)>=1)    return n.toFixed(1);
+  return n.toFixed(2);
+}
+
+function drawAxes(){
+  if(!dataset)return;
+  const{xMin,xMax,yMin,yMax}=bounds, fs=Math.round(W*0.012)+8;
+  ctx.font=`${fs}px 'DM Mono',monospace`; ctx.fillStyle='rgba(26,21,16,0.45)';
+  ctx.textAlign='center';
+  for(let i=0;i<=5;i++){const c=d2c(xMin+(xMax-xMin)*i/5,yMin);ctx.fillText(fmt(xMin+(xMax-xMin)*i/5),c.x,H-PAD*0.25);}
+  ctx.textAlign='right';
+  for(let i=0;i<=4;i++){const c=d2c(xMin,yMin+(yMax-yMin)*i/4);ctx.fillText(fmt(yMin+(yMax-yMin)*i/4),PAD*0.52,c.y+4);}
+  ctx.fillStyle='rgba(26,21,16,0.72)';
+  ctx.font=`500 ${fs+1}px 'DM Mono',monospace`;
+  ctx.textAlign='center'; ctx.fillText(dataset.xLabel,W/2,H-4);
+  ctx.save(); ctx.translate(13,H/2); ctx.rotate(-Math.PI/2); ctx.fillText(dataset.yLabel,0,0); ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+// DRAG
+// ═══════════════════════════════════════════════
+function cpos(e){
+  const r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height;
+  const s=e.touches?e.touches[0]:e;
+  return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};
+}
+function hit(p){
+  for(let i=0;i<2;i++){const dx=p.x-handles[i].x,dy=p.y-handles[i].y;if(dx*dx+dy*dy<=22*22)return i;}
+  return null;
+}
+function onDown(e){if(submitted)return;e.preventDefault();const p=cpos(e),h=hit(p);if(h!==null){drag=h;canvas.style.cursor='grabbing';}}
+function onMove(e){
+  if(submitted)return;e.preventDefault();const p=cpos(e);
+  if(drag!==null){
+    handles[drag]={x:Math.max(PAD,Math.min(W-PAD,p.x)),y:Math.max(PAD*0.35,Math.min(H-PAD*0.7,p.y))};
+    stored[drag]=c2d(handles[drag].x,handles[drag].y);
+    moved=true; draw();
+  } else { canvas.style.cursor=hit(p)!==null?'grab':'default'; }
+}
+function onUp(){drag=null;canvas.style.cursor='default';}
+
+canvas.addEventListener('mousedown', onDown,{passive:false});
+canvas.addEventListener('mousemove', onMove,{passive:false});
+canvas.addEventListener('mouseup',   onUp);
+canvas.addEventListener('mouseleave',onUp);
+canvas.addEventListener('touchstart',onDown,{passive:false});
+canvas.addEventListener('touchmove', onMove,{passive:false});
+canvas.addEventListener('touchend',  onUp);
+
+// ═══════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════
+function doSubmit(){
+  if(submitted){newDataset();return;}
+  if(!moved){
+    document.getElementById('s-wait').textContent='Drag the red handles first!';
+    return;
+  }
+
+  submitted=true;
+  const s=score();
+  rounds++; total+=s;
+  if(best===null||s>best)best=s;
+
+  document.getElementById('stat-n').textContent=rounds;
+  document.getElementById('stat-avg').textContent=Math.round(total/rounds);
+  document.getElementById('stat-best').textContent=best;
+
+  const col=sCol(s);
+  const box=document.getElementById('score-box');
+  box.classList.add('revealed');
+  box.style.setProperty('--rc',col);
+  document.getElementById('s-wait').style.display='none';
+  const res=document.getElementById('s-result'); res.classList.add('on');
+  document.getElementById('s-num').textContent=s+'/100';
+  document.getElementById('s-num').style.color=col;
+  document.getElementById('s-fill').style.background=col;
+  // animate bar after paint
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.getElementById('s-fill').style.width=s+'%';
+  }));
+  document.getElementById('s-remark').textContent=sMsg(s);
+
+  const btn=document.getElementById('sub-btn');
+  btn.textContent='Next →'; btn.classList.add('is-next');
+  draw();
+}
+
+// ═══════════════════════════════════════════════
+// NEW DATASET
+// ═══════════════════════════════════════════════
+function newDataset(){
+  let i; do{i=Math.floor(Math.random()*DS.length);}while(i===lastIdx);
+  lastIdx=i; dataset=DS[i];
+  points=makePoints(dataset,Date.now()&0xffffff);
+  const r=ols(points); trueM=r.m; trueB=r.b;
+  bounds=mkBounds(points,dataset);
+  submitted=false; moved=false;
+
+  document.getElementById('score-box').classList.remove('revealed');
+  document.getElementById('s-wait').style.display='';
+  document.getElementById('s-wait').textContent='Position your line, then hit Submit to reveal your score';
+  document.getElementById('s-result').classList.remove('on');
+  document.getElementById('s-fill').style.width='0%';
+  const btn=document.getElementById('sub-btn');
+  btn.textContent='Submit'; btn.classList.remove('is-next');
+
+  document.getElementById('ds-name').textContent=dataset.name;
+  document.getElementById('ds-vars').innerHTML=
+    `<div class="ax-chip"><b>X axis</b>${dataset.xLabel}</div>`+
+    `<span style="font-size:0.5rem;color:var(--border)">→</span>`+
+    `<div class="ax-chip"><b>Y axis</b>${dataset.yLabel}</div>`+
+    `<span class="c-tag ${dataset.pos?'pos':'neg'}">${dataset.pos?'↗ positive':'↘ negative'}</span>`;
+
+  resize(); initH(); draw();
+}
+
+new ResizeObserver(()=>{if(points)resize();}).observe(canvas.parentElement);
+newDataset();
+</script>
+</body>
+</html>
