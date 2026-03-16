@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ext. Maths TikTok Randomiser</title>
+<title>Ext. Maths Style Randomiser</title>
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -329,7 +329,7 @@ body::after {
   </div>
 
   <div class="heading">
-    <h1>TIKTOK<br><span>RANDOMISER</span></h1>
+    <h1>STYLE<br><span>RANDOMISER</span></h1>
     <div class="sub">Extension Mathematics &nbsp;·&nbsp; 10–12 second performance</div>
   </div>
 
@@ -354,7 +354,7 @@ body::after {
 
     <div class="reel-card style" id="styleCard">
       <div class="reel-header">
-        <span class="reel-label">TikTok Style</span>
+        <span class="reel-label">Performance Style</span>
         <span class="reel-code" id="styleCode">—</span>
       </div>
       <div class="drum-window">
@@ -402,7 +402,7 @@ body::after {
           <th class="cod">Code</th>
           <th>Concept</th>
           <th class="stcod">#</th>
-          <th>TikTok Style</th>
+          <th>Performance Style</th>
         </tr>
       </thead>
       <tbody id="refBody"></tbody>
@@ -510,53 +510,50 @@ buildTrack(document.getElementById('styleTrack'),   STYLES);
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function spinDrum(trackId, codeId, items, onDone) {
-  const track = document.getElementById(trackId);
+  const track  = document.getElementById(trackId);
   const codeEl = document.getElementById(codeId);
-  const itemH = 110;
-  const totalItems = items.length;
+  const ITEM_H = 110; // must match .drum-item height in CSS
+  const N      = items.length;
 
-  // Pick target
-  const target = pick(items);
-  const targetIdx = items.indexOf(target);
+  // The track has 3 copies: [copy0][copy1][copy2]
+  // We always land in copy1 (indices N..2N-1) so there's room to animate from anywhere
+  const target     = pick(items);
+  const targetIdx  = items.indexOf(target);
+  const landingIdx = N + targetIdx; // index in the 3x pool
 
-  // We'll land on the item in the second batch (offset by totalItems)
-  const landingIdx = totalItems + targetIdx;
+  // translateY that puts landingIdx item centred in the 110px window:
+  // item top = landingIdx * ITEM_H, we want item centre at window centre (55px)
+  // so top of track must be at -(landingIdx * ITEM_H) + (ITEM_H/2 - ITEM_H/2) = -(landingIdx * ITEM_H)
+  const finalY = -(landingIdx * ITEM_H);
 
-  // How many extra full spins before landing?
-  const extraSpins = 3 + Math.floor(Math.random() * 3); // 3-5 full rotations
-  const totalTurns = extraSpins * totalItems + landingIdx;
-  const finalY     = -(totalTurns * itemH) + itemH; // centre on item (offset so it lands in window centre)
+  // Add extra full rotations so it spins visibly before landing
+  const extraSpins = 3 + Math.floor(Math.random() * 3);
+  const spinY = finalY - extraSpins * N * ITEM_H; // start further up (more negative)
 
   codeEl.textContent = '…';
-
-  // Remove old active
   track.querySelectorAll('.drum-item').forEach(el => el.classList.remove('active'));
 
-  // Animate in steps — fast at start, easing to stop
-  const DURATION   = 1100; // ms
-  const startTime  = performance.now();
-  const startY     = getCurrentY(track);
+  const DURATION = 1200;
+  const startTime = performance.now();
+  const startY    = getCurrentY(track);
+  // We animate from startY → spinY (fast phase), then the ease handles deceleration
+  // Actually simpler: animate startY → finalY but with lots of extra distance baked in via spinY
+  // We'll animate startY → spinY with an ease that goes fast then stops
+  const totalDist = spinY - startY; // negative (going up = scrolling down)
 
-  function ease(t) {
-    // custom ease: fast out → decelerate into position
-    return t < 0.6 ? (t / 0.6) * 0.85 : 0.85 + 0.15 * easeOut((t - 0.6) / 0.4);
-  }
-  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
 
   function step(now) {
-    const elapsed = now - startTime;
-    const t       = Math.min(elapsed / DURATION, 1);
-    const y       = startY + (finalY - startY) * ease(t);
+    const t = Math.min((now - startTime) / DURATION, 1);
+    const y = startY + totalDist * easeOutQuart(t);
     track.style.transform = `translateY(${y}px)`;
-
     if (t < 1) {
       requestAnimationFrame(step);
     } else {
+      // Snap to exact final position (no extra spins offset — land cleanly)
       track.style.transform = `translateY(${finalY}px)`;
-      // Highlight the active item
       const allItems = track.querySelectorAll('.drum-item');
       allItems.forEach(el => el.classList.remove('active'));
-      // The item that's now in the centre = landingIdx in the 3x pool
       allItems[landingIdx].classList.add('active');
       codeEl.textContent = target.code;
       onDone(target);
@@ -689,15 +686,15 @@ function toggleRef() {
 // INIT — set tracks to a starting position
 // ─────────────────────────────────────────────
 function initTracks() {
-  // Position both drums at item 0 of the middle batch
+  // Position at item 0 of the middle (copy1) batch so first spin has room to go both ways
   [
     { trackId: 'conceptTrack', len: CONCEPTS.length },
     { trackId: 'styleTrack',   len: STYLES.length   },
   ].forEach(({ trackId, len }) => {
     const track = document.getElementById(trackId);
     track.style.transition = 'none';
-    const startY = -(len * 110) + 110; // point at item 0 of 2nd batch, centred
-    track.style.transform = `translateY(${startY}px)`;
+    // item 0 of copy1 is at index=len, finalY = -(len * 110)
+    track.style.transform = `translateY(${-(len * 110)}px)`;
   });
 }
 initTracks();
