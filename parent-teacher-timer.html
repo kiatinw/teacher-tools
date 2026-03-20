@@ -4,490 +4,143 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Interview Timer</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@200;300;400;600;700&family=Oswald:wght@200;300;400;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════
-   VARIABLES & RESET
-═══════════════════════════════════════════ */
 :root {
-  --primary:    #1a3a5c;
-  --primary2:   #245080;
-  --accent:     #c8a96e;
-  --bg:         #0d1b2a;
-  --surface:    #122033;
-  --surface2:   #1a2d42;
-  --ink:        #f0ece4;
-  --ink2:       #b8b0a4;
-  --rule:       rgba(240,236,228,0.1);
-  --green:      #4caf87;
-  --amber:      #e8a020;
-  --red:        #d64035;
-  --timer-col:  var(--ink);
+  --primary:#1a3a5c; --accent:#c8a96e; --bg:#0d1b2a; --surface:#122033;
+  --surface2:#1a2d42; --ink:#f0ece4; --ink2:#b8b0a4; --rule:rgba(240,236,228,0.1);
+  --green:#4caf87; --amber:#e8a020; --red:#d64035;
+  --display-font:'Barlow',sans-serif; --display-weight:200;
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ═══════════════════════════════════════════
-   SETTINGS VIEW
-═══════════════════════════════════════════ */
-#settings-view {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center;
-  padding: 2.5rem 1.5rem 4rem;
-}
-
-.settings-header {
-  width: 100%; max-width: 680px;
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.4rem;
-  border-bottom: 1px solid var(--rule);
-}
-.settings-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.8rem; font-weight: 400; letter-spacing: 0.01em;
-  color: var(--ink);
-}
-.settings-title span { color: var(--accent); font-style: italic; }
-.settings-badge {
-  font-size: 0.5rem; letter-spacing: 0.35em; text-transform: uppercase;
-  color: var(--ink2); background: var(--surface2);
-  border: 1px solid var(--rule); border-radius: 4px;
-  padding: 0.3rem 0.7rem;
-}
-
-.settings-card {
-  width: 100%; max-width: 680px;
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: 16px;
-  padding: 2rem 2.2rem;
-  margin-bottom: 1.2rem;
-}
-.card-section-title {
-  font-size: 0.52rem; letter-spacing: 0.38em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 1.4rem; font-weight: 500;
-  display: flex; align-items: center; gap: 0.8rem;
-}
-.card-section-title::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
-
-.field-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-  margin-bottom: 1.1rem;
-}
-.field-row.full { grid-template-columns: 1fr; }
-.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
-@media(max-width:560px){ .field-row, .field-row.three { grid-template-columns: 1fr; } }
-
-.field { display: flex; flex-direction: column; gap: 0.4rem; }
-.field label {
-  font-size: 0.56rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--ink2); font-weight: 500;
-}
-.field input, .field select {
-  background: var(--surface2); border: 1px solid var(--rule);
-  border-radius: 8px; color: var(--ink);
-  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
-  padding: 0.6rem 0.85rem;
-  outline: none; transition: border-color 0.2s;
-  width: 100%;
-}
-.field input:focus, .field select:focus { border-color: var(--accent); }
-.field input[type="color"] {
-  padding: 0.2rem 0.3rem; height: 42px; cursor: pointer;
-}
-.field select option { background: var(--surface2); }
-
-/* Logo upload */
-.logo-upload-area {
-  border: 1.5px dashed rgba(200,169,110,0.35);
-  border-radius: 10px; padding: 1.2rem;
-  text-align: center; cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  position: relative;
-}
-.logo-upload-area:hover { border-color: var(--accent); background: rgba(200,169,110,0.04); }
-.logo-upload-area input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-}
-.logo-preview {
-  max-height: 70px; max-width: 220px;
-  object-fit: contain; display: none; margin: 0 auto 0.5rem;
-}
-.logo-placeholder {
-  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink2);
-}
-.logo-placeholder strong { display: block; font-size: 1.4rem; margin-bottom: 0.3rem; color: var(--ink2); }
-
-/* Tone selector */
-.tone-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;
-}
-@media(max-width:680px){ .tone-grid { grid-template-columns: repeat(2, 1fr); } }
-@media(max-width:400px){ .tone-grid { grid-template-columns: 1fr; } }
-
-.tone-btn {
-  background: var(--surface2); border: 1.5px solid var(--rule);
-  border-radius: 8px; padding: 0.65rem 0.5rem;
-  cursor: pointer; text-align: center;
-  transition: all 0.18s; color: var(--ink2);
-  font-family: 'DM Sans', sans-serif;
-}
-.tone-btn:hover { border-color: rgba(200,169,110,0.4); color: var(--ink); }
-.tone-btn.active { border-color: var(--accent); background: rgba(200,169,110,0.1); color: var(--ink); }
-.tone-btn .tone-name { font-size: 0.68rem; font-weight: 500; display: block; margin-bottom: 0.15rem; }
-.tone-btn .tone-desc { font-size: 0.5rem; letter-spacing: 0.08em; opacity: 0.65; }
-
-.tone-preview-btn {
-  margin-top: 0.8rem; width: 100%;
-  background: transparent; border: 1px solid var(--rule);
-  border-radius: 7px; padding: 0.5rem; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.68rem;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--ink2); transition: all 0.18s;
-}
-.tone-preview-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-/* Colour swatches */
-.swatch-row { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
-.swatch {
-  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-  border: 2.5px solid transparent; transition: transform 0.15s, border-color 0.15s;
-}
-.swatch:hover { transform: scale(1.15); }
-.swatch.active { border-color: var(--ink); }
-
-/* Colour pair row */
-.colour-pair { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.colour-pair-sep { color: var(--ink2); font-size: 0.7rem; }
-
-/* Launch button */
-.launch-btn {
-  width: 100%; max-width: 680px;
-  margin-top: 0.8rem;
-  padding: 1.1rem 2rem;
-  background: var(--accent); color: #1a1208;
-  border: none; border-radius: 12px; cursor: pointer;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.55rem; font-weight: 600; letter-spacing: 0.06em;
-  box-shadow: 0 6px 32px rgba(200,169,110,0.28);
-  transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), box-shadow 0.18s, background 0.18s;
-}
-.launch-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 42px rgba(200,169,110,0.4); background: #d4b87a; }
-.launch-btn:active { transform: translateY(0); }
-.launch-btn:disabled { opacity: 0.4; pointer-events: none; }
-
-.launch-hint {
-  width: 100%; max-width: 680px;
-  text-align: center; margin-top: 0.75rem;
-  font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--ink2);
-}
-
-/* Status dot */
-.status-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink2); }
-.status-dot.waiting  { background: var(--amber); animation: pulse 1.8s ease-in-out infinite; }
-.status-dot.running  { background: var(--green); animation: pulse 1.8s ease-in-out infinite; }
-.status-dot.finished { background: var(--red); }
-.status-txt { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink2); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-/* ═══════════════════════════════════════════
-   DISPLAY VIEW (projector screen)
-═══════════════════════════════════════════ */
-#display-view {
-  display: none;
-  position: fixed; inset: 0; z-index: 1000;
-  flex-direction: column;
-  align-items: center; justify-content: flex-start;
-  background: var(--bg);
-  overflow: hidden;
-}
-#display-view.active { display: flex; }
-
-/* Dynamic bg colour accent */
-.display-bg-accent {
-  position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  transition: background 1.2s ease;
-}
-
-/* School identity bar */
-.display-top-bar {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 6px; z-index: 2;
-  background: linear-gradient(90deg, var(--school-primary, #1a3a5c), var(--school-secondary, #c8a96e));
-}
-
-.display-logo-wrap {
-  position: absolute; top: 2.5vh; left: 3vw; z-index: 2;
-  display: flex; align-items: center; gap: 1.2rem;
-}
-.display-logo {
-  max-height: 7vh; max-width: 18vw;
-  object-fit: contain; display: none;
-}
-.display-school-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1rem, 3vh, 999rem);
-  font-weight: 400; letter-spacing: 0.08em;
-  color: rgba(240,236,228,0.75);
-}
-
-/* Close / settings button */
-.display-close-btn {
-  position: absolute; top: 2vh; right: 2vw; z-index: 10;
-  background: rgba(255,255,255,0.08); border: 1px solid var(--rule);
-  border-radius: 8px; padding: 0.45rem 0.9rem; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.62rem;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink2);
-  transition: all 0.18s;
-}
-.display-close-btn:hover { background: rgba(255,255,255,0.14); color: var(--ink); }
-
-/* Main display content */
-.display-main {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  width: 100%; height: 100vh;
-  padding: 10vh 4vw 6vh;
-  gap: 3vh;
-}
-
-/* Current time — large clock at top */
-.display-current-time {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3rem, 16vh, 999rem);
-  font-weight: 300; letter-spacing: 0.08em;
-  color: rgba(240,236,228,0.85);
-  line-height: 1;
-  text-align: center;
-}
-
-/* Label sits inside centre-row above the ring, via a wrapper */
-.display-label {
-  font-size: clamp(0.55rem, 2.2vh, 999rem);
-  letter-spacing: 0.45em; text-transform: uppercase;
-  color: rgba(240,236,228,0.35);
-  text-align: center;
-  width: 100%;
-  transition: color 0.5s;
-}
-
-/* Ring + info side by side */
-.display-centre-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5vw;
-  width: 100%;
-}
-
-/* Wraps label + ring together so current-time is above both ring and info */
-.ring-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5vh;
-  flex-shrink: 0;
-}
-
-/* The big countdown sits inside the ring (position set in .ring-wrap block above) */
-.display-countdown {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(4rem, 22vh, 999rem);
-  font-weight: 300; line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  transition: color 0.6s ease;
-  text-align: center;
-}
-
-/* Thin arc progress ring */
-.ring-wrap {
-  /* width/height set explicitly in JS to match SVG size */
-  position: relative;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-.progress-ring {
-  /* SVG sits at top-left of ring-wrap, sized to fill it */
-  position: absolute;
-  top: 0; left: 0;
-  transform: rotate(-90deg);
-  pointer-events: none;
-}
-.display-countdown {
-  /* centred inside ring-wrap via absolute positioning */
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-}
-.progress-ring-bg { fill: none; stroke: rgba(255,255,255,0.07); }
-.progress-ring-fill {
-  fill: none;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear, stroke 0.6s ease;
-}
-
-/* Session info panel — vertical stack to the right of ring */
-.display-session-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 4vh;
-  align-items: flex-start;
-  flex-shrink: 0;
-  min-width: 20vw;
-}
-.session-item { text-align: left; }
-.session-val {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.4rem, 6.5vh, 999rem);
-  font-weight: 300; color: rgba(240,236,228,0.75);
-  display: block; line-height: 1;
-}
-.session-lbl {
-  font-size: clamp(0.5rem, 1.8vh, 999rem);
-  letter-spacing: 0.38em; text-transform: uppercase;
-  color: rgba(240,236,228,0.3); display: block; margin-top: 0.5vh;
-}
-.session-rule {
-  width: 100%; height: 1px;
-  background: rgba(240,236,228,0.1);
-}
-
-/* Pre-start message */
-.display-prestart {
-  text-align: center;
-}
-.prestart-msg {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2rem, 8vh, 999rem);
-  font-weight: 300; color: rgba(240,236,228,0.6);
-  letter-spacing: 0.04em; margin-bottom: 1.5vh;
-}
-.prestart-starts-in {
-  font-size: clamp(0.7rem, 2.5vh, 999rem);
-  letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 0.6vh;
-}
-.prestart-countdown {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3rem, 14vh, 999rem);
-  font-weight: 300; color: var(--accent);
-  letter-spacing: 0.04em;
-}
-
-/* Bottom date bar */
-.display-bottom {
-  position: absolute; bottom: 2.5vh; left: 0; right: 0;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 2;
-}
-.display-event-name {
-  font-size: clamp(0.5rem, 1.8vh, 999rem);
-  letter-spacing: 0.4em; text-transform: uppercase;
-  color: rgba(240,236,228,0.25);
-}
-
-/* Fullscreen toggle btn in settings */
-.fullscreen-btn {
-  display: flex; align-items: center; gap: 0.6rem;
-  background: transparent; border: 1px solid rgba(200,169,110,0.3);
-  border-radius: 8px; padding: 0.55rem 1.1rem; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.62rem;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--accent); transition: all 0.18s;
-}
-.fullscreen-btn:hover { background: rgba(200,169,110,0.08); border-color: var(--accent); }
-
-/* ── util ── */
-.hidden { display: none !important; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+#settings-view{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2.5rem 1.5rem 4rem;}
+.settings-header{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;padding-bottom:1.4rem;border-bottom:1px solid var(--rule);}
+.settings-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--ink);}
+.settings-title span{color:var(--accent);font-style:italic;}
+.settings-badge{font-size:.5rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ink2);background:var(--surface2);border:1px solid var(--rule);border-radius:4px;padding:.3rem .7rem;}
+.settings-card{width:100%;max-width:680px;background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:2rem 2.2rem;margin-bottom:1.2rem;}
+.card-section-title{font-size:.52rem;letter-spacing:.38em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem;font-weight:500;display:flex;align-items:center;gap:.8rem;}
+.card-section-title::after{content:'';flex:1;height:1px;background:var(--rule);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.1rem;}
+.field-row.three{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:560px){.field-row,.field-row.three{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:.4rem;}
+.field label{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink2);font-weight:500;}
+.field input,.field select{background:var(--surface2);border:1px solid var(--rule);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.95rem;padding:.6rem .85rem;outline:none;transition:border-color .2s;width:100%;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.field input[type="color"]{padding:.2rem .3rem;height:42px;cursor:pointer;}
+.field select option{background:var(--surface2);}
+.logo-upload-area{border:1.5px dashed rgba(200,169,110,.35);border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
+.logo-upload-area:hover{border-color:var(--accent);background:rgba(200,169,110,.04);}
+.logo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.logo-preview{max-height:70px;max-width:220px;object-fit:contain;display:none;margin:0 auto .5rem;}
+.logo-placeholder{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);}
+.logo-placeholder strong{display:block;font-size:1.4rem;margin-bottom:.3rem;color:var(--ink2);}
+.swatch-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform .15s,border-color .15s;}
+.swatch:hover{transform:scale(1.15);}
+.swatch.active{border-color:var(--ink);}
+.colour-pair{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.tone-preview-btn{margin-top:.8rem;width:100%;background:transparent;border:1px solid var(--rule);border-radius:7px;padding:.5rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);transition:all .18s;}
+.tone-preview-btn:hover{border-color:var(--accent);color:var(--accent);}
+.toggle-row{display:flex;align-items:center;gap:.8rem;height:42px;}
+.toggle-switch{position:relative;display:inline-block;cursor:pointer;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{display:block;width:48px;height:26px;border-radius:13px;background:var(--surface2);border:1px solid var(--rule);transition:background .25s,border-color .25s;position:relative;}
+.toggle-thumb{position:absolute;top:4px;left:4px;width:16px;height:16px;border-radius:50%;background:var(--ink2);transition:transform .25s,background .25s;}
+.toggle-switch input:checked+.toggle-track{background:rgba(200,169,110,.2);border-color:var(--accent);}
+.toggle-switch input:checked+.toggle-track .toggle-thumb{transform:translateX(22px);background:var(--accent);}
+.toggle-label{font-size:.72rem;color:var(--ink2);}
+.font-preview{margin-top:1.2rem;padding:1.1rem 1.4rem;background:var(--surface2);border:1px solid var(--rule);border-radius:10px;}
+.font-preview-num{font-size:2.8rem;line-height:1;letter-spacing:-.01em;color:var(--ink);display:block;font-family:var(--display-font);font-weight:var(--display-weight);}
+.font-preview-lbl{font-size:.58rem;letter-spacing:.34em;text-transform:uppercase;color:var(--ink2);display:block;margin-top:.35rem;font-family:var(--display-font);font-weight:var(--display-weight);}
+.launch-btn{width:100%;max-width:680px;margin-top:.8rem;padding:1.1rem 2rem;background:var(--accent);color:#1a1208;border:none;border-radius:12px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:600;letter-spacing:.06em;box-shadow:0 6px 32px rgba(200,169,110,.28);transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s,background .18s;}
+.launch-btn:hover{transform:translateY(-2px);box-shadow:0 12px 42px rgba(200,169,110,.4);background:#d4b87a;}
+.launch-btn:active{transform:translateY(0);}
+.launch-hint{width:100%;max-width:680px;text-align:center;margin-top:.75rem;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);}
+.status-row{display:flex;align-items:center;gap:.6rem;margin-top:1rem;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--ink2);}
+.status-dot.waiting{background:var(--amber);animation:pulse 1.8s ease-in-out infinite;}
+.status-dot.running{background:var(--green);animation:pulse 1.8s ease-in-out infinite;}
+.status-txt{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#display-view{display:none;position:fixed;inset:0;z-index:1000;flex-direction:column;align-items:center;justify-content:flex-start;background:var(--bg);overflow:hidden;}
+#display-view.active{display:flex;}
+.display-bg-accent{position:absolute;inset:0;pointer-events:none;z-index:0;transition:background 1.2s ease;}
+.display-top-bar{position:absolute;top:0;left:0;right:0;height:6px;z-index:2;background:linear-gradient(90deg,var(--school-primary,#1a3a5c),var(--school-secondary,#c8a96e));}
+.display-logo-wrap{position:absolute;top:2.5vh;left:3vw;z-index:2;display:flex;align-items:center;gap:1.2rem;}
+.display-logo{max-height:7vh;max-width:18vw;object-fit:contain;display:none;}
+.display-school-name{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,3vh,999rem);font-weight:400;letter-spacing:.08em;color:rgba(240,236,228,.75);}
+.display-close-btn{position:absolute;top:2vh;right:2vw;z-index:10;background:rgba(255,255,255,.08);border:1px solid var(--rule);border-radius:8px;padding:.45rem .9rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);transition:all .18s;}
+.display-close-btn:hover{background:rgba(255,255,255,.14);color:var(--ink);}
+.display-main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100vh;padding:10vh 4vw 6vh;gap:3vh;}
+.display-current-time{font-family:var(--display-font);font-size:clamp(3rem,16vh,999rem);font-weight:var(--display-weight);letter-spacing:.08em;color:rgba(240,236,228,.85);line-height:1;text-align:center;}
+.display-label{position:absolute;bottom:22%;left:50%;transform:translateX(-50%);font-size:clamp(.4rem,1.8vh,999rem);letter-spacing:.32em;text-transform:uppercase;color:rgba(240,236,228,.32);text-align:center;width:68%;pointer-events:none;transition:color .5s;}
+.display-centre-row{display:flex;align-items:center;justify-content:center;gap:5vw;width:100%;}
+.ring-col{display:flex;flex-direction:column;align-items:center;gap:1.5vh;flex-shrink:0;}
+.ring-wrap{position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.progress-ring{position:absolute;top:0;left:0;transform:rotate(-90deg);pointer-events:none;}
+.display-countdown{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);white-space:nowrap;font-family:var(--display-font);font-size:clamp(4rem,22vh,999rem);font-weight:var(--display-weight);line-height:1;letter-spacing:-.01em;color:var(--ink);transition:color .6s ease;text-align:center;pointer-events:none;}
+.progress-ring-bg{fill:none;stroke:rgba(255,255,255,.07);}
+.progress-ring-fill{fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .6s ease;}
+.display-session-panel{display:flex;flex-direction:column;gap:4vh;align-items:flex-start;flex-shrink:0;min-width:20vw;}
+.session-item{text-align:left;}
+.session-val{font-family:var(--display-font);font-size:clamp(1.4rem,6.5vh,999rem);font-weight:var(--display-weight);color:rgba(240,236,228,.75);display:block;line-height:1;}
+.session-lbl{font-size:clamp(.5rem,1.8vh,999rem);letter-spacing:.38em;text-transform:uppercase;color:rgba(240,236,228,.3);display:block;margin-top:.5vh;}
+.session-rule{width:100%;height:1px;background:rgba(240,236,228,.1);}
+.display-prestart{text-align:center;}
+.prestart-msg{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,8vh,999rem);font-weight:300;color:rgba(240,236,228,.6);letter-spacing:.04em;margin-bottom:1.5vh;}
+.prestart-starts-in{font-size:clamp(.7rem,2.5vh,999rem);letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:.6vh;}
+.prestart-countdown{font-family:var(--display-font);font-size:clamp(3rem,14vh,999rem);font-weight:var(--display-weight);color:var(--accent);letter-spacing:.04em;}
+.display-bottom{position:absolute;bottom:2.5vh;left:0;right:0;display:flex;align-items:center;justify-content:center;z-index:2;}
+.display-event-name{font-size:clamp(.5rem,1.8vh,999rem);letter-spacing:.4em;text-transform:uppercase;color:rgba(240,236,228,.25);}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
-
-<!-- ═══════════════════ SETTINGS VIEW ═══════════════════ -->
 <div id="settings-view">
-
   <div class="settings-header">
     <div class="settings-title">Interview <span>Timer</span></div>
     <span class="settings-badge">Staff Settings</span>
   </div>
 
-  <!-- SESSION SETTINGS -->
+  <!-- SESSION -->
   <div class="settings-card">
     <div class="card-section-title">Session</div>
     <div class="field-row three">
-      <div class="field">
-        <label>Start Time</label>
-        <input type="time" id="startTime" value="16:00">
-      </div>
-      <div class="field">
-        <label>Interview Length</label>
+      <div class="field"><label>Start Time</label><input type="time" id="startTime" value="16:00"></div>
+      <div class="field"><label>Interview Length</label>
         <select id="interviewLen">
-          <option value="3">3 minutes</option>
-          <option value="4">4 minutes</option>
-          <option value="5" selected>5 minutes</option>
-          <option value="6">6 minutes</option>
-          <option value="7">7 minutes</option>
-          <option value="8">8 minutes</option>
-          <option value="10">10 minutes</option>
-          <option value="15">15 minutes</option>
+          <option value="3">3 minutes</option><option value="4">4 minutes</option>
+          <option value="5" selected>5 minutes</option><option value="6">6 minutes</option>
+          <option value="7">7 minutes</option><option value="8">8 minutes</option>
+          <option value="10">10 minutes</option><option value="15">15 minutes</option>
         </select>
       </div>
-      <div class="field">
-        <label>Event Name</label>
-        <input type="text" id="eventName" placeholder="Parent-Teacher Night" value="Parent–Teacher Night">
-      </div>
+      <div class="field"><label>Event Name</label><input type="text" id="eventName" value="Parent&ndash;Teacher Night"></div>
     </div>
-
-    <!-- Status -->
-    <div class="status-row">
-      <div class="status-dot" id="statusDot"></div>
-      <span class="status-txt" id="statusTxt">Not started</span>
-    </div>
+    <div class="status-row"><div class="status-dot" id="statusDot"></div><span class="status-txt" id="statusTxt">Not started</span></div>
   </div>
 
   <!-- BRANDING -->
   <div class="settings-card">
     <div class="card-section-title">School Branding</div>
-
     <div class="field-row">
-      <div class="field">
-        <label>School Name</label>
-        <input type="text" id="schoolName" placeholder="Your School Name">
-      </div>
-      <div class="field">
-        <label>School Logo</label>
-        <div class="logo-upload-area" id="logoUploadArea">
+      <div class="field"><label>School Name</label><input type="text" id="schoolName" placeholder="Your School Name"></div>
+      <div class="field"><label>School Logo</label>
+        <div class="logo-upload-area">
           <input type="file" id="logoFile" accept="image/*" onchange="handleLogoUpload(event)">
           <img id="logoPreview" class="logo-preview" alt="Logo preview">
-          <div class="logo-placeholder" id="logoPlaceholder">
-            <strong>⬆</strong>
-            Click to upload logo
-          </div>
+          <div class="logo-placeholder" id="logoPlaceholder"><strong>&#8679;</strong>Click to upload logo</div>
         </div>
       </div>
     </div>
-
     <div class="field-row">
-      <div class="field">
-        <label>Primary Colour</label>
+      <div class="field"><label>Primary Colour</label>
         <div class="colour-pair">
-          <div class="swatch-row" id="primarySwatches">
+          <div class="swatch-row">
             <div class="swatch active" style="background:#1a3a5c" data-col="#1a3a5c" data-target="primary" onclick="pickSwatch(this)"></div>
             <div class="swatch" style="background:#1a4a2e" data-col="#1a4a2e" data-target="primary" onclick="pickSwatch(this)"></div>
             <div class="swatch" style="background:#4a1a1a" data-col="#4a1a1a" data-target="primary" onclick="pickSwatch(this)"></div>
@@ -498,10 +151,9 @@ body {
           <input type="color" id="primaryColour" value="#1a3a5c" oninput="applyColours()" style="width:42px;height:36px;border-radius:6px;flex-shrink:0;">
         </div>
       </div>
-      <div class="field">
-        <label>Secondary / Accent Colour</label>
+      <div class="field"><label>Accent Colour</label>
         <div class="colour-pair">
-          <div class="swatch-row" id="secondarySwatches">
+          <div class="swatch-row">
             <div class="swatch active" style="background:#c8a96e" data-col="#c8a96e" data-target="secondary" onclick="pickSwatch(this)"></div>
             <div class="swatch" style="background:#6e9ec8" data-col="#6e9ec8" data-target="secondary" onclick="pickSwatch(this)"></div>
             <div class="swatch" style="background:#c86e6e" data-col="#c86e6e" data-target="secondary" onclick="pickSwatch(this)"></div>
@@ -515,133 +167,137 @@ body {
     </div>
   </div>
 
-  <!-- END TONE -->
+  <!-- FONT & STYLE -->
   <div class="settings-card">
-    <div class="card-section-title">End-of-Interview Tone</div>
-    <div class="tone-grid" id="toneGrid">
-      <div class="tone-btn active" data-tone="chime" onclick="selectTone(this)">
-        <span class="tone-name">Chime</span>
-        <span class="tone-desc">Gentle bell</span>
+    <div class="card-section-title">Display Font &amp; Style</div>
+    <div class="field-row">
+      <div class="field"><label>Display Font</label>
+        <select id="fontSelect" onchange="applyFont()">
+          <option value="barlow" selected>Barlow &mdash; Clean modern (recommended)</option>
+          <option value="oswald">Oswald &mdash; Tall &amp; condensed</option>
+          <option value="rajdhani">Rajdhani &mdash; Technical geometric</option>
+          <option value="bebas">Bebas Neue &mdash; Bold display</option>
+          <option value="sharetech">Share Tech Mono &mdash; Digital monospace</option>
+        </select>
       </div>
-      <div class="tone-btn" data-tone="double" onclick="selectTone(this)">
-        <span class="tone-name">Double Chime</span>
-        <span class="tone-desc">Two bell strikes</span>
-      </div>
-      <div class="tone-btn" data-tone="triple" onclick="selectTone(this)">
-        <span class="tone-name">Triple Chime</span>
-        <span class="tone-desc">Three ascending bells</span>
-      </div>
-      <div class="tone-btn" data-tone="soft" onclick="selectTone(this)">
-        <span class="tone-name">Soft Tone</span>
-        <span class="tone-desc">Low sine wave</span>
-      </div>
-      <div class="tone-btn" data-tone="ding" onclick="selectTone(this)">
-        <span class="tone-name">Ding</span>
-        <span class="tone-desc">Short bright ping</span>
-      </div>
-      <div class="tone-btn" data-tone="gong" onclick="selectTone(this)">
-        <span class="tone-name">Gong</span>
-        <span class="tone-desc">Deep resonant</span>
-      </div>
-      <div class="tone-btn" data-tone="tubular" onclick="selectTone(this)">
-        <span class="tone-name">Tubular Bell</span>
-        <span class="tone-desc">Orchestra chime</span>
-      </div>
-      <div class="tone-btn" data-tone="marimba" onclick="selectTone(this)">
-        <span class="tone-name">Marimba</span>
-        <span class="tone-desc">Warm wooden tone</span>
-      </div>
-      <div class="tone-btn" data-tone="xylophone" onclick="selectTone(this)">
-        <span class="tone-name">Xylophone</span>
-        <span class="tone-desc">Bright ascending run</span>
-      </div>
-      <div class="tone-btn" data-tone="doorbell" onclick="selectTone(this)">
-        <span class="tone-name">Doorbell</span>
-        <span class="tone-desc">Ding-dong</span>
-      </div>
-      <div class="tone-btn" data-tone="fanfare" onclick="selectTone(this)">
-        <span class="tone-name">Fanfare</span>
-        <span class="tone-desc">Short brass motif</span>
-      </div>
-      <div class="tone-btn" data-tone="gentle3" onclick="selectTone(this)">
-        <span class="tone-name">Gentle Rise</span>
-        <span class="tone-desc">Soft ascending tones</span>
-      </div>
-      <div class="tone-btn" data-tone="alert" onclick="selectTone(this)">
-        <span class="tone-name">Attention</span>
-        <span class="tone-desc">Clear two-tone alert</span>
-      </div>
-      <div class="tone-btn" data-tone="vibraphone" onclick="selectTone(this)">
-        <span class="tone-name">Vibraphone</span>
-        <span class="tone-desc">Shimmering chord</span>
-      </div>
-      <div class="tone-btn" data-tone="deepbell" onclick="selectTone(this)">
-        <span class="tone-name">Deep Bell</span>
-        <span class="tone-desc">Low resonant bell</span>
-      </div>
-      <div class="tone-btn" data-tone="cuckoo" onclick="selectTone(this)">
-        <span class="tone-name">Cuckoo</span>
-        <span class="tone-desc">Two descending tones</span>
-      </div>
-      <div class="tone-btn" data-tone="harp" onclick="selectTone(this)">
-        <span class="tone-name">Harp Gliss</span>
-        <span class="tone-desc">Rising harp sweep</span>
-      </div>
-      <div class="tone-btn" data-tone="silent" onclick="selectTone(this)">
-        <span class="tone-name">Silent</span>
-        <span class="tone-desc">No sound</span>
+      <div class="field"><label>Bold Display</label>
+        <div class="toggle-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="boldToggle" onchange="applyFont()">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+          <span class="toggle-label" id="boldLabel">Off &mdash; light numerals</span>
+        </div>
       </div>
     </div>
-    <button class="tone-preview-btn" onclick="previewTone()">▶ &nbsp;Preview selected tone</button>
+    <div class="font-preview">
+      <span class="font-preview-num" id="previewNum">4:52</span>
+      <span class="font-preview-lbl" id="previewLbl">Time remaining in this interview</span>
+    </div>
   </div>
 
-  <!-- LAUNCH -->
-  <button class="launch-btn" id="launchBtn" onclick="launchDisplay()">
-    Open Display Screen
-  </button>
-  <div class="launch-hint">Opens the projector view · use the fullscreen button once displayed</div>
+  <!-- TONE -->
+  <div class="settings-card">
+    <div class="card-section-title">End-of-Interview Tone</div>
+    <div class="field-row" style="align-items:flex-end;margin-bottom:0">
+      <div class="field"><label>Select Tone</label>
+        <select id="toneSelect">
+          <optgroup label="Bells &amp; Chimes">
+            <option value="chime" selected>Chime &mdash; Gentle single bell</option>
+            <option value="double">Double Chime &mdash; Two strikes</option>
+            <option value="triple">Triple Chime &mdash; Three ascending</option>
+            <option value="tubular">Tubular Bell &mdash; Orchestral</option>
+            <option value="deepbell">Deep Bell &mdash; Low resonant</option>
+            <option value="cathedral">Cathedral &mdash; Slow deep toll</option>
+            <option value="tinybell">Tiny Bell &mdash; High delicate ring</option>
+            <option value="cowbell">Cowbell &mdash; Metallic clank</option>
+          </optgroup>
+          <optgroup label="Mallet Instruments">
+            <option value="marimba">Marimba &mdash; Warm wooden</option>
+            <option value="xylophone">Xylophone &mdash; Bright ascending run</option>
+            <option value="vibraphone">Vibraphone &mdash; Shimmering chord</option>
+            <option value="steelpan">Steel Pan &mdash; Caribbean shimmer</option>
+            <option value="celesta">Celesta &mdash; Delicate music-box</option>
+          </optgroup>
+          <optgroup label="Strings &amp; Harp">
+            <option value="harp">Harp Glissando &mdash; Rising sweep</option>
+            <option value="pizzicato">Pizzicato &mdash; Plucked strings</option>
+            <option value="harpcascade">Harp Cascade &mdash; Down then up</option>
+          </optgroup>
+          <optgroup label="Tones &amp; Pads">
+            <option value="soft">Soft Tone &mdash; Low sine wave</option>
+            <option value="gentle3">Gentle Rise &mdash; Soft ascending</option>
+            <option value="meditation">Meditation Bowl &mdash; Long resonance</option>
+            <option value="warmpad">Warm Pad &mdash; Choir-like swell</option>
+            <option value="crystal">Crystal &mdash; Pure high overtones</option>
+            <option value="sine3">Sine Chord &mdash; Three harmonics</option>
+          </optgroup>
+          <optgroup label="Alerts &amp; Signals">
+            <option value="ding">Ding &mdash; Short bright ping</option>
+            <option value="doorbell">Doorbell &mdash; Ding-dong</option>
+            <option value="alert">Attention &mdash; Two-tone alert</option>
+            <option value="cuckoo">Cuckoo &mdash; Descending two tones</option>
+            <option value="schoolbell">School Bell &mdash; Classic ring</option>
+            <option value="beepbeep">Beep Beep &mdash; Double electronic</option>
+            <option value="softping">Soft Ping &mdash; Muted notification</option>
+            <option value="riser">Riser &mdash; Sweeping upward</option>
+          </optgroup>
+          <optgroup label="Brass &amp; Wind">
+            <option value="fanfare">Fanfare &mdash; Short brass motif</option>
+            <option value="bugle">Bugle Call &mdash; Reveille figure</option>
+            <option value="horn">French Horn &mdash; Warm single note</option>
+            <option value="posthorn">Post Horn &mdash; Two-note call</option>
+          </optgroup>
+          <optgroup label="Percussion">
+            <option value="gong">Gong &mdash; Deep resonant strike</option>
+            <option value="snare">Snare Roll &mdash; Short flourish</option>
+            <option value="timpani">Timpani &mdash; Orchestral drum</option>
+            <option value="gamelan">Gamelan &mdash; Indonesian bronze</option>
+            <option value="windchime">Wind Chime &mdash; Random gentle</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="silent">Silent &mdash; No sound</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field" style="flex:0 0 auto"><label>&nbsp;</label>
+        <button class="tone-preview-btn" style="margin-top:0" onclick="previewTone()">&#9654; &nbsp;Preview</button>
+      </div>
+    </div>
+  </div>
 
-</div><!-- /settings-view -->
+  <button class="launch-btn" onclick="launchDisplay()">Open Display Screen</button>
+  <div class="launch-hint">Double-click the display to go fullscreen</div>
+</div>
 
-
-<!-- ═══════════════════ DISPLAY VIEW ═══════════════════ -->
 <div id="display-view">
-
   <div class="display-bg-accent" id="displayBgAccent"></div>
   <div class="display-top-bar" id="displayTopBar"></div>
-
   <div class="display-logo-wrap">
     <img id="displayLogo" class="display-logo" alt="School logo">
     <span class="display-school-name" id="displaySchoolName"></span>
   </div>
+  <button class="display-close-btn" onclick="closeDisplay()">&#10005; &nbsp;Settings</button>
 
-  <button class="display-close-btn" onclick="closeDisplay()">✕ &nbsp;Settings</button>
-
-  <!-- PRE-START STATE -->
   <div class="display-main" id="displayPrestart">
-    <div class="prestart-msg" id="prestartMsg">Interviews begin at <span id="prestartTime"></span></div>
+    <div class="prestart-msg">Interviews begin at <span id="prestartTime"></span></div>
     <div class="prestart-starts-in">Starting in</div>
-    <div class="prestart-countdown" id="prestartCountdown">—</div>
+    <div class="prestart-countdown" id="prestartCountdown">&mdash;</div>
   </div>
 
-  <!-- RUNNING STATE -->
   <div class="display-main hidden" id="displayRunning">
-    <!-- Current time centred above everything -->
     <div class="display-current-time" id="displayNow">00:00</div>
-    <!-- Centre row: ring-col (label + ring) beside info panel -->
     <div class="display-centre-row">
-      <!-- Label + ring stacked in a column -->
       <div class="ring-col">
-        <div class="display-label">Time remaining in this interview</div>
         <div class="ring-wrap" id="ringWrap">
           <svg class="progress-ring" id="progressRing" width="0" height="0">
             <circle class="progress-ring-bg" id="ringBg"/>
             <circle class="progress-ring-fill" id="ringFill"/>
           </svg>
           <div class="display-countdown" id="displayCountdown">5:00</div>
+          <div class="display-label">Time remaining in this interview</div>
         </div>
       </div>
-      <!-- Info panel — vertically centred beside ring -->
       <div class="display-session-panel">
         <div class="session-item">
           <span class="session-val" id="sessionInterviewNum">1</span>
@@ -649,7 +305,7 @@ body {
         </div>
         <div class="session-rule"></div>
         <div class="session-item">
-          <span class="session-val" id="sessionNextTime">—</span>
+          <span class="session-val" id="sessionNextTime">&mdash;</span>
           <span class="session-lbl">Next slot at</span>
         </div>
         <div class="session-rule"></div>
@@ -661,488 +317,162 @@ body {
     </div>
   </div>
 
-  <div class="display-bottom">
-    <span class="display-event-name" id="displayEventName"></span>
-  </div>
-
-</div><!-- /display-view -->
-
+  <div class="display-bottom"><span class="display-event-name" id="displayEventName"></span></div>
+</div>
 
 <script>
-// ═══════════════════════════════════════════
-// AUDIO ENGINE  (Web Audio API — no files needed)
-// ═══════════════════════════════════════════
-let audioCtx = null;
-function getAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
+let audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function bellNote(ctx,freq,st,delay,gain,decay){const o=ctx.createOscillator(),e=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(freq,st+delay);o.frequency.exponentialRampToValueAtTime(freq*.98,st+delay+decay);e.gain.setValueAtTime(.001,st+delay);e.gain.linearRampToValueAtTime(gain,st+delay+.005);e.gain.exponentialRampToValueAtTime(.001,st+delay+decay);o.connect(e);e.connect(ctx.destination);o.start(st+delay);o.stop(st+delay+decay+.05);}
+function sineNote(ctx,freq,st,delay,gain,decay){const o=ctx.createOscillator(),e=ctx.createGain();o.type='sine';o.frequency.value=freq;e.gain.setValueAtTime(0,st+delay);e.gain.linearRampToValueAtTime(gain,st+delay+.08);e.gain.exponentialRampToValueAtTime(.001,st+delay+decay);o.connect(e);e.connect(ctx.destination);o.start(st+delay);o.stop(st+delay+decay+.1);}
+function marimbaNote(ctx,freq,st,delay,gain,decay){const o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),e2=ctx.createGain();o.type='sine';o.frequency.value=freq;o2.type='sine';o2.frequency.value=freq*3.85;e.gain.setValueAtTime(0,st+delay);e.gain.linearRampToValueAtTime(gain,st+delay+.003);e.gain.exponentialRampToValueAtTime(.001,st+delay+decay);e2.gain.setValueAtTime(0,st+delay);e2.gain.linearRampToValueAtTime(gain*.15,st+delay+.003);e2.gain.exponentialRampToValueAtTime(.001,st+delay+decay*.3);o.connect(e);e.connect(ctx.destination);o2.connect(e2);e2.connect(ctx.destination);o.start(st+delay);o.stop(st+delay+decay+.05);o2.start(st+delay);o2.stop(st+delay+decay+.05);}
+function squareNote(ctx,freq,st,delay,gain,decay){const o=ctx.createOscillator(),e=ctx.createGain(),f=ctx.createBiquadFilter();o.type='square';o.frequency.value=freq;f.type='lowpass';f.frequency.value=2000;e.gain.setValueAtTime(0,st+delay);e.gain.linearRampToValueAtTime(gain,st+delay+.01);e.gain.setValueAtTime(gain,st+delay+decay*.7);e.gain.exponentialRampToValueAtTime(.001,st+delay+decay);o.connect(f);f.connect(e);e.connect(ctx.destination);o.start(st+delay);o.stop(st+delay+decay+.05);}
+function vibraNote(ctx,freq,st,delay,gain,decay){const o=ctx.createOscillator(),lfo=ctx.createOscillator(),lg=ctx.createGain(),e=ctx.createGain();o.type='sine';o.frequency.value=freq;lfo.type='sine';lfo.frequency.value=5.5;lg.gain.value=freq*.006;lfo.connect(lg);lg.connect(o.frequency);e.gain.setValueAtTime(0,st+delay);e.gain.linearRampToValueAtTime(gain,st+delay+.01);e.gain.exponentialRampToValueAtTime(.001,st+delay+decay);o.connect(e);e.connect(ctx.destination);lfo.start(st+delay);lfo.stop(st+delay+decay+.1);o.start(st+delay);o.stop(st+delay+decay+.1);}
 
-function playTone(type) {
-  if (type === 'silent') return;
-  const ctx = getAudio();
-  const t = ctx.currentTime;
-
-  const plays = {
-    chime: () => {
-      // Single warm bell
-      bellNote(ctx, 880, t, 0.0, 0.6, 1.8);
-      bellNote(ctx, 1760, t, 0.0, 0.3, 1.2);
-    },
-    double: () => {
-      bellNote(ctx, 880, t, 0.0, 0.6, 1.4);
-      bellNote(ctx, 880, t, 0.45, 0.6, 1.4);
-      bellNote(ctx, 1320, t, 0.0, 0.25, 1.2);
-      bellNote(ctx, 1320, t, 0.45, 0.25, 1.2);
-    },
-    soft: () => {
-      sineNote(ctx, 440, t, 0.0, 0.4, 2.0);
-      sineNote(ctx, 554, t, 0.1, 0.3, 1.8);
-    },
-    ding: () => {
-      bellNote(ctx, 1320, t, 0.0, 0.5, 0.7);
-      bellNote(ctx, 2640, t, 0.0, 0.2, 0.5);
-    },
-    gong: () => {
-      bellNote(ctx, 110, t, 0.0, 0.9, 3.5);
-      bellNote(ctx, 220, t, 0.0, 0.4, 2.5);
-      bellNote(ctx, 165, t, 0.05, 0.3, 2.0);
-    },
-    triple: () => {
-      bellNote(ctx, 784, t, 0.0,  0.5, 1.2);
-      bellNote(ctx, 988, t, 0.22, 0.5, 1.2);
-      bellNote(ctx, 1175,t, 0.44, 0.5, 1.4);
-    },
-    tubular: () => {
-      bellNote(ctx, 523, t, 0.0, 0.7, 2.5);
-      bellNote(ctx, 659, t, 0.0, 0.3, 2.0);
-      bellNote(ctx, 784, t, 0.0, 0.15,1.5);
-    },
-    marimba: () => {
-      marimbaNote(ctx, 523, t, 0.0,  0.7, 0.6);
-      marimbaNote(ctx, 659, t, 0.08, 0.5, 0.5);
-      marimbaNote(ctx, 784, t, 0.16, 0.4, 0.6);
-    },
-    xylophone: () => {
-      const notes = [523,587,659,698,784,880,988];
-      notes.forEach((f,i) => marimbaNote(ctx, f, t, i*0.08, 0.45, 0.35));
-    },
-    doorbell: () => {
-      bellNote(ctx, 784, t, 0.0, 0.6, 1.0);
-      bellNote(ctx, 523, t, 0.4, 0.6, 1.2);
-    },
-    fanfare: () => {
-      const freqs = [523,659,784,659,784,1047];
-      const durs  = [0.12,0.12,0.12,0.12,0.08,0.35];
-      let off = 0;
-      freqs.forEach((f,i) => {
-        squareNote(ctx, f, t, off, 0.28, durs[i]);
-        off += durs[i] + 0.02;
-      });
-    },
-    gentle3: () => {
-      sineNote(ctx, 440, t, 0.0,  0.3, 1.0);
-      sineNote(ctx, 554, t, 0.25, 0.3, 1.0);
-      sineNote(ctx, 659, t, 0.5,  0.35,1.2);
-    },
-    alert: () => {
-      squareNote(ctx, 880, t, 0.0,  0.22, 0.18);
-      squareNote(ctx, 1109,t, 0.22, 0.22, 0.28);
-    },
-    vibraphone: () => {
-      const chord = [523,659,784,1047];
-      chord.forEach((f,i) => vibraNote(ctx, f, t, i*0.04, 0.35, 2.2));
-    },
-    deepbell: () => {
-      bellNote(ctx, 196, t, 0.0, 0.85, 4.0);
-      bellNote(ctx, 294, t, 0.0, 0.35, 3.0);
-      bellNote(ctx, 392, t, 0.0, 0.18, 2.5);
-    },
-    cuckoo: () => {
-      sineNote(ctx, 659, t, 0.0, 0.4, 0.35);
-      sineNote(ctx, 523, t, 0.4, 0.45,0.45);
-    },
-    harp: () => {
-      const notes = [523,659,784,988,1175,1319,1568];
-      notes.forEach((f,i) => bellNote(ctx, f, t, i*0.07, 0.28, 0.9));
-    },
+function playTone(type){
+  if(type==='silent')return;
+  const ctx=getAudio(),t=ctx.currentTime;
+  const P={
+    chime:()=>{bellNote(ctx,880,t,0,.6,1.8);bellNote(ctx,1760,t,0,.3,1.2);},
+    double:()=>{bellNote(ctx,880,t,0,.6,1.4);bellNote(ctx,880,t,.45,.6,1.4);bellNote(ctx,1320,t,0,.25,1.2);bellNote(ctx,1320,t,.45,.25,1.2);},
+    triple:()=>{bellNote(ctx,784,t,0,.5,1.2);bellNote(ctx,988,t,.22,.5,1.2);bellNote(ctx,1175,t,.44,.5,1.4);},
+    tubular:()=>{bellNote(ctx,523,t,0,.7,2.5);bellNote(ctx,659,t,0,.3,2);bellNote(ctx,784,t,0,.15,1.5);},
+    deepbell:()=>{bellNote(ctx,196,t,0,.85,4);bellNote(ctx,294,t,0,.35,3);bellNote(ctx,392,t,0,.18,2.5);},
+    cathedral:()=>{bellNote(ctx,87,t,0,1,6);bellNote(ctx,131,t,0,.4,5);bellNote(ctx,174,t,.3,.25,4);},
+    tinybell:()=>{bellNote(ctx,2637,t,0,.35,1);bellNote(ctx,3136,t,.05,.2,.7);},
+    cowbell:()=>{const o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),f=ctx.createBiquadFilter();o.type='square';o.frequency.value=562;o2.type='square';o2.frequency.value=845;f.type='bandpass';f.frequency.value=700;e.gain.setValueAtTime(.001,t);e.gain.linearRampToValueAtTime(.55,t+.003);e.gain.exponentialRampToValueAtTime(.001,t+.65);o.connect(f);o2.connect(f);f.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+.7);o2.start(t);o2.stop(t+.7);},
+    marimba:()=>{marimbaNote(ctx,523,t,0,.7,.6);marimbaNote(ctx,659,t,.08,.5,.5);marimbaNote(ctx,784,t,.16,.4,.6);},
+    xylophone:()=>{[523,587,659,698,784,880,988].forEach((f,i)=>marimbaNote(ctx,f,t,i*.08,.45,.35));},
+    vibraphone:()=>{[523,659,784,1047].forEach((f,i)=>vibraNote(ctx,f,t,i*.04,.35,2.2));},
+    steelpan:()=>{[392,494,587,659].forEach((f,i)=>{bellNote(ctx,f,t,i*.1,.45,1.5);bellNote(ctx,f*2,t,i*.1,.12,.8);});},
+    celesta:()=>{[1047,1319,1568,2093].forEach((f,i)=>marimbaNote(ctx,f,t,i*.09,.35,.45));},
+    harp:()=>{[523,659,784,988,1175,1319,1568].forEach((f,i)=>bellNote(ctx,f,t,i*.07,.28,.9));},
+    pizzicato:()=>{[196,247,294,370,440].forEach((f,i)=>marimbaNote(ctx,f,t,i*.1,.5,.25));},
+    harpcascade:()=>{[1568,1319,1047,784,659].forEach((f,i)=>bellNote(ctx,f,t,i*.06,.22,.7));[523,659,784,988,1175,1319].forEach((f,i)=>bellNote(ctx,f,t,.35+i*.07,.28,.9));},
+    soft:()=>{sineNote(ctx,440,t,0,.4,2);sineNote(ctx,554,t,.1,.3,1.8);},
+    gentle3:()=>{sineNote(ctx,440,t,0,.3,1);sineNote(ctx,554,t,.25,.3,1);sineNote(ctx,659,t,.5,.35,1.2);},
+    meditation:()=>{bellNote(ctx,220,t,0,.8,5.5);bellNote(ctx,330,t,.1,.3,4.5);bellNote(ctx,440,t,.2,.15,3.5);},
+    warmpad:()=>{[261,329,392,523].forEach(f=>{const o=ctx.createOscillator(),e=ctx.createGain();o.type='sine';o.frequency.value=f;e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.18,t+.4);e.gain.setValueAtTime(.18,t+1.2);e.gain.exponentialRampToValueAtTime(.001,t+3);o.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+3.1);});},
+    crystal:()=>{[1047,1319,1760,2093,2637].forEach((f,i)=>vibraNote(ctx,f,t,i*.06,.22,2.5));},
+    sine3:()=>{sineNote(ctx,330,t,0,.38,2.2);sineNote(ctx,415,t,0,.28,2.2);sineNote(ctx,495,t,0,.22,2.2);},
+    ding:()=>{bellNote(ctx,1320,t,0,.5,.7);bellNote(ctx,2640,t,0,.2,.5);},
+    doorbell:()=>{bellNote(ctx,784,t,0,.6,1);bellNote(ctx,523,t,.4,.6,1.2);},
+    alert:()=>{squareNote(ctx,880,t,0,.22,.18);squareNote(ctx,1109,t,.22,.22,.28);},
+    cuckoo:()=>{sineNote(ctx,659,t,0,.4,.35);sineNote(ctx,523,t,.4,.45,.45);},
+    schoolbell:()=>{for(let i=0;i<8;i++){bellNote(ctx,1318,t,i*.11,.5*(1-i*.05),.18);bellNote(ctx,1760,t,i*.11,.2,.12);}},
+    beepbeep:()=>{squareNote(ctx,1000,t,0,.3,.12);squareNote(ctx,1000,t,.18,.3,.12);},
+    softping:()=>{sineNote(ctx,1047,t,0,.28,1.2);sineNote(ctx,1319,t,0,.12,.9);},
+    riser:()=>{const o=ctx.createOscillator(),e=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(200,t);o.frequency.exponentialRampToValueAtTime(1800,t+1.5);e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.45,t+.1);e.gain.linearRampToValueAtTime(.45,t+1.2);e.gain.exponentialRampToValueAtTime(.001,t+1.6);o.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+1.7);},
+    fanfare:()=>{const fr=[523,659,784,659,784,1047],du=[.12,.12,.12,.12,.08,.35];let off=0;fr.forEach((f,i)=>{squareNote(ctx,f,t,off,.28,du[i]);off+=du[i]+.02;});},
+    bugle:()=>{const m=[523,659,784,659,784,1047],l=[.12,.12,.12,.12,.08,.4];let off=0;m.forEach((f,i)=>{squareNote(ctx,f,t,off,.3,l[i]);off+=l[i]+.015;});},
+    horn:()=>{const o=ctx.createOscillator(),e=ctx.createGain(),f=ctx.createBiquadFilter();o.type='sawtooth';o.frequency.value=220;f.type='lowpass';f.frequency.value=800;e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.35,t+.08);e.gain.setValueAtTime(.35,t+.7);e.gain.exponentialRampToValueAtTime(.001,t+1.4);o.connect(f);f.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+1.5);},
+    posthorn:()=>{squareNote(ctx,523,t,0,.32,.25);squareNote(ctx,659,t,.3,.32,.35);},
+    gong:()=>{bellNote(ctx,110,t,0,.9,3.5);bellNote(ctx,220,t,0,.4,2.5);bellNote(ctx,165,t,.05,.3,2);},
+    snare:()=>{for(let i=0;i<6;i++){const b=ctx.createBuffer(1,ctx.sampleRate*.06,ctx.sampleRate),d=b.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length);const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=1500;e.gain.setValueAtTime(.5,t+i*.06);e.gain.exponentialRampToValueAtTime(.001,t+i*.06+.05);s.buffer=b;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t+i*.06);}},
+    timpani:()=>{bellNote(ctx,73,t,0,.9,2.5);bellNote(ctx,110,t,0,.35,1.8);const b=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate),d=b.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length)*.6;const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=400;e.gain.setValueAtTime(.6,t);e.gain.exponentialRampToValueAtTime(.001,t+.12);s.buffer=b;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t);},
+    gamelan:()=>{[392,440,523,554,659,740,880].forEach((f,i)=>bellNote(ctx,f,t,i*.08+Math.random()*.04,.38*(1-i*.06),1.8));},
+    windchime:()=>{[1047,1175,1319,1480,1568,1760,1976,2093].forEach(f=>bellNote(ctx,f,t,Math.random()*.5,.3*Math.random()+.15,1.2+Math.random()*.8));},
   };
-  (plays[type] || plays.chime)();
+  (P[type]||P.chime)();
 }
 
-function bellNote(ctx, freq, startTime, delay, gain, decay) {
-  const osc = ctx.createOscillator();
-  const env = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(freq, startTime + delay);
-  osc.frequency.exponentialRampToValueAtTime(freq * 0.98, startTime + delay + decay);
-  env.gain.setValueAtTime(0.001, startTime + delay);
-  env.gain.linearRampToValueAtTime(gain, startTime + delay + 0.005);
-  env.gain.exponentialRampToValueAtTime(0.001, startTime + delay + decay);
-  osc.connect(env); env.connect(ctx.destination);
-  osc.start(startTime + delay); osc.stop(startTime + delay + decay + 0.05);
+const FONTS={
+  barlow:{family:"'Barlow',sans-serif",nw:'200',bw:'600'},
+  oswald:{family:"'Oswald',sans-serif",nw:'300',bw:'600'},
+  rajdhani:{family:"'Rajdhani',sans-serif",nw:'300',bw:'600'},
+  bebas:{family:"'Bebas Neue',sans-serif",nw:'400',bw:'400'},
+  sharetech:{family:"'Share Tech Mono',monospace",nw:'400',bw:'400'},
+};
+function applyFont(){
+  const k=document.getElementById('fontSelect').value;
+  const bold=document.getElementById('boldToggle').checked;
+  const f=FONTS[k]||FONTS.barlow, w=bold?f.bw:f.nw;
+  document.documentElement.style.setProperty('--display-font',f.family);
+  document.documentElement.style.setProperty('--display-weight',w);
+  const pn=document.getElementById('previewNum'),pl=document.getElementById('previewLbl');
+  pn.style.fontFamily=f.family; pn.style.fontWeight=w;
+  pl.style.fontFamily=f.family; pl.style.fontWeight=w;
+  document.getElementById('boldLabel').textContent=bold?'On \u2014 heavy numerals':'Off \u2014 light numerals';
 }
 
-function sineNote(ctx, freq, startTime, delay, gain, decay) {
-  const osc = ctx.createOscillator();
-  const env = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.value = freq;
-  env.gain.setValueAtTime(0, startTime + delay);
-  env.gain.linearRampToValueAtTime(gain, startTime + delay + 0.08);
-  env.gain.exponentialRampToValueAtTime(0.001, startTime + delay + decay);
-  osc.connect(env); env.connect(ctx.destination);
-  osc.start(startTime + delay); osc.stop(startTime + delay + decay + 0.1);
-}
+let logoDataUrl=null,tickInterval=null,sessionStart=null,interviewDuration=5,lastInterviewIdx=-1;
 
-function marimbaNote(ctx, freq, startTime, delay, gain, decay) {
-  // Marimba: sine with fast attack, medium decay, slight overtone
-  const osc  = ctx.createOscillator();
-  const osc2 = ctx.createOscillator();
-  const env  = ctx.createGain();
-  osc.type  = 'sine'; osc.frequency.value  = freq;
-  osc2.type = 'sine'; osc2.frequency.value = freq * 3.85;
-  const env2 = ctx.createGain();
-  env.gain.setValueAtTime(0, startTime+delay);
-  env.gain.linearRampToValueAtTime(gain, startTime+delay+0.003);
-  env.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay);
-  env2.gain.setValueAtTime(0, startTime+delay);
-  env2.gain.linearRampToValueAtTime(gain*0.15, startTime+delay+0.003);
-  env2.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay*0.3);
-  osc.connect(env);  env.connect(ctx.destination);
-  osc2.connect(env2); env2.connect(ctx.destination);
-  osc.start(startTime+delay);  osc.stop(startTime+delay+decay+0.05);
-  osc2.start(startTime+delay); osc2.stop(startTime+delay+decay+0.05);
-}
+function previewTone(){getAudio();playTone(document.getElementById('toneSelect').value);}
+function handleLogoUpload(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{logoDataUrl=ev.target.result;document.getElementById('logoPreview').src=logoDataUrl;document.getElementById('logoPreview').style.display='block';document.getElementById('logoPlaceholder').style.display='none';document.getElementById('displayLogo').src=logoDataUrl;document.getElementById('displayLogo').style.display='block';};r.readAsDataURL(file);}
+function pickSwatch(el){const tgt=el.dataset.target;document.querySelectorAll(`.swatch[data-target="${tgt}"]`).forEach(s=>s.classList.remove('active'));el.classList.add('active');if(tgt==='primary')document.getElementById('primaryColour').value=el.dataset.col;if(tgt==='secondary')document.getElementById('secondaryColour').value=el.dataset.col;applyColours();}
+function applyColours(){const p=document.getElementById('primaryColour').value,s=document.getElementById('secondaryColour').value;document.documentElement.style.setProperty('--school-primary',p);document.documentElement.style.setProperty('--school-secondary',s);document.documentElement.style.setProperty('--accent',s);document.getElementById('displayTopBar').style.background=`linear-gradient(90deg,${p},${s})`;}
+function parseTimeInput(v){const[h,m]=v.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return d;}
+function fmt12(date){let h=date.getHours(),m=date.getMinutes();const a=h>=12?'pm':'am';h=h%12||12;return`${h}:${String(m).padStart(2,'0')} ${a}`;}
+function fmtMMSS(s){if(s<0)s=0;return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
 
-function squareNote(ctx, freq, startTime, delay, gain, decay) {
-  const osc = ctx.createOscillator();
-  const env = ctx.createGain();
-  const filter = ctx.createBiquadFilter();
-  osc.type = 'square'; osc.frequency.value = freq;
-  filter.type = 'lowpass'; filter.frequency.value = 2000;
-  env.gain.setValueAtTime(0, startTime+delay);
-  env.gain.linearRampToValueAtTime(gain, startTime+delay+0.01);
-  env.gain.setValueAtTime(gain, startTime+delay+decay*0.7);
-  env.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay);
-  osc.connect(filter); filter.connect(env); env.connect(ctx.destination);
-  osc.start(startTime+delay); osc.stop(startTime+delay+decay+0.05);
-}
-
-function vibraNote(ctx, freq, startTime, delay, gain, decay) {
-  // Vibraphone: sine with slight LFO tremolo
-  const osc   = ctx.createOscillator();
-  const lfo   = ctx.createOscillator();
-  const lfog  = ctx.createGain();
-  const env   = ctx.createGain();
-  osc.type  = 'sine'; osc.frequency.value = freq;
-  lfo.type  = 'sine'; lfo.frequency.value = 5.5;
-  lfog.gain.value = freq * 0.006;
-  lfo.connect(lfog); lfog.connect(osc.frequency);
-  env.gain.setValueAtTime(0, startTime+delay);
-  env.gain.linearRampToValueAtTime(gain, startTime+delay+0.01);
-  env.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay);
-  osc.connect(env); env.connect(ctx.destination);
-  lfo.start(startTime+delay); lfo.stop(startTime+delay+decay+0.1);
-  osc.start(startTime+delay); osc.stop(startTime+delay+decay+0.1);
-}
-
-// ═══════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════
-let selectedTone = 'chime';
-let logoDataUrl  = null;
-let tickInterval = null;
-let sessionStart = null; // Date object of first interview start
-let interviewDuration = 5; // minutes
-let isRunning = false;
-let lastInterviewIdx = -1; // which interview we last rang for
-
-function selectTone(el) {
-  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  selectedTone = el.dataset.tone;
-}
-function previewTone() { playTone(selectedTone); }
-
-function handleLogoUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    logoDataUrl = ev.target.result;
-    document.getElementById('logoPreview').src = logoDataUrl;
-    document.getElementById('logoPreview').style.display = 'block';
-    document.getElementById('logoPlaceholder').style.display = 'none';
-    document.getElementById('displayLogo').src = logoDataUrl;
-    document.getElementById('displayLogo').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
-// Colour handling
-function pickSwatch(el) {
-  const target = el.dataset.target;
-  document.querySelectorAll(`.swatch[data-target="${target}"]`).forEach(s => s.classList.remove('active'));
-  el.classList.add('active');
-  if (target === 'primary')   document.getElementById('primaryColour').value   = el.dataset.col;
-  if (target === 'secondary') document.getElementById('secondaryColour').value = el.dataset.col;
+function launchDisplay(){
+  getAudio(); applyFont();
+  interviewDuration=parseInt(document.getElementById('interviewLen').value);
+  sessionStart=parseTimeInput(document.getElementById('startTime').value);
+  document.getElementById('displaySchoolName').textContent=document.getElementById('schoolName').value.trim();
+  document.getElementById('displayEventName').textContent=document.getElementById('eventName').value.trim();
+  document.getElementById('sessionLen').textContent=interviewDuration+' min';
+  if(!logoDataUrl)document.getElementById('displayLogo').style.display='none';
   applyColours();
-}
-
-function applyColours() {
-  const p = document.getElementById('primaryColour').value;
-  const s = document.getElementById('secondaryColour').value;
-  document.documentElement.style.setProperty('--school-primary', p);
-  document.documentElement.style.setProperty('--school-secondary', s);
-  document.documentElement.style.setProperty('--accent', s);
-  document.getElementById('displayTopBar').style.background =
-    `linear-gradient(90deg, ${p}, ${s})`;
-}
-
-// ═══════════════════════════════════════════
-// TIME HELPERS
-// ═══════════════════════════════════════════
-function parseTimeInput(val) {
-  // Returns a Date for today at that time
-  const [h, m] = val.split(':').map(Number);
-  const d = new Date();
-  d.setHours(h, m, 0, 0);
-  return d;
-}
-
-function fmt12(date) {
-  let h = date.getHours(), m = date.getMinutes();
-  const ampm = h >= 12 ? 'pm' : 'am';
-  h = h % 12 || 12;
-  return `${h}:${String(m).padStart(2,'0')} ${ampm}`;
-}
-
-function fmtMMSS(totalSeconds) {
-  if (totalSeconds < 0) totalSeconds = 0;
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${m}:${String(s).padStart(2,'0')}`;
-}
-
-// ═══════════════════════════════════════════
-// LAUNCH & DISPLAY
-// ═══════════════════════════════════════════
-function launchDisplay() {
-  // Wake audio context
-  getAudio();
-
-  interviewDuration = parseInt(document.getElementById('interviewLen').value);
-  const startVal = document.getElementById('startTime').value;
-  sessionStart = parseTimeInput(startVal);
-
-  // Update display elements
-  const schoolName = document.getElementById('schoolName').value.trim();
-  const eventName  = document.getElementById('eventName').value.trim();
-  document.getElementById('displaySchoolName').textContent = schoolName;
-  document.getElementById('displayEventName').textContent  = eventName;
-  document.getElementById('sessionLen').textContent = interviewDuration + ' min';
-
-  if (!logoDataUrl) {
-    document.getElementById('displayLogo').style.display = 'none';
-  }
-
-  applyColours();
-
-  // Show display view
   document.getElementById('display-view').classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  // Resize ring
+  document.body.style.overflow='hidden';
   resizeRing();
-
-  // Start tick
-  if (tickInterval) clearInterval(tickInterval);
-  tickInterval = setInterval(tick, 500);
-  tick();
+  if(tickInterval)clearInterval(tickInterval);
+  tickInterval=setInterval(tick,500); tick();
 }
+function closeDisplay(){document.getElementById('display-view').classList.remove('active');document.body.style.overflow='';if(tickInterval){clearInterval(tickInterval);tickInterval=null;}lastInterviewIdx=-1;updateStatus('idle');}
+document.getElementById('display-view').addEventListener('dblclick',()=>{if(!document.fullscreenElement)document.getElementById('display-view').requestFullscreen?.();else document.exitFullscreen?.();});
 
-function closeDisplay() {
-  document.getElementById('display-view').classList.remove('active');
-  document.body.style.overflow = '';
-  if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
-  isRunning = false;
-  lastInterviewIdx = -1;
-  updateStatus('idle');
+let ringR=0,ringCirc=0;
+function resizeRing(){
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const size=Math.min(vh*.64,vw*.52);
+  ringR=size/2-8; ringCirc=2*Math.PI*ringR;
+  const svg=document.getElementById('progressRing');
+  svg.setAttribute('width',size);svg.setAttribute('height',size);svg.style.width=size+'px';svg.style.height=size+'px';
+  const cx=size/2,cy=size/2,sw=Math.max(10,size*.028);
+  ['ringBg','ringFill'].forEach(id=>{const el=document.getElementById(id);el.setAttribute('cx',cx);el.setAttribute('cy',cy);el.setAttribute('r',ringR);el.setAttribute('stroke-width',sw);});
+  document.getElementById('ringFill').style.strokeDasharray=ringCirc;
+  document.getElementById('ringFill').style.strokeDashoffset=0;
+  const w=document.getElementById('ringWrap');w.style.width=size+'px';w.style.height=size+'px';
 }
+window.addEventListener('resize',resizeRing);
 
-// Fullscreen
-document.getElementById('display-view').addEventListener('dblclick', () => {
-  if (!document.fullscreenElement) {
-    document.getElementById('display-view').requestFullscreen?.();
-  } else {
-    document.exitFullscreen?.();
-  }
-});
-
-// ═══════════════════════════════════════════
-// RING SETUP
-// ═══════════════════════════════════════════
-let ringR = 0, ringCirc = 0;
-function resizeRing() {
-  const vw = window.innerWidth, vh = window.innerHeight;
-  // Available height after current-time (~14vh), label (~4vh), padding (~18vh total)
-  // Available width: ~55vw (ring takes ~55vw, info panel ~20vw, gap ~5vw)
-  const maxByH = vh * 0.64;
-  const maxByW = vw * 0.52;
-  const size = Math.min(maxByH, maxByW);
-  ringR = size / 2 - 8;
-  ringCirc = 2 * Math.PI * ringR;
-  const svg = document.getElementById('progressRing');
-  svg.setAttribute('width', size);
-  svg.setAttribute('height', size);
-  svg.style.width = size + 'px';
-  svg.style.height = size + 'px';
-  const cx = size / 2, cy = size / 2;
-  // Thick stroke — readable from 10+ metres
-  const strokeW = Math.max(10, size * 0.028);
-  document.getElementById('ringBg').setAttribute('cx', cx);
-  document.getElementById('ringBg').setAttribute('cy', cy);
-  document.getElementById('ringBg').setAttribute('r', ringR);
-  document.getElementById('ringBg').setAttribute('stroke-width', strokeW);
-  document.getElementById('ringFill').setAttribute('cx', cx);
-  document.getElementById('ringFill').setAttribute('cy', cy);
-  document.getElementById('ringFill').setAttribute('r', ringR);
-  document.getElementById('ringFill').setAttribute('stroke-width', strokeW);
-  document.getElementById('ringFill').style.strokeDasharray = ringCirc;
-  document.getElementById('ringFill').style.strokeDashoffset = 0;
-
-  // Critically: set ring-wrap explicit size so the SVG doesn't bleed out of flex bounds
-  const wrap = document.getElementById('ringWrap');
-  wrap.style.width  = size + 'px';
-  wrap.style.height = size + 'px';
+function tick(){
+  const now=new Date();
+  document.getElementById('displayNow').textContent=fmt12(now);
+  const diffMs=now-sessionStart;
+  if(diffMs<0){showPrestart(now);updateStatus('waiting');return;}
+  updateStatus('running'); showRunning();
+  const iMs=interviewDuration*60*1000,elapsed=diffMs%iMs,remainMs=iMs-elapsed;
+  const remainSec=Math.ceil(remainMs/1000),idx=Math.floor(diffMs/iMs);
+  if(idx!==lastInterviewIdx&&lastInterviewIdx!==-1)playTone(document.getElementById('toneSelect').value);
+  lastInterviewIdx=idx;
+  document.getElementById('displayCountdown').textContent=fmtMMSS(remainSec);
+  let tc,rc;
+  if(remainSec>60){tc='rgba(240,236,228,.92)';rc='rgba(240,236,228,.55)';}
+  else if(remainSec>30){tc='#e8a020';rc='#e8a020';}
+  else{tc='#d64035';rc='#d64035';}
+  document.getElementById('displayCountdown').style.color=tc;
+  document.getElementById('ringFill').style.stroke=rc;
+  if(remainSec<=30){const i=.03+.05*(1-remainSec/30);document.getElementById('displayBgAccent').style.background=`radial-gradient(ellipse 70% 60% at 50% 50%,rgba(214,64,53,${i}),transparent)`;}
+  else document.getElementById('displayBgAccent').style.background='none';
+  document.getElementById('ringFill').style.strokeDashoffset=ringCirc*(elapsed/iMs);
+  document.getElementById('sessionInterviewNum').textContent=idx+1;
+  document.getElementById('sessionNextTime').textContent=fmt12(new Date(sessionStart.getTime()+(idx+1)*iMs));
 }
-window.addEventListener('resize', resizeRing);
-
-// ═══════════════════════════════════════════
-// TICK — the main loop
-// ═══════════════════════════════════════════
-function tick() {
-  const now = new Date();
-
-  // Update current time display
-  document.getElementById('displayNow').textContent = fmt12(now);
-
-  const diffMs = now - sessionStart; // ms since session start
-
-  if (diffMs < 0) {
-    // Pre-start
-    showPrestart(now);
-    updateStatus('waiting');
-    return;
-  }
-
-  // We're in the session
-  updateStatus('running');
-  showRunning();
-
-  const interviewMs  = interviewDuration * 60 * 1000;
-  const elapsedInSlot = diffMs % interviewMs; // ms into current slot
-  const remainMs      = interviewMs - elapsedInSlot;
-  const remainSec     = Math.ceil(remainMs / 1000);
-  const interviewIdx  = Math.floor(diffMs / interviewMs); // 0-indexed
-
-  // Check if we crossed into a new interview — ring the tone
-  if (interviewIdx !== lastInterviewIdx && lastInterviewIdx !== -1) {
-    playTone(selectedTone);
-  }
-  // Also ring at exactly 0:00 (when the slot rolls over)
-  if (remainSec <= 0 && lastInterviewIdx === interviewIdx) {
-    // handled next tick
-  }
-  lastInterviewIdx = interviewIdx;
-
-  // Countdown text
-  document.getElementById('displayCountdown').textContent = fmtMMSS(remainSec);
-
-  // Colour — green/amber/red based on remaining time
-  let timerColour, ringColour;
-  if (remainSec > 60) {
-    timerColour = 'rgba(240,236,228,0.92)';
-    ringColour  = 'rgba(240,236,228,0.55)';
-  } else if (remainSec > 30) {
-    timerColour = '#e8a020';
-    ringColour  = '#e8a020';
-  } else {
-    timerColour = '#d64035';
-    ringColour  = '#d64035';
-  }
-  document.getElementById('displayCountdown').style.color = timerColour;
-  document.getElementById('ringFill').style.stroke = ringColour;
-
-  // Subtle bg tint as time runs out (projector-friendly — very subtle)
-  if (remainSec <= 30) {
-    const intensity = 0.03 + 0.05 * (1 - remainSec / 30);
-    document.getElementById('displayBgAccent').style.background =
-      `radial-gradient(ellipse 70% 60% at 50% 50%, rgba(214,64,53,${intensity}), transparent)`;
-  } else {
-    document.getElementById('displayBgAccent').style.background = 'none';
-  }
-
-  // Ring fill (progress)
-  const fraction = 1 - (elapsedInSlot / interviewMs);
-  const offset   = ringCirc * (1 - fraction);
-  document.getElementById('ringFill').style.strokeDashoffset = offset;
-
-  // Session info
-  document.getElementById('sessionInterviewNum').textContent = interviewIdx + 1;
-
-  // Next slot time
-  const nextSlotDate = new Date(sessionStart.getTime() + (interviewIdx + 1) * interviewMs);
-  document.getElementById('sessionNextTime').textContent = fmt12(nextSlotDate);
-}
-
-function showPrestart(now) {
+function showPrestart(now){
   document.getElementById('displayPrestart').classList.remove('hidden');
   document.getElementById('displayRunning').classList.add('hidden');
-
-  const startStr = fmt12(sessionStart);
-  document.getElementById('prestartTime').textContent = startStr;
-
-  const diffSec = Math.ceil((sessionStart - now) / 1000);
-  const h = Math.floor(diffSec / 3600);
-  const m = Math.floor((diffSec % 3600) / 60);
-  const s = diffSec % 60;
-  let str = '';
-  if (h > 0) str += h + 'h ';
-  if (m > 0 || h > 0) str += m + 'm ';
-  str += s + 's';
-  document.getElementById('prestartCountdown').textContent = str;
+  document.getElementById('prestartTime').textContent=fmt12(sessionStart);
+  const ds=Math.ceil((sessionStart-now)/1000),h=Math.floor(ds/3600),m=Math.floor((ds%3600)/60),s=ds%60;
+  let str='';if(h>0)str+=h+'h ';if(m>0||h>0)str+=m+'m ';str+=s+'s';
+  document.getElementById('prestartCountdown').textContent=str;
 }
+function showRunning(){document.getElementById('displayPrestart').classList.add('hidden');document.getElementById('displayRunning').classList.remove('hidden');}
+function updateStatus(state){const dot=document.getElementById('statusDot'),txt=document.getElementById('statusTxt');dot.className='status-dot';if(state==='idle'){txt.textContent='Not started';return;}if(state==='waiting'){dot.classList.add('waiting');txt.textContent='Waiting for start time';}if(state==='running'){dot.classList.add('running');txt.textContent='Session running';}}
 
-function showRunning() {
-  document.getElementById('displayPrestart').classList.add('hidden');
-  document.getElementById('displayRunning').classList.remove('hidden');
-}
-
-// ═══════════════════════════════════════════
-// STATUS INDICATOR (settings page)
-// ═══════════════════════════════════════════
-function updateStatus(state) {
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusTxt');
-  dot.className = 'status-dot';
-  if (state === 'idle') {
-    txt.textContent = 'Not started'; return;
-  }
-  if (state === 'waiting') {
-    dot.classList.add('waiting');
-    txt.textContent = 'Waiting for start time';
-  } else if (state === 'running') {
-    dot.classList.add('running');
-    txt.textContent = 'Session running';
-  }
-}
-
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
-applyColours();
+applyColours(); applyFont();
 </script>
 </body>
 </html>
