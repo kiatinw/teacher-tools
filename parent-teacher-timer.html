@@ -112,12 +112,14 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
     <div class="field-row three">
       <div class="field"><label>Start Time</label><input type="time" id="startTime" value="16:00"></div>
       <div class="field"><label>Interview Length</label>
-        <select id="interviewLen">
+        <select id="interviewLen" onchange="toggleCustomLen()">
           <option value="3">3 minutes</option><option value="4">4 minutes</option>
           <option value="5" selected>5 minutes</option><option value="6">6 minutes</option>
           <option value="7">7 minutes</option><option value="8">8 minutes</option>
           <option value="10">10 minutes</option><option value="15">15 minutes</option>
+          <option value="custom">Custom&hellip;</option>
         </select>
+        <input type="number" id="customLen" min="1" max="60" placeholder="Enter minutes" style="display:none;margin-top:.45rem;">
       </div>
       <div class="field"><label>Event Name</label><input type="text" id="eventName" value="Parent&ndash;Teacher Night"></div>
     </div>
@@ -202,7 +204,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
     <div class="field-row" style="align-items:flex-end;margin-bottom:0">
       <div class="field"><label>Select Tone</label>
         <select id="toneSelect">
-          <optgroup label="Bells &amp; Chimes">
+          <optgroup label="&#127514; Bells &amp; Chimes">
             <option value="chime" selected>Chime &mdash; Gentle single bell</option>
             <option value="double">Double Chime &mdash; Two strikes</option>
             <option value="triple">Triple Chime &mdash; Three ascending</option>
@@ -210,29 +212,35 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
             <option value="deepbell">Deep Bell &mdash; Low resonant</option>
             <option value="cathedral">Cathedral &mdash; Slow deep toll</option>
             <option value="tinybell">Tiny Bell &mdash; High delicate ring</option>
-            <option value="cowbell">Cowbell &mdash; Metallic clank</option>
+            <option value="cowbell">Cowbell &mdash; More cowbell</option>
+            <option value="churchcarillon">Church Carillon &mdash; Full peal of bells</option>
+            <option value="vespers">Vespers &mdash; Evening bell sequence</option>
           </optgroup>
-          <optgroup label="Mallet Instruments">
+          <optgroup label="&#127929; Mallet Instruments">
             <option value="marimba">Marimba &mdash; Warm wooden</option>
             <option value="xylophone">Xylophone &mdash; Bright ascending run</option>
             <option value="vibraphone">Vibraphone &mdash; Shimmering chord</option>
             <option value="steelpan">Steel Pan &mdash; Caribbean shimmer</option>
             <option value="celesta">Celesta &mdash; Delicate music-box</option>
+            <option value="orchestrahit">Orchestra Hit &mdash; 80s synth stab</option>
           </optgroup>
-          <optgroup label="Strings &amp; Harp">
+          <optgroup label="&#127925; Strings &amp; Harp">
             <option value="harp">Harp Glissando &mdash; Rising sweep</option>
             <option value="pizzicato">Pizzicato &mdash; Plucked strings</option>
             <option value="harpcascade">Harp Cascade &mdash; Down then up</option>
+            <option value="stringpizzrun">String Pizz Run &mdash; Quick ascending pluck</option>
           </optgroup>
-          <optgroup label="Tones &amp; Pads">
+          <optgroup label="&#127928; Tones &amp; Pads">
             <option value="soft">Soft Tone &mdash; Low sine wave</option>
             <option value="gentle3">Gentle Rise &mdash; Soft ascending</option>
             <option value="meditation">Meditation Bowl &mdash; Long resonance</option>
             <option value="warmpad">Warm Pad &mdash; Choir-like swell</option>
             <option value="crystal">Crystal &mdash; Pure high overtones</option>
             <option value="sine3">Sine Chord &mdash; Three harmonics</option>
+            <option value="spacesynth">Space Synth &mdash; Sci-fi whoosh pad</option>
+            <option value="ufo">UFO &mdash; Wobbling alien signal</option>
           </optgroup>
-          <optgroup label="Alerts &amp; Signals">
+          <optgroup label="&#9889; Alerts &amp; Signals">
             <option value="ding">Ding &mdash; Short bright ping</option>
             <option value="doorbell">Doorbell &mdash; Ding-dong</option>
             <option value="alert">Attention &mdash; Two-tone alert</option>
@@ -241,21 +249,56 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
             <option value="beepbeep">Beep Beep &mdash; Double electronic</option>
             <option value="softping">Soft Ping &mdash; Muted notification</option>
             <option value="riser">Riser &mdash; Sweeping upward</option>
+            <option value="airhorn">Air Horn &mdash; BWAAAMP</option>
+            <option value="submarine">Submarine &mdash; Sonar ping</option>
+            <option value="oldphone">Old Phone &mdash; Retro telephone ring</option>
+            <option value="levelup">Level Up &mdash; Video game success</option>
+            <option value="powerup">Power Up &mdash; 8-bit item collect</option>
+            <option value="error">Error Bloop &mdash; Descending sad tones</option>
           </optgroup>
-          <optgroup label="Brass &amp; Wind">
+          <optgroup label="&#127930; Brass &amp; Wind">
             <option value="fanfare">Fanfare &mdash; Short brass motif</option>
             <option value="bugle">Bugle Call &mdash; Reveille figure</option>
             <option value="horn">French Horn &mdash; Warm single note</option>
             <option value="posthorn">Post Horn &mdash; Two-note call</option>
+            <option value="royalfanfare">Royal Fanfare &mdash; Grand ceremonial</option>
+            <option value="jazzriff">Jazz Riff &mdash; Cheeky brass lick</option>
           </optgroup>
-          <optgroup label="Percussion">
+          <optgroup label="&#127941; Percussion">
             <option value="gong">Gong &mdash; Deep resonant strike</option>
             <option value="snare">Snare Roll &mdash; Short flourish</option>
             <option value="timpani">Timpani &mdash; Orchestral drum</option>
             <option value="gamelan">Gamelan &mdash; Indonesian bronze</option>
             <option value="windchime">Wind Chime &mdash; Random gentle</option>
+            <option value="rimshot">Rimshot &mdash; Ba-dum tss</option>
+            <option value="taiko">Taiko &mdash; Japanese war drum</option>
           </optgroup>
-          <optgroup label="Other">
+          <optgroup label="&#127926; Jingles &amp; Tunes">
+            <option value="bigben">Big Ben &mdash; Westminster chimes</option>
+            <option value="habanera">Habanera &mdash; Carmen's famous melody</option>
+            <option value="ode">Ode to Joy &mdash; Beethoven opener</option>
+            <option value="axelf">Axel F &mdash; Beverly Hills Cop theme</option>
+            <option value="nokia">Nokia Tune &mdash; The classic ringtone</option>
+            <option value="toreador">Toreador &mdash; Carmen march</option>
+            <option value="william">William Tell &mdash; Lone Ranger gallop</option>
+            <option value="furelise">F&uuml;r Elise &mdash; Beethoven opening bars</option>
+            <option value="jeopardy">Jeopardy &mdash; Think music</option>
+            <option value="circus">Circus March &mdash; Entry of the Gladiators</option>
+            <option value="imperial">Imperial March &mdash; Dun dun dun dun da-dun</option>
+          </optgroup>
+          <optgroup label="&#128560; Completely Unhinged">
+            <option value="applause">Applause &mdash; Crowd goes wild</option>
+            <option value="sadtrombone">Sad Trombone &mdash; Wah wah waaah</option>
+            <option value="priceiswrong">Price Is Wrong &mdash; Going down</option>
+            <option value="crickets">Crickets &mdash; Just crickets</option>
+            <option value="explosion">Explosion &mdash; BOOM</option>
+            <option value="warp">Warp Speed &mdash; Engage!</option>
+            <option value="dramatic">Dramatic Sting &mdash; Dun dun DUNN</option>
+            <option value="cartoon">Cartoon Run &mdash; Speedy chase music</option>
+            <option value="harp2heaven">Harp to Heaven &mdash; Angel ascending</option>
+            <option value="vineboom">Vine Boom &mdash; The bass drop</option>
+          </optgroup>
+          <optgroup label="&#128263; Other">
             <option value="silent">Silent &mdash; No sound</option>
           </optgroup>
         </select>
@@ -372,6 +415,367 @@ function playTone(type){
     timpani:()=>{bellNote(ctx,73,t,0,.9,2.5);bellNote(ctx,110,t,0,.35,1.8);const b=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate),d=b.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length)*.6;const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=400;e.gain.setValueAtTime(.6,t);e.gain.exponentialRampToValueAtTime(.001,t+.12);s.buffer=b;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t);},
     gamelan:()=>{[392,440,523,554,659,740,880].forEach((f,i)=>bellNote(ctx,f,t,i*.08+Math.random()*.04,.38*(1-i*.06),1.8));},
     windchime:()=>{[1047,1175,1319,1480,1568,1760,1976,2093].forEach(f=>bellNote(ctx,f,t,Math.random()*.5,.3*Math.random()+.15,1.2+Math.random()*.8));},
+    // ── NEW ADDITIONS ──
+    churchcarillon:()=>{
+      // Full peal pattern - descending then ascending
+      const p=[1047,988,880,784,698,659,587,523,587,659,698,784,880,988,1047];
+      p.forEach((f,i)=>bellNote(ctx,f,t,i*.22,.55,1.6));
+    },
+    vespers:()=>{
+      // Evening bell sequence - slow tolling groups
+      [196,220].forEach(f=>bellNote(ctx,f,t,0,.9,4));
+      [196,220].forEach(f=>bellNote(ctx,f,t,1.2,.9,4));
+      [196,220].forEach(f=>bellNote(ctx,f,t,2.4,.9,4));
+    },
+    orchestrahit:()=>{
+      // Classic 80s orchestra stab
+      const freqs=[131,165,196,262,330,392,523];
+      freqs.forEach(f=>{squareNote(ctx,f,t,0,.4,.08);sineNote(ctx,f,t,.04,.35,.6);});
+      const buf=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate),d=buf.getChannelData(0);
+      for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length)*.5;
+      const s=ctx.createBufferSource(),e=ctx.createGain(),fl=ctx.createBiquadFilter();
+      fl.type='lowpass';fl.frequency.value=600;e.gain.setValueAtTime(.6,t);e.gain.exponentialRampToValueAtTime(.001,t+.1);
+      s.buffer=buf;s.connect(fl);fl.connect(e);e.connect(ctx.destination);s.start(t);
+    },
+    stringpizzrun:()=>{
+      [196,220,247,262,294,330,349,392,440,523].forEach((f,i)=>marimbaNote(ctx,f,t,i*.06,.6,.2));
+    },
+    spacesynth:()=>{
+      const o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();
+      o.type='sawtooth';o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(440,t+1.5);
+      o2.type='sawtooth';o2.frequency.setValueAtTime(110.5,t);o2.frequency.exponentialRampToValueAtTime(440.5,t+1.5);
+      lfo.type='sine';lfo.frequency.value=6;lg.gain.value=20;
+      lfo.connect(lg);lg.connect(o.frequency);
+      const flt=ctx.createBiquadFilter();flt.type='lowpass';flt.frequency.setValueAtTime(300,t);flt.frequency.exponentialRampToValueAtTime(3000,t+1.5);
+      e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.4,t+.1);e.gain.linearRampToValueAtTime(.4,t+1.2);e.gain.exponentialRampToValueAtTime(.001,t+2);
+      o.connect(flt);o2.connect(flt);flt.connect(e);e.connect(ctx.destination);
+      lfo.start(t);lfo.stop(t+2.1);o.start(t);o.stop(t+2.1);o2.start(t);o2.stop(t+2.1);
+    },
+    ufo:()=>{
+      const o=ctx.createOscillator(),lfo=ctx.createOscillator(),lg=ctx.createGain(),e=ctx.createGain();
+      o.type='sine';o.frequency.value=300;
+      lfo.type='sine';lfo.frequency.setValueAtTime(2,t);lfo.frequency.linearRampToValueAtTime(8,t+2);
+      lg.gain.value=150;lfo.connect(lg);lg.connect(o.frequency);
+      e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.5,t+.2);e.gain.setValueAtTime(.5,t+1.5);e.gain.exponentialRampToValueAtTime(.001,t+2.5);
+      o.connect(e);e.connect(ctx.destination);lfo.start(t);lfo.stop(t+2.6);o.start(t);o.stop(t+2.6);
+    },
+    airhorn:()=>{
+      // Mighty BWAAAMP
+      const o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),flt=ctx.createBiquadFilter();
+      o.type='sawtooth';o.frequency.setValueAtTime(120,t);o.frequency.linearRampToValueAtTime(90,t+1.2);
+      o2.type='sawtooth';o2.frequency.setValueAtTime(121,t);o2.frequency.linearRampToValueAtTime(91,t+1.2);
+      flt.type='lowpass';flt.frequency.value=800;
+      e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.9,t+.03);e.gain.setValueAtTime(.9,t+.8);e.gain.exponentialRampToValueAtTime(.001,t+1.5);
+      o.connect(flt);o2.connect(flt);flt.connect(e);e.connect(ctx.destination);
+      o.start(t);o.stop(t+1.6);o2.start(t);o2.stop(t+1.6);
+    },
+    submarine:()=>{
+      // Sonar ping - sends a clear sweep through water
+      const o=ctx.createOscillator(),e=ctx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(800,t);o.frequency.exponentialRampToValueAtTime(400,t+1);
+      e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.7,t+.005);e.gain.exponentialRampToValueAtTime(.001,t+1.2);
+      o.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+1.3);
+      // Echo
+      const o2=ctx.createOscillator(),e2=ctx.createGain();
+      o2.type='sine';o2.frequency.setValueAtTime(800,t+1.4);o2.frequency.exponentialRampToValueAtTime(400,t+2.4);
+      e2.gain.setValueAtTime(0,t+1.4);e2.gain.linearRampToValueAtTime(.35,t+1.405);e2.gain.exponentialRampToValueAtTime(.001,t+2.5);
+      o2.connect(e2);e2.connect(ctx.destination);o2.start(t+1.4);o2.stop(t+2.6);
+    },
+    oldphone:()=>{
+      // Classic telephone double-ring
+      function ring(start){
+        for(let i=0;i<20;i++){
+          const on=i%2===0;
+          if(!on)continue;
+          const o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain();
+          o.type='square';o.frequency.value=440;o2.type='square';o2.frequency.value=480;
+          e.gain.setValueAtTime(.3,start+i*.05);e.gain.setValueAtTime(.3,start+i*.05+.04);e.gain.setValueAtTime(0,start+i*.05+.05);
+          o.connect(e);o2.connect(e);e.connect(ctx.destination);
+          o.start(start+i*.05);o.stop(start+i*.05+.06);
+          o2.start(start+i*.05);o2.stop(start+i*.05+.06);
+        }
+      }
+      ring(t); ring(t+1.1);
+    },
+    levelup:()=>{
+      // Video game level-up arpeggio
+      const notes=[523,659,784,1047,1319];
+      notes.forEach((f,i)=>marimbaNote(ctx,f,t,i*.08,.7,.4));
+      bellNote(ctx,2093,t,notes.length*.08,.6,1.2);
+    },
+    powerup:()=>{
+      // 8-bit item collect - rising chromatic
+      const o=ctx.createOscillator(),e=ctx.createGain();
+      o.type='square';
+      const freqs=[523,587,659,698,784,880,988,1047];
+      freqs.forEach((f,i)=>{o.frequency.setValueAtTime(f,t+i*.05);});
+      e.gain.setValueAtTime(.3,t);e.gain.setValueAtTime(.3,t+freqs.length*.05);e.gain.exponentialRampToValueAtTime(.001,t+freqs.length*.05+.2);
+      o.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+freqs.length*.05+.25);
+    },
+    error:()=>{
+      // Sad descending bloops
+      [494,440,392,349].forEach((f,i)=>marimbaNote(ctx,f,t,i*.18,.6,.3));
+    },
+    royalfanfare:()=>{
+      // Grand ceremonial fanfare
+      const mel=[523,523,523,415,523,659,784,523,659,784];
+      const durs=[.12,.12,.12,.12,.35,.12,.12,.35,.12,.5];
+      let off=0;
+      mel.forEach((f,i)=>{
+        squareNote(ctx,f,t,off,.35,durs[i]);
+        squareNote(ctx,f*2,t,off,.15,durs[i]);
+        off+=durs[i]+.02;
+      });
+    },
+    jazzriff:()=>{
+      // Cheeky brass lick - swing feel
+      const mel=[523,494,523,659,784,740,784];
+      const offs=[0,.1,.18,.26,.34,.42,.5];
+      mel.forEach((f,i)=>squareNote(ctx,f,t,offs[i],.3,.15));
+    },
+    rimshot:()=>{
+      // Ba-dum tss - the classic comedy rimshot
+      // Ba
+      const b1=ctx.createBuffer(1,ctx.sampleRate*.04,ctx.sampleRate),d1=b1.getChannelData(0);
+      for(let j=0;j<d1.length;j++)d1[j]=(Math.random()*2-1)*(1-j/d1.length);
+      const s1=ctx.createBufferSource(),e1=ctx.createGain(),f1=ctx.createBiquadFilter();
+      f1.type='bandpass';f1.frequency.value=200;e1.gain.value=.6;
+      s1.buffer=b1;s1.connect(f1);f1.connect(e1);e1.connect(ctx.destination);s1.start(t);
+      // Dum
+      bellNote(ctx,196,t,.15,.7,.3);
+      // Tss (hi-hat)
+      const b2=ctx.createBuffer(1,ctx.sampleRate*.15,ctx.sampleRate),d2=b2.getChannelData(0);
+      for(let j=0;j<d2.length;j++)d2[j]=(Math.random()*2-1)*(1-j/d2.length);
+      const s2=ctx.createBufferSource(),e2=ctx.createGain(),f2=ctx.createBiquadFilter();
+      f2.type='highpass';f2.frequency.value=8000;e2.gain.setValueAtTime(.4,t+.3);e2.gain.exponentialRampToValueAtTime(.001,t+.5);
+      s2.buffer=b2;s2.connect(f2);f2.connect(e2);e2.connect(ctx.destination);s2.start(t+.3);
+    },
+    taiko:()=>{
+      // Japanese war drum - thunderous
+      for(let i=0;i<3;i++){
+        const buf=ctx.createBuffer(1,ctx.sampleRate*.2,ctx.sampleRate),d=buf.getChannelData(0);
+        for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length)*.8;
+        const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();
+        f.type='lowpass';f.frequency.value=300;
+        e.gain.setValueAtTime(.9,t+i*.6);e.gain.exponentialRampToValueAtTime(.001,t+i*.6+.25);
+        s.buffer=buf;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t+i*.6);
+        bellNote(ctx,55,t,i*.6,.8,.4);
+      }
+    },
+    // ── JINGLES ──
+    bigben:()=>{
+      // Westminster Quarters - the famous 4-note pattern
+      const pat=[[330,392,349,261],[330,349,392,330],[392,349,330,261],[261,330,349,392]];
+      const seq=pat[0]; // first quarter
+      seq.forEach((f,i)=>bellNote(ctx,f,t,i*.5,.8,2.5));
+      // Final toll
+      setTimeout(()=>{bellNote(getAudio(),261,getAudio().currentTime,0,.9,4);},2200);
+    },
+    habanera:()=>{
+      // Carmen's Habanera melody (recognisable opening)
+      const mel=[392,392,392,0,370,392,0,392,349,330,294,262,294,330,349,392,392];
+      const durs=[.15,.15,.15,.15,.15,.3,.15,.15,.15,.15,.15,.15,.15,.15,.15,.3,.15];
+      let off=0;
+      mel.forEach((f,i)=>{if(f>0)sineNote(ctx,f,t,off,.5,durs[i]+.05);off+=durs[i];});
+    },
+    ode:()=>{
+      // Ode to Joy - Beethoven 9th opening phrase
+      const mel=[330,330,349,392,392,349,330,294,262,262,294,330,330,294,294];
+      const durs=[.22,.22,.22,.22,.22,.22,.22,.22,.22,.22,.22,.22,.33,.11,.44];
+      let off=0;
+      mel.forEach((f,i)=>{squareNote(ctx,f,t,off,.25,durs[i]);sineNote(ctx,f*2,t,off,.1,durs[i]);off+=durs[i]+.02;});
+    },
+    axelf:()=>{
+      // Axel F - Beverly Hills Cop (the iconic synth riff)
+      const mel=[0,392,0,392,494,392,370,392,0,523,0,523,0,494,440,392];
+      const durs=[.1,.15,.05,.1,.15,.1,.1,.2,.1,.15,.05,.1,.05,.1,.1,.3];
+      let off=0;
+      mel.forEach((f,i)=>{
+        if(f>0){
+          const o=ctx.createOscillator(),e=ctx.createGain();
+          o.type='sawtooth';o.frequency.value=f;
+          const flt=ctx.createBiquadFilter();flt.type='lowpass';flt.frequency.value=1200;
+          e.gain.setValueAtTime(0,t+off);e.gain.linearRampToValueAtTime(.4,t+off+.01);
+          e.gain.setValueAtTime(.4,t+off+durs[i]*.8);e.gain.exponentialRampToValueAtTime(.001,t+off+durs[i]);
+          o.connect(flt);flt.connect(e);e.connect(ctx.destination);o.start(t+off);o.stop(t+off+durs[i]+.05);
+        }
+        off+=durs[i]+.02;
+      });
+    },
+    nokia:()=>{
+      // Nokia Tune - the classic Gran Vals ringtone
+      const mel=[1319,1175,1319,1047,880,880,880,1047,1175,1175,1175,1319,1047,1047,1047,1175,1047,880];
+      const durs=[.125,.125,.25,.25,.25,.125,.125,.25,.25,.125,.125,.5,.25,.125,.125,.25,.25,.5];
+      let off=0;
+      mel.forEach((f,i)=>{marimbaNote(ctx,f,t,off,.6,durs[i]+.05);off+=durs[i]+.02;});
+    },
+    toreador:()=>{
+      // Toreador's Song from Carmen - march opening
+      const mel=[392,523,523,523,523,494,466,523,659,523,494,466,440,440,440,440,440,415,392,440,523];
+      const durs=[.3,.2,.1,.1,.3,.1,.1,.15,.15,.15,.15,.15,.2,.1,.1,.3,.1,.1,.15,.15,.4];
+      let off=0;
+      mel.forEach((f,i)=>{squareNote(ctx,f,t,off,.28,durs[i]);off+=durs[i]+.02;});
+    },
+    william:()=>{
+      // William Tell Overture - the Lone Ranger gallop section
+      function triplet(f,start,g=.3){
+        marimbaNote(ctx,f,t,start,g,.1);
+        marimbaNote(ctx,f,t,start+.1,g*.8,.1);
+        marimbaNote(ctx,f,t,start+.2,g,.1);
+      }
+      // duh-duh-DUH pattern
+      const beats=[523,523,659,523,523,784,523,523,659,523,523,1047];
+      beats.forEach((f,i)=>marimbaNote(ctx,f,t,i*.15,.4,.1));
+    },
+    furelise:()=>{
+      // Fur Elise - recognisable opening (E D# E D# E B D C A)
+      const mel=[659,622,659,622,659,494,587,523,440];
+      const durs=[.2,.2,.2,.2,.2,.2,.2,.2,.5];
+      let off=0;
+      mel.forEach((f,i)=>{sineNote(ctx,f,t,off,.45,durs[i]+.05);off+=durs[i]+.01;});
+    },
+    jeopardy:()=>{
+      // Jeopardy Think Music - the suspenseful tick-tock
+      const mel=[392,294,262,294,330,247,220,247,196,294,262,294,330,247,220,247];
+      const durs=[.4,.2,.2,.2,.4,.2,.2,.2,.4,.2,.2,.2,.4,.2,.2,.4];
+      let off=0;
+      mel.forEach((f,i)=>{sineNote(ctx,f,t,off,.4,durs[i]+.05);off+=durs[i]+.01;});
+    },
+    circus:()=>{
+      // Entry of the Gladiators - the circus march!
+      const mel=[587,622,587,554,587,466,494,523,554,587,294,311,294,277,294,233,247,262,277,294];
+      const durs=[.15,.15,.15,.15,.45,.15,.15,.15,.15,.45,.15,.15,.15,.15,.45,.15,.15,.15,.15,.45];
+      let off=0;
+      mel.forEach((f,i)=>{squareNote(ctx,f,t,off,.3,durs[i]);sineNote(ctx,f,t,off,.15,durs[i]+.05);off+=durs[i]+.01;});
+    },
+    imperial:()=>{
+      // Imperial March - Star Wars (dun dun dun dun-da-dun dun-da-dun)
+      const mel=[392,392,392,311,466,392,311,466,392,523,523,523,554,466,370,311,466,392];
+      const durs=[.45,.45,.45,.3,.15,.45,.3,.15,.6,.45,.45,.45,.3,.15,.45,.3,.15,.6];
+      let off=0;
+      mel.forEach((f,i)=>{
+        squareNote(ctx,f,t,off,.35,durs[i]);
+        squareNote(ctx,f*.5,t,off,.2,durs[i]);
+        off+=durs[i]+.02;
+      });
+    },
+    // ── COMPLETELY UNHINGED ──
+    applause:()=>{
+      // Crowd applause - randomised noise bursts
+      for(let i=0;i<40;i++){
+        const buf=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate),d=buf.getChannelData(0);
+        for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length);
+        const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();
+        f.type='bandpass';f.frequency.value=1000+Math.random()*2000;
+        const delay=Math.random()*2;
+        e.gain.setValueAtTime(Math.random()*.3+.1,t+delay);e.gain.exponentialRampToValueAtTime(.001,t+delay+.1);
+        s.buffer=buf;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t+delay);
+      }
+    },
+    sadtrombone:()=>{
+      // Wah wah waaah
+      const mel=[494,440,415,392];
+      mel.forEach((f,i)=>{
+        const o=ctx.createOscillator(),e=ctx.createGain(),flt=ctx.createBiquadFilter();
+        o.type='sawtooth';o.frequency.value=f;flt.type='lowpass';flt.frequency.value=600;
+        const d=i<3?.3:.8;
+        e.gain.setValueAtTime(0,t+i*.35);e.gain.linearRampToValueAtTime(.5,t+i*.35+.05);
+        e.gain.setValueAtTime(.5,t+i*.35+d-.05);e.gain.exponentialRampToValueAtTime(.001,t+i*.35+d);
+        o.connect(flt);flt.connect(e);e.connect(ctx.destination);o.start(t+i*.35);o.stop(t+i*.35+d+.1);
+      });
+    },
+    priceiswrong:()=>{
+      // Descending price-is-wrong losing music
+      const mel=[523,494,466,440,415,392,370,349,330,311,294,277,262];
+      mel.forEach((f,i)=>{
+        const o=ctx.createOscillator(),e=ctx.createGain(),flt=ctx.createBiquadFilter();
+        o.type='sawtooth';flt.type='lowpass';flt.frequency.value=500;o.frequency.value=f;
+        e.gain.setValueAtTime(.4,t+i*.12);e.gain.exponentialRampToValueAtTime(.001,t+i*.12+.15);
+        o.connect(flt);flt.connect(e);e.connect(ctx.destination);o.start(t+i*.12);o.stop(t+i*.12+.2);
+      });
+    },
+    crickets:()=>{
+      // Just crickets chirping
+      function chirp(start){
+        for(let i=0;i<4;i++){
+          const o=ctx.createOscillator(),e=ctx.createGain();
+          o.type='sine';o.frequency.setValueAtTime(4000,start+i*.03);
+          o.frequency.linearRampToValueAtTime(3500,start+i*.03+.02);
+          e.gain.setValueAtTime(.1,start+i*.03);e.gain.exponentialRampToValueAtTime(.001,start+i*.03+.025);
+          o.connect(e);e.connect(ctx.destination);o.start(start+i*.03);o.stop(start+i*.03+.03);
+        }
+      }
+      for(let i=0;i<8;i++) chirp(t+i*.4+Math.random()*.1);
+    },
+    explosion:()=>{
+      // BOOM
+      const buf=ctx.createBuffer(1,ctx.sampleRate*.8,ctx.sampleRate),d=buf.getChannelData(0);
+      for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/d.length,0.3);
+      const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();
+      f.type='lowpass';f.frequency.value=200;
+      e.gain.setValueAtTime(1.2,t);e.gain.exponentialRampToValueAtTime(.001,t+1);
+      s.buffer=buf;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t);
+      bellNote(ctx,55,t,0,.9,1.5);bellNote(ctx,41,t,.05,.7,1.2);
+    },
+    warp:()=>{
+      // Warp speed - engage!
+      const o=ctx.createOscillator(),e=ctx.createGain(),flt=ctx.createBiquadFilter();
+      o.type='sawtooth';flt.type='lowpass';
+      o.frequency.setValueAtTime(50,t);o.frequency.exponentialRampToValueAtTime(4000,t+1.5);
+      flt.frequency.setValueAtTime(100,t);flt.frequency.exponentialRampToValueAtTime(8000,t+1.5);
+      e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.6,t+.1);e.gain.linearRampToValueAtTime(.6,t+1.2);e.gain.exponentialRampToValueAtTime(.001,t+1.8);
+      o.connect(flt);flt.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+1.9);
+    },
+    dramatic:()=>{
+      // Dun dun DUNN - dramatic sting
+      sineNote(ctx,196,t,0,.5,.2); sineNote(ctx,196,t,.25,.5,.2);
+      sineNote(ctx,147,t,.5,.8,.8);
+      // Crash cymbal
+      const buf=ctx.createBuffer(1,ctx.sampleRate*.4,ctx.sampleRate),d=buf.getChannelData(0);
+      for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length);
+      const s=ctx.createBufferSource(),e=ctx.createGain(),f=ctx.createBiquadFilter();
+      f.type='highpass';f.frequency.value=4000;e.gain.setValueAtTime(.5,t+.5);e.gain.exponentialRampToValueAtTime(.001,t+1);
+      s.buffer=buf;s.connect(f);f.connect(e);e.connect(ctx.destination);s.start(t+.5);
+    },
+    cartoon:()=>{
+      // Speedy cartoon chase music
+      const mel=[523,587,659,698,784,880,988,1047,988,880,784,698,659,587,523,494,523];
+      mel.forEach((f,i)=>marimbaNote(ctx,f,t,i*.07,.5,.1));
+      // Boing spring effect
+      const o=ctx.createOscillator(),e=ctx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(200,t+mel.length*.07);
+      o.frequency.exponentialRampToValueAtTime(800,t+mel.length*.07+.3);
+      o.frequency.exponentialRampToValueAtTime(300,t+mel.length*.07+.5);
+      e.gain.setValueAtTime(.4,t+mel.length*.07);e.gain.exponentialRampToValueAtTime(.001,t+mel.length*.07+.6);
+      o.connect(e);e.connect(ctx.destination);o.start(t+mel.length*.07);o.stop(t+mel.length*.07+.7);
+    },
+    harp2heaven:()=>{
+      // Harp to heaven - ascending angelic sweep with choir
+      const notes=[262,294,330,349,392,440,494,523,587,659,698,784,880,988,1047,1175,1319,1568,2093];
+      notes.forEach((f,i)=>bellNote(ctx,f,t,i*.1,.4-i*.015,1.5));
+      // Choir ahhh
+      [262,330,392,523].forEach(f=>{
+        const o=ctx.createOscillator(),e=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();
+        o.type='sine';o.frequency.value=f;lfo.type='sine';lfo.frequency.value=5.5;lg.gain.value=f*.003;
+        lfo.connect(lg);lg.connect(o.frequency);
+        e.gain.setValueAtTime(0,t+.8);e.gain.linearRampToValueAtTime(.2,t+1.5);e.gain.setValueAtTime(.2,t+2.5);e.gain.exponentialRampToValueAtTime(.001,t+3.5);
+        o.connect(e);e.connect(ctx.destination);lfo.start(t+.8);lfo.stop(t+3.6);o.start(t+.8);o.stop(t+3.6);
+      });
+    },
+    vineboom:()=>{
+      // The Vine boom bass drop
+      const o=ctx.createOscillator(),e=ctx.createGain(),flt=ctx.createBiquadFilter();
+      o.type='sine';flt.type='lowpass';flt.frequency.value=120;
+      o.frequency.setValueAtTime(80,t);o.frequency.exponentialRampToValueAtTime(40,t+.6);
+      e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(1.2,t+.01);e.gain.exponentialRampToValueAtTime(.001,t+.8);
+      o.connect(flt);flt.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+.9);
+      // The clap
+      const buf=ctx.createBuffer(1,ctx.sampleRate*.1,ctx.sampleRate),d=buf.getChannelData(0);
+      for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length);
+      const s=ctx.createBufferSource(),e2=ctx.createGain(),f2=ctx.createBiquadFilter();
+      f2.type='bandpass';f2.frequency.value=1200;e2.gain.setValueAtTime(.8,t);e2.gain.exponentialRampToValueAtTime(.001,t+.15);
+      s.buffer=buf;s.connect(f2);f2.connect(e2);e2.connect(ctx.destination);s.start(t);
+    },
   };
   (P[type]||P.chime)();
 }
@@ -397,6 +801,12 @@ function applyFont(){
 
 let logoDataUrl=null,tickInterval=null,sessionStart=null,interviewDuration=5,lastInterviewIdx=-1;
 
+function toggleCustomLen(){
+  const sel=document.getElementById('interviewLen');
+  const inp=document.getElementById('customLen');
+  inp.style.display=(sel.value==='custom')?'block':'none';
+  if(sel.value==='custom')inp.focus();
+}
 function previewTone(){getAudio();playTone(document.getElementById('toneSelect').value);}
 function handleLogoUpload(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{logoDataUrl=ev.target.result;document.getElementById('logoPreview').src=logoDataUrl;document.getElementById('logoPreview').style.display='block';document.getElementById('logoPlaceholder').style.display='none';document.getElementById('displayLogo').src=logoDataUrl;document.getElementById('displayLogo').style.display='block';};r.readAsDataURL(file);}
 function pickSwatch(el){const tgt=el.dataset.target;document.querySelectorAll(`.swatch[data-target="${tgt}"]`).forEach(s=>s.classList.remove('active'));el.classList.add('active');if(tgt==='primary')document.getElementById('primaryColour').value=el.dataset.col;if(tgt==='secondary')document.getElementById('secondaryColour').value=el.dataset.col;applyColours();}
@@ -407,7 +817,13 @@ function fmtMMSS(s){if(s<0)s=0;return`${Math.floor(s/60)}:${String(s%60).padStar
 
 function launchDisplay(){
   getAudio(); applyFont();
-  interviewDuration=parseInt(document.getElementById('interviewLen').value);
+  const lenSel=document.getElementById('interviewLen');
+  if(lenSel.value==='custom'){
+    const cv=parseInt(document.getElementById('customLen').value);
+    interviewDuration=(!isNaN(cv)&&cv>=1)?cv:5;
+  } else {
+    interviewDuration=parseInt(lenSel.value);
+  }
   sessionStart=parseTimeInput(document.getElementById('startTime').value);
   document.getElementById('displaySchoolName').textContent=document.getElementById('schoolName').value.trim();
   document.getElementById('displayEventName').textContent=document.getElementById('eventName').value.trim();
