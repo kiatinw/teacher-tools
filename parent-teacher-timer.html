@@ -131,9 +131,10 @@ body {
 
 /* Tone selector */
 .tone-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;
 }
-@media(max-width:500px){ .tone-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:680px){ .tone-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width:400px){ .tone-grid { grid-template-columns: 1fr; } }
 
 .tone-btn {
   background: var(--surface2); border: 1.5px solid var(--rule);
@@ -238,7 +239,7 @@ body {
 }
 .display-school-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1rem, 2.5vh, 1.6rem);
+  font-size: clamp(1rem, 3vh, 999rem);
   font-weight: 400; letter-spacing: 0.08em;
   color: rgba(240,236,228,0.75);
 }
@@ -267,7 +268,7 @@ body {
 /* Current time — large clock at top */
 .display-current-time {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(4.5rem, 14vh, 11rem);
+  font-size: clamp(3rem, 16vh, 999rem);
   font-weight: 300; letter-spacing: 0.08em;
   color: rgba(240,236,228,0.85);
   line-height: 1;
@@ -276,10 +277,11 @@ body {
 
 /* Label sits inside centre-row above the ring, via a wrapper */
 .display-label {
-  font-size: clamp(0.55rem, 1.6vh, 0.9rem);
-  letter-spacing: 0.55em; text-transform: uppercase;
+  font-size: clamp(0.55rem, 2.2vh, 999rem);
+  letter-spacing: 0.45em; text-transform: uppercase;
   color: rgba(240,236,228,0.35);
   text-align: center;
+  width: 100%;
   transition: color 0.5s;
 }
 
@@ -304,7 +306,7 @@ body {
 /* The big countdown sits inside the ring (position set in .ring-wrap block above) */
 .display-countdown {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(5rem, 18vh, 14rem);
+  font-size: clamp(4rem, 22vh, 999rem);
   font-weight: 300; line-height: 1;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -344,20 +346,20 @@ body {
 .display-session-panel {
   display: flex;
   flex-direction: column;
-  gap: 3.5vh;
+  gap: 4vh;
   align-items: flex-start;
   flex-shrink: 0;
-  min-width: 18vw;
+  min-width: 20vw;
 }
 .session-item { text-align: left; }
 .session-val {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.8rem, 5.5vh, 4rem);
+  font-size: clamp(1.4rem, 6.5vh, 999rem);
   font-weight: 300; color: rgba(240,236,228,0.75);
   display: block; line-height: 1;
 }
 .session-lbl {
-  font-size: clamp(0.5rem, 1.4vh, 0.78rem);
+  font-size: clamp(0.5rem, 1.8vh, 999rem);
   letter-spacing: 0.38em; text-transform: uppercase;
   color: rgba(240,236,228,0.3); display: block; margin-top: 0.5vh;
 }
@@ -372,18 +374,18 @@ body {
 }
 .prestart-msg {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2rem, 6vh, 5rem);
+  font-size: clamp(2rem, 8vh, 999rem);
   font-weight: 300; color: rgba(240,236,228,0.6);
   letter-spacing: 0.04em; margin-bottom: 1.5vh;
 }
 .prestart-starts-in {
-  font-size: clamp(0.7rem, 2vh, 1.1rem);
+  font-size: clamp(0.7rem, 2.5vh, 999rem);
   letter-spacing: 0.3em; text-transform: uppercase;
   color: var(--accent); margin-bottom: 0.6vh;
 }
 .prestart-countdown {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3rem, 10vh, 8rem);
+  font-size: clamp(3rem, 14vh, 999rem);
   font-weight: 300; color: var(--accent);
   letter-spacing: 0.04em;
 }
@@ -395,7 +397,7 @@ body {
   z-index: 2;
 }
 .display-event-name {
-  font-size: clamp(0.5rem, 1.4vh, 0.8rem);
+  font-size: clamp(0.5rem, 1.8vh, 999rem);
   letter-spacing: 0.4em; text-transform: uppercase;
   color: rgba(240,236,228,0.25);
 }
@@ -525,6 +527,10 @@ body {
         <span class="tone-name">Double Chime</span>
         <span class="tone-desc">Two bell strikes</span>
       </div>
+      <div class="tone-btn" data-tone="triple" onclick="selectTone(this)">
+        <span class="tone-name">Triple Chime</span>
+        <span class="tone-desc">Three ascending bells</span>
+      </div>
       <div class="tone-btn" data-tone="soft" onclick="selectTone(this)">
         <span class="tone-name">Soft Tone</span>
         <span class="tone-desc">Low sine wave</span>
@@ -536,6 +542,50 @@ body {
       <div class="tone-btn" data-tone="gong" onclick="selectTone(this)">
         <span class="tone-name">Gong</span>
         <span class="tone-desc">Deep resonant</span>
+      </div>
+      <div class="tone-btn" data-tone="tubular" onclick="selectTone(this)">
+        <span class="tone-name">Tubular Bell</span>
+        <span class="tone-desc">Orchestra chime</span>
+      </div>
+      <div class="tone-btn" data-tone="marimba" onclick="selectTone(this)">
+        <span class="tone-name">Marimba</span>
+        <span class="tone-desc">Warm wooden tone</span>
+      </div>
+      <div class="tone-btn" data-tone="xylophone" onclick="selectTone(this)">
+        <span class="tone-name">Xylophone</span>
+        <span class="tone-desc">Bright ascending run</span>
+      </div>
+      <div class="tone-btn" data-tone="doorbell" onclick="selectTone(this)">
+        <span class="tone-name">Doorbell</span>
+        <span class="tone-desc">Ding-dong</span>
+      </div>
+      <div class="tone-btn" data-tone="fanfare" onclick="selectTone(this)">
+        <span class="tone-name">Fanfare</span>
+        <span class="tone-desc">Short brass motif</span>
+      </div>
+      <div class="tone-btn" data-tone="gentle3" onclick="selectTone(this)">
+        <span class="tone-name">Gentle Rise</span>
+        <span class="tone-desc">Soft ascending tones</span>
+      </div>
+      <div class="tone-btn" data-tone="alert" onclick="selectTone(this)">
+        <span class="tone-name">Attention</span>
+        <span class="tone-desc">Clear two-tone alert</span>
+      </div>
+      <div class="tone-btn" data-tone="vibraphone" onclick="selectTone(this)">
+        <span class="tone-name">Vibraphone</span>
+        <span class="tone-desc">Shimmering chord</span>
+      </div>
+      <div class="tone-btn" data-tone="deepbell" onclick="selectTone(this)">
+        <span class="tone-name">Deep Bell</span>
+        <span class="tone-desc">Low resonant bell</span>
+      </div>
+      <div class="tone-btn" data-tone="cuckoo" onclick="selectTone(this)">
+        <span class="tone-name">Cuckoo</span>
+        <span class="tone-desc">Two descending tones</span>
+      </div>
+      <div class="tone-btn" data-tone="harp" onclick="selectTone(this)">
+        <span class="tone-name">Harp Gliss</span>
+        <span class="tone-desc">Rising harp sweep</span>
       </div>
       <div class="tone-btn" data-tone="silent" onclick="selectTone(this)">
         <span class="tone-name">Silent</span>
@@ -658,6 +708,64 @@ function playTone(type) {
       bellNote(ctx, 220, t, 0.0, 0.4, 2.5);
       bellNote(ctx, 165, t, 0.05, 0.3, 2.0);
     },
+    triple: () => {
+      bellNote(ctx, 784, t, 0.0,  0.5, 1.2);
+      bellNote(ctx, 988, t, 0.22, 0.5, 1.2);
+      bellNote(ctx, 1175,t, 0.44, 0.5, 1.4);
+    },
+    tubular: () => {
+      bellNote(ctx, 523, t, 0.0, 0.7, 2.5);
+      bellNote(ctx, 659, t, 0.0, 0.3, 2.0);
+      bellNote(ctx, 784, t, 0.0, 0.15,1.5);
+    },
+    marimba: () => {
+      marimbaNote(ctx, 523, t, 0.0,  0.7, 0.6);
+      marimbaNote(ctx, 659, t, 0.08, 0.5, 0.5);
+      marimbaNote(ctx, 784, t, 0.16, 0.4, 0.6);
+    },
+    xylophone: () => {
+      const notes = [523,587,659,698,784,880,988];
+      notes.forEach((f,i) => marimbaNote(ctx, f, t, i*0.08, 0.45, 0.35));
+    },
+    doorbell: () => {
+      bellNote(ctx, 784, t, 0.0, 0.6, 1.0);
+      bellNote(ctx, 523, t, 0.4, 0.6, 1.2);
+    },
+    fanfare: () => {
+      const freqs = [523,659,784,659,784,1047];
+      const durs  = [0.12,0.12,0.12,0.12,0.08,0.35];
+      let off = 0;
+      freqs.forEach((f,i) => {
+        squareNote(ctx, f, t, off, 0.28, durs[i]);
+        off += durs[i] + 0.02;
+      });
+    },
+    gentle3: () => {
+      sineNote(ctx, 440, t, 0.0,  0.3, 1.0);
+      sineNote(ctx, 554, t, 0.25, 0.3, 1.0);
+      sineNote(ctx, 659, t, 0.5,  0.35,1.2);
+    },
+    alert: () => {
+      squareNote(ctx, 880, t, 0.0,  0.22, 0.18);
+      squareNote(ctx, 1109,t, 0.22, 0.22, 0.28);
+    },
+    vibraphone: () => {
+      const chord = [523,659,784,1047];
+      chord.forEach((f,i) => vibraNote(ctx, f, t, i*0.04, 0.35, 2.2));
+    },
+    deepbell: () => {
+      bellNote(ctx, 196, t, 0.0, 0.85, 4.0);
+      bellNote(ctx, 294, t, 0.0, 0.35, 3.0);
+      bellNote(ctx, 392, t, 0.0, 0.18, 2.5);
+    },
+    cuckoo: () => {
+      sineNote(ctx, 659, t, 0.0, 0.4, 0.35);
+      sineNote(ctx, 523, t, 0.4, 0.45,0.45);
+    },
+    harp: () => {
+      const notes = [523,659,784,988,1175,1319,1568];
+      notes.forEach((f,i) => bellNote(ctx, f, t, i*0.07, 0.28, 0.9));
+    },
   };
   (plays[type] || plays.chime)();
 }
@@ -685,6 +793,58 @@ function sineNote(ctx, freq, startTime, delay, gain, decay) {
   env.gain.exponentialRampToValueAtTime(0.001, startTime + delay + decay);
   osc.connect(env); env.connect(ctx.destination);
   osc.start(startTime + delay); osc.stop(startTime + delay + decay + 0.1);
+}
+
+function marimbaNote(ctx, freq, startTime, delay, gain, decay) {
+  // Marimba: sine with fast attack, medium decay, slight overtone
+  const osc  = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const env  = ctx.createGain();
+  osc.type  = 'sine'; osc.frequency.value  = freq;
+  osc2.type = 'sine'; osc2.frequency.value = freq * 3.85;
+  const env2 = ctx.createGain();
+  env.gain.setValueAtTime(0, startTime+delay);
+  env.gain.linearRampToValueAtTime(gain, startTime+delay+0.003);
+  env.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay);
+  env2.gain.setValueAtTime(0, startTime+delay);
+  env2.gain.linearRampToValueAtTime(gain*0.15, startTime+delay+0.003);
+  env2.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay*0.3);
+  osc.connect(env);  env.connect(ctx.destination);
+  osc2.connect(env2); env2.connect(ctx.destination);
+  osc.start(startTime+delay);  osc.stop(startTime+delay+decay+0.05);
+  osc2.start(startTime+delay); osc2.stop(startTime+delay+decay+0.05);
+}
+
+function squareNote(ctx, freq, startTime, delay, gain, decay) {
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+  osc.type = 'square'; osc.frequency.value = freq;
+  filter.type = 'lowpass'; filter.frequency.value = 2000;
+  env.gain.setValueAtTime(0, startTime+delay);
+  env.gain.linearRampToValueAtTime(gain, startTime+delay+0.01);
+  env.gain.setValueAtTime(gain, startTime+delay+decay*0.7);
+  env.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay);
+  osc.connect(filter); filter.connect(env); env.connect(ctx.destination);
+  osc.start(startTime+delay); osc.stop(startTime+delay+decay+0.05);
+}
+
+function vibraNote(ctx, freq, startTime, delay, gain, decay) {
+  // Vibraphone: sine with slight LFO tremolo
+  const osc   = ctx.createOscillator();
+  const lfo   = ctx.createOscillator();
+  const lfog  = ctx.createGain();
+  const env   = ctx.createGain();
+  osc.type  = 'sine'; osc.frequency.value = freq;
+  lfo.type  = 'sine'; lfo.frequency.value = 5.5;
+  lfog.gain.value = freq * 0.006;
+  lfo.connect(lfog); lfog.connect(osc.frequency);
+  env.gain.setValueAtTime(0, startTime+delay);
+  env.gain.linearRampToValueAtTime(gain, startTime+delay+0.01);
+  env.gain.exponentialRampToValueAtTime(0.001, startTime+delay+decay);
+  osc.connect(env); env.connect(ctx.destination);
+  lfo.start(startTime+delay); lfo.stop(startTime+delay+decay+0.1);
+  osc.start(startTime+delay); osc.stop(startTime+delay+decay+0.1);
 }
 
 // ═══════════════════════════════════════════
@@ -828,8 +988,8 @@ function resizeRing() {
   const vw = window.innerWidth, vh = window.innerHeight;
   // Available height after current-time (~14vh), label (~4vh), padding (~18vh total)
   // Available width: ~55vw (ring takes ~55vw, info panel ~20vw, gap ~5vw)
-  const maxByH = vh * 0.56;
-  const maxByW = vw * 0.54;
+  const maxByH = vh * 0.64;
+  const maxByW = vw * 0.52;
   const size = Math.min(maxByH, maxByW);
   ringR = size / 2 - 8;
   ringCirc = 2 * Math.PI * ringR;
