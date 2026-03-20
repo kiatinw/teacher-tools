@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Interview Timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════ */
+:root {
+  --primary:    #1a3a5c;
+  --primary2:   #245080;
+  --accent:     #c8a96e;
+  --bg:         #0d1b2a;
+  --surface:    #122033;
+  --surface2:   #1a2d42;
+  --ink:        #f0ece4;
+  --ink2:       #b8b0a4;
+  --rule:       rgba(240,236,228,0.1);
+  --green:      #4caf87;
+  --amber:      #e8a020;
+  --red:        #d64035;
+  --timer-col:  var(--ink);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SETTINGS VIEW
+═══════════════════════════════════════════ */
+#settings-view {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.settings-header {
+  width: 100%; max-width: 680px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--rule);
+}
+.settings-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 400; letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.settings-title span { color: var(--accent); font-style: italic; }
+.settings-badge {
+  font-size: 0.5rem; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--ink2); background: var(--surface2);
+  border: 1px solid var(--rule); border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+}
+
+.settings-card {
+  width: 100%; max-width: 680px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 2rem 2.2rem;
+  margin-bottom: 1.2rem;
+}
+.card-section-title {
+  font-size: 0.52rem; letter-spacing: 0.38em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 1.4rem; font-weight: 500;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.card-section-title::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+.field-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+.field-row.full { grid-template-columns: 1fr; }
+.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
+@media(max-width:560px){ .field-row, .field-row.three { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label {
+  font-size: 0.56rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink2); font-weight: 500;
+}
+.field input, .field select {
+  background: var(--surface2); border: 1px solid var(--rule);
+  border-radius: 8px; color: var(--ink);
+  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+  padding: 0.6rem 0.85rem;
+  outline: none; transition: border-color 0.2s;
+  width: 100%;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field input[type="color"] {
+  padding: 0.2rem 0.3rem; height: 42px; cursor: pointer;
+}
+.field select option { background: var(--surface2); }
+
+/* Logo upload */
+.logo-upload-area {
+  border: 1.5px dashed rgba(200,169,110,0.35);
+  border-radius: 10px; padding: 1.2rem;
+  text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.logo-upload-area:hover { border-color: var(--accent); background: rgba(200,169,110,0.04); }
+.logo-upload-area input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.logo-preview {
+  max-height: 70px; max-width: 220px;
+  object-fit: contain; display: none; margin: 0 auto 0.5rem;
+}
+.logo-placeholder {
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink2);
+}
+.logo-placeholder strong { display: block; font-size: 1.4rem; margin-bottom: 0.3rem; color: var(--ink2); }
+
+/* Tone selector */
+.tone-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem;
+}
+@media(max-width:500px){ .tone-grid { grid-template-columns: 1fr 1fr; } }
+
+.tone-btn {
+  background: var(--surface2); border: 1.5px solid var(--rule);
+  border-radius: 8px; padding: 0.65rem 0.5rem;
+  cursor: pointer; text-align: center;
+  transition: all 0.18s; color: var(--ink2);
+  font-family: 'DM Sans', sans-serif;
+}
+.tone-btn:hover { border-color: rgba(200,169,110,0.4); color: var(--ink); }
+.tone-btn.active { border-color: var(--accent); background: rgba(200,169,110,0.1); color: var(--ink); }
+.tone-btn .tone-name { font-size: 0.68rem; font-weight: 500; display: block; margin-bottom: 0.15rem; }
+.tone-btn .tone-desc { font-size: 0.5rem; letter-spacing: 0.08em; opacity: 0.65; }
+
+.tone-preview-btn {
+  margin-top: 0.8rem; width: 100%;
+  background: transparent; border: 1px solid var(--rule);
+  border-radius: 7px; padding: 0.5rem; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.68rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink2); transition: all 0.18s;
+}
+.tone-preview-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Colour swatches */
+.swatch-row { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.swatch {
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+  border: 2.5px solid transparent; transition: transform 0.15s, border-color 0.15s;
+}
+.swatch:hover { transform: scale(1.15); }
+.swatch.active { border-color: var(--ink); }
+
+/* Colour pair row */
+.colour-pair { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.colour-pair-sep { color: var(--ink2); font-size: 0.7rem; }
+
+/* Launch button */
+.launch-btn {
+  width: 100%; max-width: 680px;
+  margin-top: 0.8rem;
+  padding: 1.1rem 2rem;
+  background: var(--accent); color: #1a1208;
+  border: none; border-radius: 12px; cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem; font-weight: 600; letter-spacing: 0.06em;
+  box-shadow: 0 6px 32px rgba(200,169,110,0.28);
+  transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), box-shadow 0.18s, background 0.18s;
+}
+.launch-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 42px rgba(200,169,110,0.4); background: #d4b87a; }
+.launch-btn:active { transform: translateY(0); }
+.launch-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+.launch-hint {
+  width: 100%; max-width: 680px;
+  text-align: center; margin-top: 0.75rem;
+  font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink2);
+}
+
+/* Status dot */
+.status-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink2); }
+.status-dot.waiting  { background: var(--amber); animation: pulse 1.8s ease-in-out infinite; }
+.status-dot.running  { background: var(--green); animation: pulse 1.8s ease-in-out infinite; }
+.status-dot.finished { background: var(--red); }
+.status-txt { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink2); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ═══════════════════════════════════════════
+   DISPLAY VIEW (projector screen)
+═══════════════════════════════════════════ */
+#display-view {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  background: var(--bg);
+  overflow: hidden;
+}
+#display-view.active { display: flex; }
+
+/* Dynamic bg colour accent */
+.display-bg-accent {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  transition: background 1.2s ease;
+}
+
+/* School identity bar */
+.display-top-bar {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 6px; z-index: 2;
+  background: linear-gradient(90deg, var(--school-primary, #1a3a5c), var(--school-secondary, #c8a96e));
+}
+
+.display-logo-wrap {
+  position: absolute; top: 2.5vh; left: 3vw; z-index: 2;
+  display: flex; align-items: center; gap: 1.2rem;
+}
+.display-logo {
+  max-height: 7vh; max-width: 18vw;
+  object-fit: contain; display: none;
+}
+.display-school-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1rem, 2.5vh, 1.6rem);
+  font-weight: 400; letter-spacing: 0.08em;
+  color: rgba(240,236,228,0.75);
+}
+
+/* Close / settings button */
+.display-close-btn {
+  position: absolute; top: 2vh; right: 2vw; z-index: 10;
+  background: rgba(255,255,255,0.08); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 0.45rem 0.9rem; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.62rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink2);
+  transition: all 0.18s;
+}
+.display-close-btn:hover { background: rgba(255,255,255,0.14); color: var(--ink); }
+
+/* Main display content */
+.display-main {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 100%; height: 100vh;
+  padding: 10vh 4vw 6vh;
+  gap: 0;
+}
+
+/* Current time — large clock at top */
+.display-current-time {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(4.5rem, 14vh, 11rem);
+  font-weight: 300; letter-spacing: 0.08em;
+  color: rgba(240,236,228,0.85);
+  line-height: 1; margin-bottom: 3vh;
+  text-align: center;
+}
+
+/* Label above timer */
+.display-label {
+  font-size: clamp(0.55rem, 1.6vh, 0.9rem);
+  letter-spacing: 0.55em; text-transform: uppercase;
+  color: rgba(240,236,228,0.35);
+  margin-bottom: 2vh;
+  transition: color 0.5s;
+}
+
+/* Ring + info side by side */
+.display-centre-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5vw;
+  width: 100%;
+}
+
+/* The big countdown sits inside the ring */
+.display-countdown {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(6rem, 20vh, 16rem);
+  font-weight: 300; line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: color 0.6s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Thin arc progress ring */
+.ring-wrap {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.progress-ring {
+  position: absolute;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.progress-ring-bg { fill: none; stroke: rgba(255,255,255,0.07); }
+.progress-ring-fill {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.6s ease;
+}
+
+/* Session info panel — vertical stack to the right of ring */
+.display-session-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5vh;
+  align-items: flex-start;
+  flex-shrink: 0;
+  min-width: 18vw;
+}
+.session-item { text-align: left; }
+.session-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.8rem, 5.5vh, 4rem);
+  font-weight: 300; color: rgba(240,236,228,0.75);
+  display: block; line-height: 1;
+}
+.session-lbl {
+  font-size: clamp(0.5rem, 1.4vh, 0.78rem);
+  letter-spacing: 0.38em; text-transform: uppercase;
+  color: rgba(240,236,228,0.3); display: block; margin-top: 0.5vh;
+}
+.session-rule {
+  width: 100%; height: 1px;
+  background: rgba(240,236,228,0.1);
+}
+
+/* Pre-start message */
+.display-prestart {
+  text-align: center;
+}
+.prestart-msg {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 6vh, 5rem);
+  font-weight: 300; color: rgba(240,236,228,0.6);
+  letter-spacing: 0.04em; margin-bottom: 1.5vh;
+}
+.prestart-starts-in {
+  font-size: clamp(0.7rem, 2vh, 1.1rem);
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.6vh;
+}
+.prestart-countdown {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 10vh, 8rem);
+  font-weight: 300; color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+/* Bottom date bar */
+.display-bottom {
+  position: absolute; bottom: 2.5vh; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2;
+}
+.display-event-name {
+  font-size: clamp(0.5rem, 1.4vh, 0.8rem);
+  letter-spacing: 0.4em; text-transform: uppercase;
+  color: rgba(240,236,228,0.25);
+}
+
+/* Fullscreen toggle btn in settings */
+.fullscreen-btn {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: transparent; border: 1px solid rgba(200,169,110,0.3);
+  border-radius: 8px; padding: 0.55rem 1.1rem; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.62rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); transition: all 0.18s;
+}
+.fullscreen-btn:hover { background: rgba(200,169,110,0.08); border-color: var(--accent); }
+
+/* ── util ── */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SETTINGS VIEW ═══════════════════ -->
+<div id="settings-view">
+
+  <div class="settings-header">
+    <div class="settings-title">Interview <span>Timer</span></div>
+    <span class="settings-badge">Staff Settings</span>
+  </div>
+
+  <!-- SESSION SETTINGS -->
+  <div class="settings-card">
+    <div class="card-section-title">Session</div>
+    <div class="field-row three">
+      <div class="field">
+        <label>Start Time</label>
+        <input type="time" id="startTime" value="16:00">
+      </div>
+      <div class="field">
+        <label>Interview Length</label>
+        <select id="interviewLen">
+          <option value="3">3 minutes</option>
+          <option value="4">4 minutes</option>
+          <option value="5" selected>5 minutes</option>
+          <option value="6">6 minutes</option>
+          <option value="7">7 minutes</option>
+          <option value="8">8 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15">15 minutes</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Event Name</label>
+        <input type="text" id="eventName" placeholder="Parent-Teacher Night" value="Parent–Teacher Night">
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-row">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-txt" id="statusTxt">Not started</span>
+    </div>
+  </div>
+
+  <!-- BRANDING -->
+  <div class="settings-card">
+    <div class="card-section-title">School Branding</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>School Name</label>
+        <input type="text" id="schoolName" placeholder="Your School Name">
+      </div>
+      <div class="field">
+        <label>School Logo</label>
+        <div class="logo-upload-area" id="logoUploadArea">
+          <input type="file" id="logoFile" accept="image/*" onchange="handleLogoUpload(event)">
+          <img id="logoPreview" class="logo-preview" alt="Logo preview">
+          <div class="logo-placeholder" id="logoPlaceholder">
+            <strong>⬆</strong>
+            Click to upload logo
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Primary Colour</label>
+        <div class="colour-pair">
+          <div class="swatch-row" id="primarySwatches">
+            <div class="swatch active" style="background:#1a3a5c" data-col="#1a3a5c" data-target="primary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#1a4a2e" data-col="#1a4a2e" data-target="primary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#4a1a1a" data-col="#4a1a1a" data-target="primary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#2a1a4a" data-col="#2a1a4a" data-target="primary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#1a3a3a" data-col="#1a3a3a" data-target="primary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#3a2a1a" data-col="#3a2a1a" data-target="primary" onclick="pickSwatch(this)"></div>
+          </div>
+          <input type="color" id="primaryColour" value="#1a3a5c" oninput="applyColours()" style="width:42px;height:36px;border-radius:6px;flex-shrink:0;">
+        </div>
+      </div>
+      <div class="field">
+        <label>Secondary / Accent Colour</label>
+        <div class="colour-pair">
+          <div class="swatch-row" id="secondarySwatches">
+            <div class="swatch active" style="background:#c8a96e" data-col="#c8a96e" data-target="secondary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#6e9ec8" data-col="#6e9ec8" data-target="secondary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#c86e6e" data-col="#c86e6e" data-target="secondary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#6ec898" data-col="#6ec898" data-target="secondary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#9e6ec8" data-col="#9e6ec8" data-target="secondary" onclick="pickSwatch(this)"></div>
+            <div class="swatch" style="background:#c8c86e" data-col="#c8c86e" data-target="secondary" onclick="pickSwatch(this)"></div>
+          </div>
+          <input type="color" id="secondaryColour" value="#c8a96e" oninput="applyColours()" style="width:42px;height:36px;border-radius:6px;flex-shrink:0;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- END TONE -->
+  <div class="settings-card">
+    <div class="card-section-title">End-of-Interview Tone</div>
+    <div class="tone-grid" id="toneGrid">
+      <div class="tone-btn active" data-tone="chime" onclick="selectTone(this)">
+        <span class="tone-name">Chime</span>
+        <span class="tone-desc">Gentle bell</span>
+      </div>
+      <div class="tone-btn" data-tone="double" onclick="selectTone(this)">
+        <span class="tone-name">Double Chime</span>
+        <span class="tone-desc">Two bell strikes</span>
+      </div>
+      <div class="tone-btn" data-tone="soft" onclick="selectTone(this)">
+        <span class="tone-name">Soft Tone</span>
+        <span class="tone-desc">Low sine wave</span>
+      </div>
+      <div class="tone-btn" data-tone="ding" onclick="selectTone(this)">
+        <span class="tone-name">Ding</span>
+        <span class="tone-desc">Short bright ping</span>
+      </div>
+      <div class="tone-btn" data-tone="gong" onclick="selectTone(this)">
+        <span class="tone-name">Gong</span>
+        <span class="tone-desc">Deep resonant</span>
+      </div>
+      <div class="tone-btn" data-tone="silent" onclick="selectTone(this)">
+        <span class="tone-name">Silent</span>
+        <span class="tone-desc">No sound</span>
+      </div>
+    </div>
+    <button class="tone-preview-btn" onclick="previewTone()">▶ &nbsp;Preview selected tone</button>
+  </div>
+
+  <!-- LAUNCH -->
+  <button class="launch-btn" id="launchBtn" onclick="launchDisplay()">
+    Open Display Screen
+  </button>
+  <div class="launch-hint">Opens the projector view · use the fullscreen button once displayed</div>
+
+</div><!-- /settings-view -->
+
+
+<!-- ═══════════════════ DISPLAY VIEW ═══════════════════ -->
+<div id="display-view">
+
+  <div class="display-bg-accent" id="displayBgAccent"></div>
+  <div class="display-top-bar" id="displayTopBar"></div>
+
+  <div class="display-logo-wrap">
+    <img id="displayLogo" class="display-logo" alt="School logo">
+    <span class="display-school-name" id="displaySchoolName"></span>
+  </div>
+
+  <button class="display-close-btn" onclick="closeDisplay()">✕ &nbsp;Settings</button>
+
+  <!-- PRE-START STATE -->
+  <div class="display-main" id="displayPrestart">
+    <div class="prestart-msg" id="prestartMsg">Interviews begin at <span id="prestartTime"></span></div>
+    <div class="prestart-starts-in">Starting in</div>
+    <div class="prestart-countdown" id="prestartCountdown">—</div>
+  </div>
+
+  <!-- RUNNING STATE -->
+  <div class="display-main hidden" id="displayRunning">
+    <div class="display-current-time" id="displayNow">00:00</div>
+    <div class="display-label">Time remaining in this interview</div>
+    <div class="display-centre-row">
+      <!-- Ring with countdown inside -->
+      <div class="ring-wrap" id="ringWrap">
+        <svg class="progress-ring" id="progressRing" width="0" height="0">
+          <circle class="progress-ring-bg" id="ringBg"/>
+          <circle class="progress-ring-fill" id="ringFill"/>
+        </svg>
+        <div class="display-countdown" id="displayCountdown">5:00</div>
+      </div>
+      <!-- Info panel to the right -->
+      <div class="display-session-panel">
+        <div class="session-item">
+          <span class="session-val" id="sessionInterviewNum">1</span>
+          <span class="session-lbl">Interview No.</span>
+        </div>
+        <div class="session-rule"></div>
+        <div class="session-item">
+          <span class="session-val" id="sessionNextTime">—</span>
+          <span class="session-lbl">Next slot at</span>
+        </div>
+        <div class="session-rule"></div>
+        <div class="session-item">
+          <span class="session-val" id="sessionLen">5 min</span>
+          <span class="session-lbl">Per interview</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="display-bottom">
+    <span class="display-event-name" id="displayEventName"></span>
+  </div>
+
+</div><!-- /display-view -->
+
+
+<script>
+// ═══════════════════════════════════════════
+// AUDIO ENGINE  (Web Audio API — no files needed)
+// ═══════════════════════════════════════════
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(type) {
+  if (type === 'silent') return;
+  const ctx = getAudio();
+  const t = ctx.currentTime;
+
+  const plays = {
+    chime: () => {
+      // Single warm bell
+      bellNote(ctx, 880, t, 0.0, 0.6, 1.8);
+      bellNote(ctx, 1760, t, 0.0, 0.3, 1.2);
+    },
+    double: () => {
+      bellNote(ctx, 880, t, 0.0, 0.6, 1.4);
+      bellNote(ctx, 880, t, 0.45, 0.6, 1.4);
+      bellNote(ctx, 1320, t, 0.0, 0.25, 1.2);
+      bellNote(ctx, 1320, t, 0.45, 0.25, 1.2);
+    },
+    soft: () => {
+      sineNote(ctx, 440, t, 0.0, 0.4, 2.0);
+      sineNote(ctx, 554, t, 0.1, 0.3, 1.8);
+    },
+    ding: () => {
+      bellNote(ctx, 1320, t, 0.0, 0.5, 0.7);
+      bellNote(ctx, 2640, t, 0.0, 0.2, 0.5);
+    },
+    gong: () => {
+      bellNote(ctx, 110, t, 0.0, 0.9, 3.5);
+      bellNote(ctx, 220, t, 0.0, 0.4, 2.5);
+      bellNote(ctx, 165, t, 0.05, 0.3, 2.0);
+    },
+  };
+  (plays[type] || plays.chime)();
+}
+
+function bellNote(ctx, freq, startTime, delay, gain, decay) {
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(freq, startTime + delay);
+  osc.frequency.exponentialRampToValueAtTime(freq * 0.98, startTime + delay + decay);
+  env.gain.setValueAtTime(0.001, startTime + delay);
+  env.gain.linearRampToValueAtTime(gain, startTime + delay + 0.005);
+  env.gain.exponentialRampToValueAtTime(0.001, startTime + delay + decay);
+  osc.connect(env); env.connect(ctx.destination);
+  osc.start(startTime + delay); osc.stop(startTime + delay + decay + 0.05);
+}
+
+function sineNote(ctx, freq, startTime, delay, gain, decay) {
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  env.gain.setValueAtTime(0, startTime + delay);
+  env.gain.linearRampToValueAtTime(gain, startTime + delay + 0.08);
+  env.gain.exponentialRampToValueAtTime(0.001, startTime + delay + decay);
+  osc.connect(env); env.connect(ctx.destination);
+  osc.start(startTime + delay); osc.stop(startTime + delay + decay + 0.1);
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let selectedTone = 'chime';
+let logoDataUrl  = null;
+let tickInterval = null;
+let sessionStart = null; // Date object of first interview start
+let interviewDuration = 5; // minutes
+let isRunning = false;
+let lastInterviewIdx = -1; // which interview we last rang for
+
+function selectTone(el) {
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedTone = el.dataset.tone;
+}
+function previewTone() { playTone(selectedTone); }
+
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    logoDataUrl = ev.target.result;
+    document.getElementById('logoPreview').src = logoDataUrl;
+    document.getElementById('logoPreview').style.display = 'block';
+    document.getElementById('logoPlaceholder').style.display = 'none';
+    document.getElementById('displayLogo').src = logoDataUrl;
+    document.getElementById('displayLogo').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// Colour handling
+function pickSwatch(el) {
+  const target = el.dataset.target;
+  document.querySelectorAll(`.swatch[data-target="${target}"]`).forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  if (target === 'primary')   document.getElementById('primaryColour').value   = el.dataset.col;
+  if (target === 'secondary') document.getElementById('secondaryColour').value = el.dataset.col;
+  applyColours();
+}
+
+function applyColours() {
+  const p = document.getElementById('primaryColour').value;
+  const s = document.getElementById('secondaryColour').value;
+  document.documentElement.style.setProperty('--school-primary', p);
+  document.documentElement.style.setProperty('--school-secondary', s);
+  document.documentElement.style.setProperty('--accent', s);
+  document.getElementById('displayTopBar').style.background =
+    `linear-gradient(90deg, ${p}, ${s})`;
+}
+
+// ═══════════════════════════════════════════
+// TIME HELPERS
+// ═══════════════════════════════════════════
+function parseTimeInput(val) {
+  // Returns a Date for today at that time
+  const [h, m] = val.split(':').map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d;
+}
+
+function fmt12(date) {
+  let h = date.getHours(), m = date.getMinutes();
+  const ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12 || 12;
+  return `${h}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function fmtMMSS(totalSeconds) {
+  if (totalSeconds < 0) totalSeconds = 0;
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════
+// LAUNCH & DISPLAY
+// ═══════════════════════════════════════════
+function launchDisplay() {
+  // Wake audio context
+  getAudio();
+
+  interviewDuration = parseInt(document.getElementById('interviewLen').value);
+  const startVal = document.getElementById('startTime').value;
+  sessionStart = parseTimeInput(startVal);
+
+  // Update display elements
+  const schoolName = document.getElementById('schoolName').value.trim();
+  const eventName  = document.getElementById('eventName').value.trim();
+  document.getElementById('displaySchoolName').textContent = schoolName;
+  document.getElementById('displayEventName').textContent  = eventName;
+  document.getElementById('sessionLen').textContent = interviewDuration + ' min';
+
+  if (!logoDataUrl) {
+    document.getElementById('displayLogo').style.display = 'none';
+  }
+
+  applyColours();
+
+  // Show display view
+  document.getElementById('display-view').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Resize ring
+  resizeRing();
+
+  // Start tick
+  if (tickInterval) clearInterval(tickInterval);
+  tickInterval = setInterval(tick, 500);
+  tick();
+}
+
+function closeDisplay() {
+  document.getElementById('display-view').classList.remove('active');
+  document.body.style.overflow = '';
+  if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
+  isRunning = false;
+  lastInterviewIdx = -1;
+  updateStatus('idle');
+}
+
+// Fullscreen
+document.getElementById('display-view').addEventListener('dblclick', () => {
+  if (!document.fullscreenElement) {
+    document.getElementById('display-view').requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+});
+
+// ═══════════════════════════════════════════
+// RING SETUP
+// ═══════════════════════════════════════════
+let ringR = 0, ringCirc = 0;
+function resizeRing() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  // Available height after current-time (~14vh), label (~4vh), padding (~18vh total)
+  // Available width: ~55vw (ring takes ~55vw, info panel ~20vw, gap ~5vw)
+  const maxByH = vh * 0.56;
+  const maxByW = vw * 0.54;
+  const size = Math.min(maxByH, maxByW);
+  ringR = size / 2 - 8;
+  ringCirc = 2 * Math.PI * ringR;
+  const svg = document.getElementById('progressRing');
+  svg.setAttribute('width', size);
+  svg.setAttribute('height', size);
+  svg.style.width = size + 'px';
+  svg.style.height = size + 'px';
+  const cx = size / 2, cy = size / 2;
+  // Thick stroke — readable from 10+ metres
+  const strokeW = Math.max(10, size * 0.028);
+  document.getElementById('ringBg').setAttribute('cx', cx);
+  document.getElementById('ringBg').setAttribute('cy', cy);
+  document.getElementById('ringBg').setAttribute('r', ringR);
+  document.getElementById('ringBg').setAttribute('stroke-width', strokeW);
+  document.getElementById('ringFill').setAttribute('cx', cx);
+  document.getElementById('ringFill').setAttribute('cy', cy);
+  document.getElementById('ringFill').setAttribute('r', ringR);
+  document.getElementById('ringFill').setAttribute('stroke-width', strokeW);
+  document.getElementById('ringFill').style.strokeDasharray = ringCirc;
+  document.getElementById('ringFill').style.strokeDashoffset = 0;
+}
+window.addEventListener('resize', resizeRing);
+
+// ═══════════════════════════════════════════
+// TICK — the main loop
+// ═══════════════════════════════════════════
+function tick() {
+  const now = new Date();
+
+  // Update current time display
+  document.getElementById('displayNow').textContent = fmt12(now);
+
+  const diffMs = now - sessionStart; // ms since session start
+
+  if (diffMs < 0) {
+    // Pre-start
+    showPrestart(now);
+    updateStatus('waiting');
+    return;
+  }
+
+  // We're in the session
+  updateStatus('running');
+  showRunning();
+
+  const interviewMs  = interviewDuration * 60 * 1000;
+  const elapsedInSlot = diffMs % interviewMs; // ms into current slot
+  const remainMs      = interviewMs - elapsedInSlot;
+  const remainSec     = Math.ceil(remainMs / 1000);
+  const interviewIdx  = Math.floor(diffMs / interviewMs); // 0-indexed
+
+  // Check if we crossed into a new interview — ring the tone
+  if (interviewIdx !== lastInterviewIdx && lastInterviewIdx !== -1) {
+    playTone(selectedTone);
+  }
+  // Also ring at exactly 0:00 (when the slot rolls over)
+  if (remainSec <= 0 && lastInterviewIdx === interviewIdx) {
+    // handled next tick
+  }
+  lastInterviewIdx = interviewIdx;
+
+  // Countdown text
+  document.getElementById('displayCountdown').textContent = fmtMMSS(remainSec);
+
+  // Colour — green/amber/red based on remaining time
+  let timerColour, ringColour;
+  if (remainSec > 60) {
+    timerColour = 'rgba(240,236,228,0.92)';
+    ringColour  = 'rgba(240,236,228,0.55)';
+  } else if (remainSec > 30) {
+    timerColour = '#e8a020';
+    ringColour  = '#e8a020';
+  } else {
+    timerColour = '#d64035';
+    ringColour  = '#d64035';
+  }
+  document.getElementById('displayCountdown').style.color = timerColour;
+  document.getElementById('ringFill').style.stroke = ringColour;
+
+  // Subtle bg tint as time runs out (projector-friendly — very subtle)
+  if (remainSec <= 30) {
+    const intensity = 0.03 + 0.05 * (1 - remainSec / 30);
+    document.getElementById('displayBgAccent').style.background =
+      `radial-gradient(ellipse 70% 60% at 50% 50%, rgba(214,64,53,${intensity}), transparent)`;
+  } else {
+    document.getElementById('displayBgAccent').style.background = 'none';
+  }
+
+  // Ring fill (progress)
+  const fraction = 1 - (elapsedInSlot / interviewMs);
+  const offset   = ringCirc * (1 - fraction);
+  document.getElementById('ringFill').style.strokeDashoffset = offset;
+
+  // Session info
+  document.getElementById('sessionInterviewNum').textContent = interviewIdx + 1;
+
+  // Next slot time
+  const nextSlotDate = new Date(sessionStart.getTime() + (interviewIdx + 1) * interviewMs);
+  document.getElementById('sessionNextTime').textContent = fmt12(nextSlotDate);
+}
+
+function showPrestart(now) {
+  document.getElementById('displayPrestart').classList.remove('hidden');
+  document.getElementById('displayRunning').classList.add('hidden');
+
+  const startStr = fmt12(sessionStart);
+  document.getElementById('prestartTime').textContent = startStr;
+
+  const diffSec = Math.ceil((sessionStart - now) / 1000);
+  const h = Math.floor(diffSec / 3600);
+  const m = Math.floor((diffSec % 3600) / 60);
+  const s = diffSec % 60;
+  let str = '';
+  if (h > 0) str += h + 'h ';
+  if (m > 0 || h > 0) str += m + 'm ';
+  str += s + 's';
+  document.getElementById('prestartCountdown').textContent = str;
+}
+
+function showRunning() {
+  document.getElementById('displayPrestart').classList.add('hidden');
+  document.getElementById('displayRunning').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════
+// STATUS INDICATOR (settings page)
+// ═══════════════════════════════════════════
+function updateStatus(state) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusTxt');
+  dot.className = 'status-dot';
+  if (state === 'idle') {
+    txt.textContent = 'Not started'; return;
+  }
+  if (state === 'waiting') {
+    dot.classList.add('waiting');
+    txt.textContent = 'Waiting for start time';
+  } else if (state === 'running') {
+    dot.classList.add('running');
+    txt.textContent = 'Session running';
+  }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+applyColours();
+</script>
+</body>
+</html>
