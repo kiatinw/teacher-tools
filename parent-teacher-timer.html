@@ -299,6 +299,13 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
             <option value="ode">Ode to Joy &mdash; Beethoven opener</option>
             <option value="furelise">F&uuml;r Elise &mdash; Beethoven opening</option>
           </optgroup>
+          <optgroup label="🖖 Star Trek">
+            <option value="stTheme">Star Trek Theme</option>
+            <option value="tngDoor">TNG Door Chime</option>
+            <option value="tngComm">TNG Combadge</option>
+            <option value="tosComm">TOS Communicator</option>
+            <option value="redAlert">Red Alert</option>
+          </optgroup>
           <optgroup label="🤪 Unhinged & Chaos">
             <option value="airraid">Air Raid Siren &mdash; Impending doom</option>
             <option value="techno">Techno Drop &mdash; Untz untz untz</option>
@@ -450,6 +457,11 @@ function playTone(type){
     timpani:()=>{const o=ctx.createOscillator(),e=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(100,t);o.frequency.linearRampToValueAtTime(80,t+.1);e.gain.setValueAtTime(1,t);e.gain.exponentialRampToValueAtTime(.001,t+1.5);o.connect(e);e.connect(ctx.destination);o.start(t);o.stop(t+1.6);},
     gamelan:()=>{[440,460,880,920].forEach((f,i)=>bellNote(ctx,f,t,i*.05,.4,2));},
     windchime:()=>{[1047,1175,1319,1480,1568,1760,1976,2093].forEach(f=>bellNote(ctx,f,t,Math.random()*.5,.3*Math.random()+.15,1.2+Math.random()*.8));},
+    stTheme:()=>{brassNote(ctx,466,t,0,.3);brassNote(ctx,698,t,.35,.3);brassNote(ctx,932,t,.7,.6);},
+    tngDoor:()=>{bellNote(ctx,554,t,0,.6,1.2);bellNote(ctx,415,t,.4,.6,1.5);},
+    tngComm:()=>{squareNote(ctx,784,t,0,.3,.05);squareNote(ctx,1047,t,.07,.3,.1);},
+    tosComm:()=>{const o=ctx.createOscillator(),lfo=ctx.createOscillator(),lg=ctx.createGain(),e=ctx.createGain();o.type='sine';o.frequency.value=2250;lfo.type='square';lfo.frequency.value=25;lg.gain.value=250;lfo.connect(lg);lg.connect(o.frequency);e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.4,t+.01);e.gain.setValueAtTime(.4,t+.5);e.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(e);e.connect(ctx.destination);lfo.start(t);lfo.stop(t+.65);o.start(t);o.stop(t+.65);},
+    redAlert:()=>{for(let i=0;i<3;i++){const st=t+i*1.2;const o=ctx.createOscillator(),e=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(700,st);o.frequency.linearRampToValueAtTime(1500,st+.5);o.frequency.linearRampToValueAtTime(700,st+1);e.gain.setValueAtTime(0,st);e.gain.linearRampToValueAtTime(.4,st+.02);e.gain.setValueAtTime(.4,st+1.1);e.gain.exponentialRampToValueAtTime(.001,st+1.2);o.connect(e);e.connect(ctx.destination);o.start(st);o.stop(st+1.25);}},
     // ── NEW ADDITIONS ──
     churchcarillon:()=>{
       // Full peal pattern - descending then ascending
