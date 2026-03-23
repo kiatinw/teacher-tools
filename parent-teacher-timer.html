@@ -165,7 +165,6 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
         </select>
         <input type="number" id="customLen" min="1" max="60" placeholder="Enter minutes" style="display:none;margin-top:.45rem;">
       </div>
-      <div class="field"><label>Transition Time</label>
       <div class="field"><label>Transition Time (secs)</label>
         <div class="toggle-row">
           <label class="toggle-switch">
@@ -176,7 +175,6 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
           <span class="toggle-label" id="transLabel" style="white-space:nowrap;">Off</span>
         </div>
       </div>
-    </div>
     <div class="field-row">
       <div class="field"><label>Event Name</label><input type="text" id="eventName" value="Parent&ndash;Teacher Night"></div>
     </div>
@@ -883,9 +881,6 @@ function tick(){
   if(diffMs<0){showPrestart(now);updateStatus('waiting');return;}
   updateStatus('running'); showRunning();
   
-  const iMs=interviewDuration*60*1000;
-  const tMs=enableTransition?transitionDuration*1000:0;
-  const cycleMs=iMs+tMs;
   const cycleMs=interviewDuration*60*1000;
   let tMs=enableTransition?transitionDuration*1000:0;
   if(tMs>=cycleMs) tMs=0;
