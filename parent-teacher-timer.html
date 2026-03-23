@@ -18,7 +18,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kiatinw.github.io/og-image.png">
 
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@200;300;400;600;700&family=Oswald:wght@200;300;400;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@200;300;400;600;700&family=Oswald:wght@200;300;400;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@100;300;400;500;700&family=Teko:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800&family=Chakra+Petch:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --primary:#1a3a5c; --accent:#c8a96e; --bg:#0d1b2a; --surface:#122033;
@@ -133,6 +133,14 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
 .attention-close:hover{background:var(--accent);color:var(--bg);}
 .attention-icon{font-size:4rem;margin-bottom:1rem;animation:bellShake 1s ease infinite;}
 @keyframes bellShake{0%,100%{transform:rotate(0deg)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
+
+/* ── TIME UP PULSE ── */
+@keyframes bgPulse {
+  0% { background-color: var(--bg); }
+  20% { background-color: rgba(214,64,53,0.35); }
+  100% { background-color: var(--bg); }
+}
+.time-up-pulse { animation: bgPulse 1.4s ease-out; }
 </style>
 </head>
 <body>
@@ -216,6 +224,11 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
           <option value="rajdhani">Rajdhani &mdash; Technical geometric</option>
           <option value="bebas">Bebas Neue &mdash; Bold display</option>
           <option value="sharetech">Share Tech Mono &mdash; Digital monospace</option>
+          <option value="orbitron">Orbitron &mdash; Sci-fi futuristic</option>
+          <option value="roboto">Roboto Mono &mdash; Clean monospace</option>
+          <option value="teko">Teko &mdash; Boxy display</option>
+          <option value="cinzel">Cinzel &mdash; Classical serif</option>
+          <option value="chakra">Chakra Petch &mdash; Square geometric</option>
         </select>
       </div>
       <div class="field"><label>Bold Display</label>
@@ -732,8 +745,13 @@ const FONTS={
   barlow:{family:"'Barlow',sans-serif",nw:'200',bw:'600'},
   oswald:{family:"'Oswald',sans-serif",nw:'300',bw:'600'},
   rajdhani:{family:"'Rajdhani',sans-serif",nw:'300',bw:'600'},
-  bebas:{family:"'Bebas Neue',sans-serif",nw:'400',bw:'400'},
-  sharetech:{family:"'Share Tech Mono',monospace",nw:'400',bw:'400'},
+  bebas:{family:"'Bebas Neue',sans-serif",nw:'400',bw:'700'},
+  sharetech:{family:"'Share Tech Mono',monospace",nw:'400',bw:'700'},
+  orbitron:{family:"'Orbitron',sans-serif",nw:'400',bw:'800'},
+  roboto:{family:"'Roboto Mono',monospace",nw:'300',bw:'700'},
+  teko:{family:"'Teko',sans-serif",nw:'300',bw:'600'},
+  cinzel:{family:"'Cinzel',serif",nw:'400',bw:'700'},
+  chakra:{family:"'Chakra Petch',sans-serif",nw:'300',bw:'600'},
 };
 function applyFont(){
   const k=document.getElementById('fontSelect').value;
@@ -843,7 +861,13 @@ function tick(){
   updateStatus('running'); showRunning();
   const iMs=interviewDuration*60*1000,elapsed=diffMs%iMs,remainMs=iMs-elapsed;
   const remainSec=Math.ceil(remainMs/1000),idx=Math.floor(diffMs/iMs);
-  if(idx!==lastInterviewIdx&&lastInterviewIdx!==-1)playTone(document.getElementById('toneSelect').value);
+  if(idx!==lastInterviewIdx&&lastInterviewIdx!==-1){
+    playTone(document.getElementById('toneSelect').value);
+    const dv=document.getElementById('display-view');
+    dv.classList.remove('time-up-pulse');
+    void dv.offsetWidth; // trigger reflow
+    dv.classList.add('time-up-pulse');
+  }
   lastInterviewIdx=idx;
   document.getElementById('displayCountdown').textContent=fmtMMSS(remainSec);
   let tc,rc;
