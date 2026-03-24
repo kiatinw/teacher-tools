@@ -4,41 +4,53 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Faculty Assessment Allocator</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f7f5f0;--surface:#ffffff;--surface2:#f0ede6;--surface3:#e8e4db;
-  --ink:#1c1a16;--ink2:#4a4640;--dim:#9a9490;
-  --rule:rgba(28,26,22,0.1);--rule2:rgba(28,26,22,0.06);
-  --red:#b83232;--green:#2a6e48;--amber:#b86a00;--blue:#1a4a7a;--purple:#5a2d8a;
-  --accent:#b83232;
+  --bg: #0a0e1a;
+  --surface: #0f1628;
+  --surface2: #1e3a5f;
+  --border: #1e3a5f;
+  --rule: rgba(0, 255, 136, 0.15);
+  --ink: #e0e8f0;
+  --ink2: #88a0b8;
+  --dim: #4a6a7a;
+  --green: #00ff88;
+  --cyan: #00cfff;
+  --red: #ff3355;
+  --font-body: 'DM Mono', monospace;
+  --font-head: 'Orbitron', sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-size:15px;}
-body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:0;}
 
 /* ── HEADER ── */
-.app-header{background:var(--ink);color:#f7f5f0;padding:0 2rem;display:flex;align-items:stretch;gap:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18);}
-.app-title{font-family:'DM Serif Display',serif;font-size:1.25rem;letter-spacing:-.01em;padding:1rem 1.5rem 1rem 0;border-right:1px solid rgba(255,255,255,.12);margin-right:0;display:flex;align-items:center;gap:.5rem;white-space:nowrap;}
-.app-title em{font-style:italic;color:rgba(247,245,240,.55);}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:stretch;gap:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18);}
+.app-title{font-family:var(--font-head);font-weight:700;font-size:1.1rem;letter-spacing:.02em;padding:1rem 1.5rem 1rem 0;border-right:1px solid var(--border);margin-right:0;display:flex;align-items:center;gap:.5rem;white-space:nowrap;color:var(--green);text-shadow:0 0 12px rgba(0,255,136,.2);}
+.app-title em{font-style:normal;color:rgba(224,232,240,.55);font-weight:400;}
 .nav{display:flex;align-items:stretch;gap:0;flex:1;}
-.nav-btn{background:transparent;border:none;cursor:pointer;padding:.9rem 1.4rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(247,245,240,.5);border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;}
-.nav-btn:hover{color:rgba(247,245,240,.85);}
-.nav-btn.active{color:#f7f5f0;border-bottom-color:var(--red);}
+.nav-btn{background:transparent;border:none;cursor:pointer;padding:.9rem 1.4rem;font-family:var(--font-body);font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;}
+.nav-btn:hover{color:var(--ink2);}
+.nav-btn.active{color:var(--green);border-bottom-color:var(--green);}
 .header-actions{display:flex;align-items:center;gap:.6rem;margin-left:auto;padding-left:1.5rem;}
-.btn-print{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,245,240,.7);transition:all .18s;}
-.btn-print:hover{background:rgba(255,255,255,.15);color:#f7f5f0;}
-.btn-allocate{background:var(--red);border:none;border-radius:6px;padding:.4rem 1.1rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;transition:all .18s;}
-.btn-allocate:hover{background:#9e2a2a;}
+.btn-print{background:transparent;border:1px solid var(--border);border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-family:var(--font-body);font-size:.65rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);transition:all .18s;}
+.btn-print:hover{background:var(--surface2);color:var(--ink2);border-color:var(--surface2);}
+.btn-allocate{background:var(--green);border:none;border-radius:6px;padding:.4rem 1.1rem;cursor:pointer;font-family:var(--font-body);font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--bg);transition:all .18s;box-shadow:0 0 15px rgba(0,255,136,.2);}
+.btn-allocate:hover{background:#33ffaa;box-shadow:0 0 20px rgba(0,255,136,.4);}
 
 /* ── LAYOUT ── */
-.page{display:none;padding:2rem;max-width:1200px;margin:0 auto;}
+.page{display:none;padding:2rem;max-width:1200px;margin:0 auto;animation:fadeIn .4s ease;}
 .page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── CARDS & SECTIONS ── */
-.card{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:1.5rem;margin-bottom:1.2rem;}
-.card-title{font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.6rem;}
-.card-title .ct-badge{font-family:'DM Mono',monospace;font-size:.6rem;background:var(--surface2);border:1px solid var(--rule);border-radius:4px;padding:.15rem .45rem;color:var(--dim);letter-spacing:.08em;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.2rem;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;background:linear-gradient(135deg,transparent 50%,rgba(0,255,136,0.04) 50%);pointer-events:none;}
+.card-title{font-family:var(--font-head);font-size:1rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.6rem;color:var(--ink);}
+.card-title .ct-badge{font-family:var(--font-body);font-size:.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:.15rem .45rem;color:var(--dim);letter-spacing:.08em;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;}
 @media(max-width:700px){.two-col,.three-col{grid-template-columns:1fr;}}
@@ -46,91 +58,91 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
 /* ── FORM ELEMENTS ── */
 .field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.8rem;}
 .field:last-child{margin-bottom:0;}
-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
-input[type=text],input[type=number],select{background:var(--surface2);border:1px solid var(--rule);border-radius:7px;padding:.55rem .8rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);outline:none;transition:border-color .18s;width:100%;}
-input:focus,select:focus{border-color:var(--ink2);}
+label{font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
+input[type=text],input[type=number],select{background:#070d1a;border:1px solid var(--border);border-radius:6px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.9rem;color:var(--green);outline:none;transition:border-color .18s,box-shadow .18s;width:100%;}
+input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 12px rgba(0,207,255,.2);}
 .input-row{display:flex;gap:.5rem;align-items:flex-end;}
 .input-row input,.input-row select{flex:1;}
-.btn{border:none;border-radius:7px;padding:.55rem 1.1rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.04em;transition:all .18s;white-space:nowrap;}
-.btn-primary{background:var(--ink);color:#f7f5f0;}
-.btn-primary:hover{background:var(--ink2);}
-.btn-secondary{background:var(--surface2);border:1px solid var(--rule);color:var(--ink2);}
-.btn-secondary:hover{background:var(--surface3);}
-.btn-danger{background:transparent;border:1px solid rgba(184,50,50,.3);color:var(--red);font-size:.72rem;padding:.3rem .65rem;}
-.btn-danger:hover{background:rgba(184,50,50,.08);}
-.btn-sm{font-size:.72rem;padding:.35rem .75rem;}
+.btn{border:none;border-radius:6px;padding:.55rem 1.1rem;cursor:pointer;font-family:var(--font-body);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;transition:all .18s;white-space:nowrap;}
+.btn-primary{background:var(--cyan);color:var(--bg);}
+.btn-primary:hover{background:#33ddff;}
+.btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--ink2);}
+.btn-secondary:hover{background:var(--border);color:var(--ink);}
+.btn-danger{background:transparent;border:1px solid rgba(255,51,85,.3);color:var(--red);font-size:.7rem;padding:.3rem .65rem;}
+.btn-danger:hover{background:rgba(255,51,85,.1);}
+.btn-sm{font-size:.65rem;padding:.35rem .75rem;}
 .btn-icon{background:transparent;border:none;cursor:pointer;padding:.25rem .4rem;border-radius:5px;color:var(--dim);font-size:.85rem;transition:all .15s;}
-.btn-icon:hover{background:var(--surface2);color:var(--ink);}
+.btn-icon:hover{background:var(--surface2);color:var(--cyan);}
 
 /* ── TAG PILLS ── */
-.pill{display:inline-flex;align-items:center;gap:.3rem;background:var(--surface2);border:1px solid var(--rule);border-radius:99px;padding:.2rem .65rem;font-size:.72rem;font-weight:500;color:var(--ink2);white-space:nowrap;}
+.pill{display:inline-flex;align-items:center;gap:.3rem;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:.2rem .65rem;font-size:.72rem;font-weight:500;color:var(--ink2);white-space:nowrap;}
 .pill .pill-x{cursor:pointer;color:var(--dim);font-size:.8rem;line-height:1;border:none;background:transparent;padding:0;margin-left:.1rem;}
 .pill .pill-x:hover{color:var(--red);}
 .pills-wrap{display:flex;flex-wrap:wrap;gap:.4rem;min-height:2rem;align-items:flex-start;margin-top:.4rem;}
-.pill-writer{background:rgba(26,74,122,.08);border-color:rgba(26,74,122,.25);color:var(--blue);}
-.pill-marker{background:rgba(42,110,72,.08);border-color:rgba(42,110,72,.25);color:var(--green);}
-.pill-class{background:rgba(90,45,138,.08);border-color:rgba(90,45,138,.25);color:var(--purple);}
+.pill-writer{background:rgba(0,207,255,.08);border-color:rgba(0,207,255,.25);color:var(--cyan);}
+.pill-marker{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.25);color:var(--green);}
+.pill-class{background:rgba(255,204,0,.08);border-color:rgba(255,204,0,.25);color:#ffcc00;}
 
 /* ── LIST ITEMS ── */
-.list-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;border-radius:8px;border:1px solid var(--rule2);margin-bottom:.4rem;background:var(--surface2);transition:background .15s;}
-.list-item:hover{background:var(--surface3);}
+.list-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface);transition:background .15s;}
+.list-item:hover{background:var(--bg);}
 .list-item-name{flex:1;font-weight:500;font-size:.88rem;}
 .list-item-meta{font-size:.72rem;color:var(--dim);}
-.list-empty{text-align:center;padding:1.5rem;color:var(--dim);font-size:.82rem;border:1.5px dashed var(--rule);border-radius:8px;}
+.list-empty{text-align:center;padding:1.5rem;color:var(--dim);font-size:.82rem;border:1.5px dashed var(--border);border-radius:8px;}
 
 /* ── TABLE ── */
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:.85rem;}
-thead th{background:var(--surface2);border-bottom:2px solid var(--rule);padding:.65rem .9rem;text-align:left;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
-tbody td{padding:.7rem .9rem;border-bottom:1px solid var(--rule2);vertical-align:top;}
+thead th{background:var(--surface);border-bottom:2px solid var(--border);padding:.65rem .9rem;text-align:left;font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
+tbody td{padding:.7rem .9rem;border-bottom:1px solid var(--border);vertical-align:top;}
 tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover td{background:var(--surface2);}
-.td-course{font-weight:600;font-size:.9rem;}
+tbody tr:hover td{background:var(--bg);}
+.td-course{font-family:var(--font-head);font-weight:700;font-size:.9rem;color:var(--ink);}
 .td-sub{font-size:.72rem;color:var(--dim);margin-top:.15rem;}
 
 /* ── WORKLOAD BAR ── */
 .wl-bar-wrap{margin:.3rem 0 0;}
-.wl-bar-track{height:5px;background:var(--rule);border-radius:99px;overflow:hidden;}
+.wl-bar-track{height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
 .wl-bar-fill{height:100%;border-radius:99px;transition:width .4s,background .4s;}
 .wl-label{font-size:.65rem;color:var(--dim);margin-top:.2rem;display:flex;justify-content:space-between;}
 
 /* ── ALLOCATION CONTROLS ── */
-.alloc-select{background:var(--surface);border:1px solid var(--rule);border-radius:7px;padding:.4rem .7rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--ink);cursor:pointer;outline:none;}
-.alloc-select:focus{border-color:var(--blue);}
+.alloc-select{background:#070d1a;border:1px solid var(--border);border-radius:6px;padding:.4rem .7rem;font-size:.82rem;font-family:var(--font-body);color:var(--cyan);cursor:pointer;outline:none;}
+.alloc-select:focus{border-color:var(--cyan);}
 .marker-count{display:flex;align-items:center;gap:.4rem;}
-.mc-btn{background:var(--surface2);border:1px solid var(--rule);border-radius:5px;width:26px;height:26px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:all .15s;}
-.mc-btn:hover{background:var(--surface3);}
-.mc-val{font-family:'DM Mono',monospace;font-size:.85rem;min-width:1.5rem;text-align:center;font-weight:500;}
+.mc-btn{background:var(--surface);border:1px solid var(--border);border-radius:5px;width:26px;height:26px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:all .15s;}
+.mc-btn:hover{background:var(--surface2);}
+.mc-val{font-family:var(--font-body);font-size:.85rem;min-width:1.5rem;text-align:center;font-weight:500;}
 
 /* ── STATUS CHIPS ── */
 .chip{display:inline-flex;align-items:center;gap:.3rem;border-radius:99px;padding:.15rem .55rem;font-size:.68rem;font-weight:600;letter-spacing:.04em;}
-.chip-ok{background:rgba(42,110,72,.1);color:var(--green);}
-.chip-warn{background:rgba(184,106,0,.1);color:var(--amber);}
-.chip-err{background:rgba(184,50,50,.1);color:var(--red);}
+.chip-ok{background:rgba(0,255,136,.1);color:var(--green);}
+.chip-warn{background:rgba(255,204,0,.1);color:#ffcc00;}
+.chip-err{background:rgba(255,51,85,.1);color:var(--red);}
 
 /* ── TEACHER VIEW ── */
-.teacher-card{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:1.2rem;margin-bottom:.9rem;}
-.teacher-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;margin-bottom:.9rem;padding-bottom:.8rem;border-bottom:1px solid var(--rule2);}
-.teacher-name{font-family:'DM Serif Display',serif;font-size:1.1rem;}
+.teacher-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:.9rem;}
+.teacher-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;margin-bottom:.9rem;padding-bottom:.8rem;border-bottom:1px solid var(--border);}
+.teacher-name{font-family:var(--font-head);font-size:1.1rem;color:var(--ink);}
 .teacher-meta{font-size:.72rem;color:var(--dim);margin-top:.1rem;}
-.task-row{display:flex;align-items:flex-start;gap:.5rem;padding:.45rem 0;border-bottom:1px solid var(--rule2);}
+.task-row{display:flex;align-items:flex-start;gap:.5rem;padding:.45rem 0;border-bottom:1px solid var(--border);}
 .task-row:last-child{border-bottom:none;}
 .task-type{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;min-width:3.8rem;padding:.2rem .5rem;border-radius:4px;text-align:center;margin-top:.1rem;}
-.task-type-write{background:rgba(26,74,122,.1);color:var(--blue);}
-.task-type-mark{background:rgba(42,110,72,.1);color:var(--green);}
+.task-type-write{background:rgba(0,207,255,.1);color:var(--cyan);}
+.task-type-mark{background:rgba(0,255,136,.1);color:var(--green);}
 .task-detail{font-size:.85rem;flex:1;}
 .task-classes{font-size:.7rem;color:var(--dim);margin-top:.1rem;}
 
 /* ── TABS within page ── */
-.subtabs{display:flex;gap:0;border-bottom:1px solid var(--rule);margin-bottom:1.4rem;}
-.subtab{background:transparent;border:none;border-bottom:2px solid transparent;padding:.6rem 1.1rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;letter-spacing:.05em;color:var(--dim);transition:all .18s;margin-bottom:-1px;}
-.subtab.active{color:var(--ink);border-bottom-color:var(--ink);}
+.subtabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.4rem;}
+.subtab{background:transparent;border:none;border-bottom:2px solid transparent;padding:.6rem 1.1rem;cursor:pointer;font-family:var(--font-body);font-size:.7rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);transition:all .18s;margin-bottom:-1px;}
+.subtab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
 .subpage{display:none;}
 .subpage.active{display:block;}
 
 /* ── SECTION HEADER ── */
 .section-hd{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:1rem;}
-.section-hd h2{font-family:'DM Serif Display',serif;font-size:1.3rem;}
+.section-hd h2{font-family:var(--font-head);font-size:1.3rem;color:var(--ink);}
 .section-hd p{font-size:.8rem;color:var(--dim);margin-top:.15rem;}
 
 /* ── PRINT ── */
@@ -162,7 +174,7 @@ tbody tr:hover td{background:var(--surface2);}
     <button class="nav-btn" onclick="showPage('teachers')">4 · Teacher View</button>
   </nav>
   <div class="header-actions">
-    <button class="btn-print" onclick="window.print()">&#128438; Print</button>
+    <button class="btn-print" onclick="window.print()">&#128438; PRINT</button>
     <button class="btn-allocate" onclick="autoAllocate()">&#9889; Auto-Allocate</button>
   </div>
 </div>
@@ -175,7 +187,7 @@ tbody tr:hover td{background:var(--surface2);}
     <div>
       <div class="card">
         <div class="card-title">Teachers <span class="ct-badge" id="badge-teachers">0</span></div>
-        <div class="input-row">
+        <div class="input-row" style="margin-bottom:.5rem;">
           <input type="text" id="teacher-name" placeholder="Full name (e.g. J. Smith)">
           <button class="btn btn-primary btn-sm" onclick="addTeacher()">Add</button>
         </div>
@@ -196,7 +208,7 @@ tbody tr:hover td{background:var(--surface2);}
         <div class="input-row" style="margin-bottom:.5rem;">
           <div class="field" style="margin:0;flex:1;">
             <label>Markers per course</label>
-            <input type="number" id="course-markers" value="2" min="1" max="10" style="max-width:80px;">
+            <input type="number" id="course-markers" value="2" min="1" max="10" style="width:80px;">
           </div>
           <button class="btn btn-primary btn-sm" style="margin-bottom:0;align-self:flex-end" onclick="addCourse()">Add</button>
         </div>
@@ -211,7 +223,7 @@ tbody tr:hover td{background:var(--surface2);}
   <!-- Classes & Assignments -->
   <div class="card" id="class-assignment-card">
     <div class="card-title">Assign Classes to Courses</div>
-    <p style="font-size:.8rem;color:var(--dim);margin-bottom:1.2rem;">For each course, add the class groups and assign the teacher who takes that class.</p>
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:1.2rem;">For each course, add class groups and assign teachers with their period load.</p>
     <div id="course-class-area">
       <div class="list-empty">Add courses and teachers above to begin assigning classes.</div>
     </div>
@@ -220,10 +232,11 @@ tbody tr:hover td{background:var(--surface2);}
   <!-- Save/Load -->
   <div class="card">
     <div class="card-title">Save &amp; Load</div>
-    <p style="font-size:.8rem;color:var(--dim);margin-bottom:.9rem;">Export your setup as a file and reload it later. Allocations are saved too.</p>
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:.9rem;">Import or export your setup using a CSV spreadsheet file.</p>
     <div class="data-actions">
-      <button class="btn btn-primary btn-sm" onclick="exportData()">&#8659; Export JSON</button>
-      <label class="btn btn-secondary btn-sm" style="cursor:pointer;">&#8657; Import JSON <input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+      <button class="btn btn-secondary btn-sm" onclick="downloadCSVTemplate()">&#8659; Download CSV Template</button>
+      <label class="btn btn-primary btn-sm" style="cursor:pointer;">&#8657; Import from CSV <input type="file" accept=".csv" style="display:none" onchange="importFromCSV(event)"></label>
+      <button class="btn btn-secondary btn-sm" onclick="exportToCSV()">&#8659; Export current to CSV</button>
     </div>
   </div>
 </div>
@@ -232,7 +245,7 @@ tbody tr:hover td{background:var(--surface2);}
 <div class="page" id="page-allocate">
   <div class="section-hd">
     <div>
-      <h2>Allocations</h2>
+      <h2 style="color:var(--ink)">Allocations</h2>
       <p>Auto-allocate assigns writers and markers to balance workload. Click any dropdown to override manually.</p>
     </div>
     <button class="btn btn-primary" onclick="autoAllocate()">&#9889; Auto-Allocate All</button>
@@ -246,7 +259,7 @@ tbody tr:hover td{background:var(--surface2);}
 <!-- ══════════════════ PAGE 3: COURSE VIEW ══════════════════ -->
 <div class="page" id="page-courses">
   <div class="section-hd">
-    <div><h2>Course View</h2><p>Every course with its writer and markers.</p></div>
+    <div><h2 style="color:var(--ink)">Course View</h2><p>Every course with its writer and markers.</p></div>
   </div>
   <div class="print-only" style="margin-bottom:1rem;font-size:.8rem;color:#666;">Faculty Assessment Allocations — printed <span id="print-date"></span></div>
   <div class="card">
@@ -270,7 +283,7 @@ tbody tr:hover td{background:var(--surface2);}
 <!-- ══════════════════ PAGE 4: TEACHER VIEW ══════════════════ -->
 <div class="page" id="page-teachers">
   <div class="section-hd">
-    <div><h2>Teacher Workload View</h2><p>What each teacher is writing and marking.</p></div>
+    <div><h2 style="color:var(--ink)">Teacher Workload View</h2><p>What each teacher is writing and marking.</p></div>
   </div>
   <div id="teacher-view-body">
     <div class="list-empty">Run allocation first.</div>
@@ -283,11 +296,14 @@ tbody tr:hover td{background:var(--surface2);}
 // ═══════════════════════════════════════════
 let state = {
   teachers: [],   // [{id, name}]
-  courses:  [],   // [{id, name, markersNeeded, classes:[{id,name,teacherId}]}]
+  courses:  [],   // [{id, name, markersNeeded, classes:[{id, name, assignments:[{teacherId, periods}]}]}]
   allocs:   {},   // {courseId: {writerId, markerIds:[]}}
 };
 let _id = 1;
 function uid(){ return 'id' + (_id++); }
+
+const WRITING_WEIGHT = 1.5;
+const MARKING_WEIGHT_PER_CLASS = 1.0;
 
 // ═══════════════════════════════════════════
 // NAV
@@ -319,8 +335,11 @@ function addTeacher(){
 function removeTeacher(id){
   state.teachers = state.teachers.filter(t=>t.id!==id);
   // Remove from class assignments
-  state.courses.forEach(c=>c.classes.forEach(cl=>{if(cl.teacherId===id)cl.teacherId=null;}));
-  // Remove from allocs
+  state.courses.forEach(c => {
+    c.classes.forEach(cl => {
+      cl.assignments = cl.assignments.filter(a => a.teacherId !== id);
+    });
+  });
   Object.keys(state.allocs).forEach(cid=>{
     const a=state.allocs[cid];
     if(a.writerId===id)a.writerId=null;
@@ -333,7 +352,7 @@ function renderTeachers(){
   document.getElementById('badge-teachers').textContent=state.teachers.length;
   if(!state.teachers.length){el.innerHTML='<div class="list-empty">No teachers added yet.</div>';return;}
   el.innerHTML=state.teachers.map(t=>`
-    <div class="list-item">
+    <div class="list-item" style="padding:.4rem .8rem;">
       <span class="list-item-name">${esc(t.name)}</span>
       <button class="btn btn-danger" onclick="removeTeacher('${t.id}')">Remove</button>
     </div>`).join('');
@@ -348,7 +367,7 @@ function addCourse(){
   const name=nameInp.value.trim();
   if(!name) return;
   const markersNeeded=Math.max(1,parseInt(markInp.value)||2);
-  state.courses.push({id:uid(), name, markersNeeded, classes:[]});
+  state.courses.push({id:uid(), name, markersNeeded, classes:[] });
   nameInp.value='';
   renderCourses(); renderCourseClassArea(); renderAllocTable();
 }
@@ -370,7 +389,7 @@ function renderCourses(){
   document.getElementById('badge-courses').textContent=state.courses.length;
   if(!state.courses.length){el.innerHTML='<div class="list-empty">No courses added yet.</div>';return;}
   el.innerHTML=state.courses.map(c=>`
-    <div class="list-item">
+    <div class="list-item" style="padding:.4rem .8rem;">
       <span class="list-item-name">${esc(c.name)}</span>
       <span class="list-item-meta">${c.classes.length} class${c.classes.length!==1?'es':''} · ${c.markersNeeded} marker${c.markersNeeded!==1?'s':''}</span>
       <button class="btn btn-danger" onclick="removeCourse('${c.id}')">Remove</button>
@@ -386,102 +405,145 @@ function renderCourseClassArea(){
     el.innerHTML='<div class="list-empty">Add courses and teachers above to begin assigning classes.</div>';return;
   }
   el.innerHTML=state.courses.map(c=>`
-    <div style="margin-bottom:1.4rem;padding-bottom:1.4rem;border-bottom:1px solid var(--rule2);">
+    <div style="margin-bottom:1.4rem;padding-bottom:1.4rem;border-bottom:1px solid var(--border);">
       <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;flex-wrap:wrap;">
-        <strong style="font-size:.95rem;">${esc(c.name)}</strong>
+        <strong style="font-family:var(--font-head);font-size:1rem;color:var(--ink);">${esc(c.name)}</strong>
         <div class="marker-count" title="Markers needed for this course">
-          <span style="font-size:.68rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;">Markers:</span>
+          <span style="font-size:.6rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;">Markers:</span>
           <button class="mc-btn" onclick="updateMarkersNeeded('${c.id}',-1)">−</button>
           <span class="mc-val">${c.markersNeeded}</span>
           <button class="mc-btn" onclick="updateMarkersNeeded('${c.id}',1)">+</button>
         </div>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:.6rem;">
-        <input type="text" id="cls-name-${c.id}" placeholder="Class code (e.g. 12MX1A)" style="max-width:200px;">
-        <select id="cls-teacher-${c.id}" style="max-width:200px;">
-          <option value="">— assign teacher —</option>
-          ${state.teachers.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')}
-        </select>
+      ${renderClassesForCourse(c)}
+      <div class="input-row" style="margin-top:.8rem;">
+        <input type="text" id="new-class-name-${c.id}" placeholder="New class code (e.g. 12MX1A)" style="max-width:240px;">
         <button class="btn btn-secondary btn-sm" onclick="addClass('${c.id}')">+ Add Class</button>
-      </div>
-      <div class="pills-wrap">
-        ${c.classes.length===0?'<span style="font-size:.75rem;color:var(--dim);">No classes yet</span>':''}
-        ${c.classes.map(cl=>{
-          const tname=state.teachers.find(t=>t.id===cl.teacherId)?.name||'Unassigned';
-          return `<span class="pill pill-class">${esc(cl.name)} <span style="opacity:.6;margin:0 .15rem;">·</span> ${esc(tname)} <button class="pill-x" onclick="removeClassFromCourse('${c.id}','${cl.id}')">×</button></span>`;
-        }).join('')}
       </div>
     </div>`).join('');
 }
 
+function renderClassesForCourse(course) {
+  if (course.classes.length === 0) {
+    return '<div class="list-empty" style="padding:1rem;margin-top:.5rem;">No classes assigned to this course yet.</div>';
+  }
+  return course.classes.map(cl => `
+    <div class="card" style="background:var(--bg);margin-top:.6rem;padding:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;">
+        <strong style="font-size:.9rem;">${esc(cl.name)}</strong>
+        <button class="btn btn-danger btn-sm" onclick="removeClassFromCourse('${course.id}','${cl.id}')">Remove Class</button>
+      </div>
+      <div class="pills-wrap" style="margin-bottom:.6rem;">
+        ${cl.assignments.length === 0 ? '<span style="font-size:.75rem;color:var(--dim);">No teachers assigned</span>' : ''}
+        ${cl.assignments.map(a => {
+          const teacher = state.teachers.find(t => t.id === a.teacherId);
+          return `<span class="pill pill-class">${esc(teacher?.name || 'Unassigned')} (${a.periods}p) <button class="pill-x" onclick="removeTeacherFromClass('${course.id}','${cl.id}','${a.teacherId}')">×</button></span>`;
+        }).join('')}
+      </div>
+      <div class="input-row">
+        <select id="assign-teacher-${cl.id}" style="flex:2;">
+          <option value="">— Assign Teacher —</option>
+          ${state.teachers.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}
+        </select>
+        <input type="number" id="assign-periods-${cl.id}" value="5" min="1" max="20" placeholder="Periods" style="flex:1;">
+        <button class="btn btn-secondary btn-sm" onclick="addTeacherToClass('${course.id}','${cl.id}')">+ Assign</button>
+      </div>
+    </div>
+  `).join('');
+}
+
 function addClass(courseId){
   const c=state.courses.find(c=>c.id===courseId);
-  const nameEl=document.getElementById('cls-name-'+courseId);
-  const teachEl=document.getElementById('cls-teacher-'+courseId);
+  const nameEl=document.getElementById('new-class-name-'+courseId);
   const name=nameEl.value.trim();
   if(!name)return;
-  c.classes.push({id:uid(), name, teacherId:teachEl.value||null});
+  c.classes.push({id:uid(), name, assignments:[]});
   nameEl.value='';
   renderCourseClassArea(); renderCourses();
 }
+
 function removeClassFromCourse(courseId, classId){
   const c=state.courses.find(c=>c.id===courseId);
   c.classes=c.classes.filter(cl=>cl.id!==classId);
   renderCourseClassArea(); renderCourses();
 }
 
+function addTeacherToClass(courseId, classId) {
+  const teacherId = document.getElementById(`assign-teacher-${classId}`).value;
+  const periods = parseInt(document.getElementById(`assign-periods-${classId}`).value, 10);
+  if (!teacherId || !periods || periods < 1) return;
+
+  const course = state.courses.find(c => c.id === courseId);
+  const cls = course.classes.find(cl => cl.id === classId);
+  
+  // Avoid duplicates
+  if (cls.assignments.some(a => a.teacherId === teacherId)) return;
+
+  cls.assignments.push({ teacherId, periods });
+  renderCourseClassArea();
+}
+
+function removeTeacherFromClass(courseId, classId, teacherId) {
+  const course = state.courses.find(c => c.id === courseId);
+  const cls = course.classes.find(cl => cl.id === classId);
+  cls.assignments = cls.assignments.filter(a => a.teacherId !== teacherId);
+  renderCourseClassArea();
+}
+
 // ═══════════════════════════════════════════
 // AUTO-ALLOCATE
 // ═══════════════════════════════════════════
 function autoAllocate(){
-  // For each course:
-  // 1. Collect teachers who teach classes in this course → eligible writers/markers
-  // 2. Pick writer: eligible teacher with fewest current writing tasks (ties broken by fewest marking tasks)
-  // 3. Pick markers: writer always marks; fill remaining from eligible (fewest marking) then from all faculty
-  // 4. If not enough eligible → pull from any faculty teacher
-  const writeCount={}, markCount={};
-  state.teachers.forEach(t=>{writeCount[t.id]=0; markCount[t.id]=0;});
-  // Count existing allocs
-  Object.values(state.allocs).forEach(a=>{
-    if(a.writerId) writeCount[a.writerId]=(writeCount[a.writerId]||0)+1;
-    a.markerIds.forEach(m=>markCount[m]=(markCount[m]||0)+1);
-  });
+  const workload = {};
+  state.teachers.forEach(t => { workload[t.id] = { write: 0, mark: 0, total: 0 }; });
+
+  function calculateTotalLoad(id) {
+    const w = workload[id];
+    return (w.write * WRITING_WEIGHT) + w.mark;
+  }
 
   state.courses.forEach(course=>{
-    const eligibleIds=[...new Set(course.classes.map(cl=>cl.teacherId).filter(Boolean))];
+    const involvement = {};
+    course.classes.forEach(cl => {
+      cl.assignments.forEach(a => {
+        involvement[a.teacherId] = (involvement[a.teacherId] || 0) + a.periods;
+      });
+    });
+    const eligibleIds = Object.keys(involvement);
     const allIds=state.teachers.map(t=>t.id);
 
-    function sortByLoad(ids, preferLessWriting){
+    function sortByLoad(ids){
       return [...ids].sort((a,b)=>{
-        const wDiff=(writeCount[a]||0)-(writeCount[b]||0);
-        const mDiff=(markCount[a]||0)-(markCount[b]||0);
-        return preferLessWriting ? (wDiff||mDiff) : (mDiff||wDiff);
+        const loadA = calculateTotalLoad(a);
+        const loadB = calculateTotalLoad(b);
+        if (loadA !== loadB) return loadA - loadB;
+        // Tie-break with involvement for writers
+        return (involvement[b] || 0) - (involvement[a] || 0);
       });
     }
 
     // Pick writer from eligible, fallback to all
-    const writerPool=sortByLoad(eligibleIds.length?eligibleIds:allIds, true);
+    const writerPool=sortByLoad(eligibleIds.length?eligibleIds:allIds);
     const writerId=writerPool[0]||null;
-    if(writerId) writeCount[writerId]=(writeCount[writerId]||0)+1;
+    if(writerId) workload[writerId].write += 1;
 
     // Pick markers: writer always marks; fill remaining from eligible then all
     const needed=course.markersNeeded;
     const markerIds=writerId?[writerId]:[];
-    markCount[writerId]=(markCount[writerId]||0)+1;
+    const markingLoadPerMarker = (course.classes.length * MARKING_WEIGHT_PER_CLASS) / needed;
+    if(writerId) workload[writerId].mark += markingLoadPerMarker;
 
     // Remaining slots
     const remaining=needed-markerIds.length;
     if(remaining>0){
-      const candidates=sortByLoad(
-        (eligibleIds.length?eligibleIds:allIds).filter(id=>!markerIds.includes(id)), false
-      );
+      const candidates = sortByLoad((eligibleIds.length ? eligibleIds : allIds).filter(id => !markerIds.includes(id)));
       candidates.slice(0,remaining).forEach(id=>{
         markerIds.push(id);
-        markCount[id]=(markCount[id]||0)+1;
+        workload[id].mark += markingLoadPerMarker;
       });
       // Still not enough? Pull from all
       if(markerIds.length<needed){
-        sortByLoad(allIds.filter(id=>!markerIds.includes(id)),false)
+        sortByLoad(allIds.filter(id=>!markerIds.includes(id)))
           .slice(0,needed-markerIds.length)
           .forEach(id=>{markerIds.push(id);markCount[id]=(markCount[id]||0)+1;});
       }
@@ -506,7 +568,7 @@ function renderAllocTable(){
     return;
   }
 
-  const rows=state.courses.map(course=>{
+  const rows = state.courses.map(course => {
     const a=state.allocs[course.id]||{writerId:null,markerIds:[]};
     const classNames=course.classes.map(cl=>cl.name).join(', ')||'<span style="color:var(--dim)">None</span>';
 
@@ -522,10 +584,10 @@ function renderAllocTable(){
       </div>`;
     }).join('');
 
-    const status=allocStatus(course, a);
+    const status = checkAllocStatus(course, a);
 
     return `<div class="card" style="margin-bottom:.9rem;">
-      <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+      <div style="display:flex;align-items:flex-start;gap:1.2rem;flex-wrap:wrap;">
         <div style="flex:2;min-width:200px;">
           <div class="td-course">${esc(course.name)}</div>
           <div class="td-sub" style="margin-top:.25rem;">${classNames}</div>
@@ -553,7 +615,7 @@ function renderAllocTable(){
   el.innerHTML=rows;
 }
 
-function allocStatus(course, a){
+function checkAllocStatus(course, a){
   if(!a||!a.writerId) return '<span class="chip chip-err">No writer</span>';
   const filled=a.markerIds.filter(Boolean).length;
   if(filled<course.markersNeeded) return '<span class="chip chip-warn">'+filled+'/'+course.markersNeeded+' markers</span>';
@@ -589,16 +651,20 @@ function renderCourseView(){
     const a=state.allocs[course.id]||{writerId:null,markerIds:[]};
     const writer=state.teachers.find(t=>t.id===a.writerId);
     const markers=a.markerIds.filter(Boolean).map(id=>state.teachers.find(t=>t.id===id)).filter(Boolean);
-    const classStr=course.classes.map(cl=>{
-      const t=state.teachers.find(t=>t.id===cl.teacherId);
-      return `<span class="pill pill-class" style="margin:.1rem">${esc(cl.name)}${t?' · '+esc(t.name):''}</span>`;
+    const classStr = course.classes.map(cl => {
+      const teacherPills = cl.assignments.map(asgn => {
+        const teacher = state.teachers.find(t => t.id === asgn.teacherId);
+        return teacher ? `${esc(teacher.name)} (${asgn.periods}p)` : `Unassigned (${asgn.periods}p)`;
+      }).join(', ');
+      return `<span class="pill pill-class" style="margin:.1rem">${esc(cl.name)} <span style="opacity:.6;margin:0 .15rem;">·</span> ${teacherPills || 'No teachers'}</span>`;
     }).join(' ');
+
     return `<tr>
       <td><div class="td-course">${esc(course.name)}</div><div class="td-sub">${course.markersNeeded} marker${course.markersNeeded!==1?'s':''} needed</div></td>
       <td><div class="pills-wrap">${classStr||'<span style="color:var(--dim)">—</span>'}</div></td>
-      <td>${writer?`<span class="pill pill-writer">&#9998; ${esc(writer.name)}</span>`:'<span class="chip chip-err">Unassigned</span>'}</td>
+      <td>${writer?`<span class="pill pill-writer" style="background:rgba(0,207,255,.1);color:var(--cyan);border-color:rgba(0,207,255,.3);">&#9998; ${esc(writer.name)}</span>`:'<span class="chip chip-err">Unassigned</span>'}</td>
       <td><div class="pills-wrap">${markers.length?markers.map(m=>`<span class="pill pill-marker">&#10003; ${esc(m.name)}</span>`).join(''):'<span class="chip chip-warn">None</span>'}</div></td>
-      <td>${allocStatus(course,a)}</td>
+      <td>${checkAllocStatus(course,a)}</td>
     </tr>`;
   }).join('');
 }
@@ -611,26 +677,33 @@ function renderTeacherView(){
   if(!state.teachers.length){el.innerHTML='<div class="list-empty">No teachers added.</div>';return;}
 
   // Build per-teacher task lists
-  const taskMap={};
-  state.teachers.forEach(t=>{taskMap[t.id]={writing:[],marking:[]};});
+  const workload = {};
+  state.teachers.forEach(t => { workload[t.id] = { write: [], mark: [], load: 0 }; });
+
   state.courses.forEach(course=>{
     const a=state.allocs[course.id];
     if(!a)return;
-    if(a.writerId&&taskMap[a.writerId]) taskMap[a.writerId].writing.push(course);
+    const markingLoadPerMarker = (course.classes.length * MARKING_WEIGHT_PER_CLASS) / course.markersNeeded;
+    if(a.writerId&&workload[a.writerId]) {
+      workload[a.writerId].write.push(course);
+      workload[a.writerId].load += WRITING_WEIGHT;
+    }
     a.markerIds.filter(Boolean).forEach(mid=>{
-      if(taskMap[mid]) taskMap[mid].marking.push(course);
+      if(workload[mid]) {
+        workload[mid].mark.push(course);
+        workload[mid].load += markingLoadPerMarker;
+      }
     });
   });
 
   // Max tasks for bar scaling
-  const maxTasks=Math.max(1,...state.teachers.map(t=>(taskMap[t.id].writing.length*2)+taskMap[t.id].marking.length));
+  const maxLoad = Math.max(1, ...Object.values(workload).map(w => w.load));
 
-  el.innerHTML=state.teachers.map(teacher=>{
-    const tasks=taskMap[teacher.id];
+  el.innerHTML = state.teachers.map(teacher => {
+    const tasks = workload[teacher.id];
     const writing=tasks.writing;
     const marking=tasks.marking;
-    const load=writing.length*2+marking.length; // writing counts double
-    const pct=Math.min(100,Math.round(load/maxTasks*100));
+    const pct=Math.min(100,Math.round(tasks.load/maxLoad*100));
     const barCol=pct>80?'var(--red)':pct>55?'var(--amber)':'var(--green)';
 
     const writingRows=writing.map(c=>{
@@ -665,12 +738,12 @@ function renderTeacherView(){
     return `<div class="teacher-card">
       <div class="teacher-card-header">
         <div>
-          <div class="teacher-name">${esc(teacher.name)}</div>
+          <div class="teacher-name" style="color:var(--ink);">${esc(teacher.name)}</div>
           <div class="teacher-meta">${writing.length} writing · ${marking.length} marking · ${marking.length+writing.length} total tasks</div>
         </div>
         <div style="min-width:140px;">
           <div class="wl-bar-wrap">
-            <div class="wl-bar-track"><div class="wl-bar-fill" style="width:${pct}%;background:${barCol}"></div></div>
+            <div class="wl-bar-track"><div class="wl-bar-fill" style="width:${pct}%;background:${barCol};"></div></div>
             <div class="wl-label"><span>Workload</span><span>${pct}%</span></div>
           </div>
         </div>
@@ -686,21 +759,90 @@ function renderTeacherView(){
 // UTILS
 // ═══════════════════════════════════════════
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function parseCSV(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return [];
+    const header = lines[0].split(',').map(h => h.trim());
+    return lines.slice(1).map(line => {
+        const values = line.split(',');
+        return header.reduce((obj, h, i) => {
+            obj[h] = values[i] ? values[i].trim() : '';
+            return obj;
+        }, {});
+    });
+}
 
-function exportData(){
-  const json=JSON.stringify({state,_id},null,2);
+function downloadCSVTemplate() {
+  const csv = "course_name,class_name,teacher_name,periods,markers_needed\nYear 12 Advanced,12MAA1,J. Smith,5,2\nYear 11 Standard,11MST2,A. Jones,3,3\nYear 11 Standard,11MST2,B. Davis,2,3";
   const a=document.createElement('a');
-  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json);
-  a.download='faculty-allocations.json';
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='allocator_template.csv';
   a.click();
 }
-function importData(e){
+
+function exportToCSV() {
+  let csv = 'course_name,class_name,teacher_name,periods,markers_needed\n';
+  state.courses.forEach(c => {
+    if (c.classes.length === 0) {
+      csv += `${c.name},,,${c.markersNeeded}\n`;
+    } else {
+      c.classes.forEach(cl => {
+        if (cl.assignments.length === 0) {
+          csv += `${c.name},${cl.name},,,${c.markersNeeded}\n`;
+        } else {
+          cl.assignments.forEach(a => {
+            const teacher = state.teachers.find(t => t.id === a.teacherId);
+            csv += `${c.name},${cl.name},${teacher?.name || ''},${a.periods},${c.markersNeeded}\n`;
+          });
+        }
+      });
+    }
+  });
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'faculty_allocations_export.csv';
+  a.click();
+}
+
+function importFromCSV(e){
   const file=e.target.files[0]; if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
     try{
-      const data=JSON.parse(ev.target.result);
-      state=data.state; _id=data._id||_id;
+      const data = parseCSV(ev.target.result);
+      state = { teachers: [], courses: [], allocs: {} };
+      _id = 1;
+      const teacherMap = {}, courseMap = {}, classMap = {};
+
+      data.forEach(row => {
+        if (!row.teacher_name && !row.course_name) return;
+        let teacherId = null;
+        if (row.teacher_name && !teacherMap[row.teacher_name]) {
+          teacherId = uid();
+          teacherMap[row.teacher_name] = teacherId;
+          state.teachers.push({ id: teacherId, name: row.teacher_name });
+        }
+        teacherId = teacherMap[row.teacher_name];
+
+        if (row.course_name && !courseMap[row.course_name]) {
+          const courseId = uid();
+          courseMap[row.course_name] = courseId;
+          state.courses.push({ id: courseId, name: row.course_name, markersNeeded: parseInt(row.markers_needed, 10) || 2, classes: [] });
+        }
+        const course = state.courses.find(c => c.name === row.course_name);
+
+        if (row.class_name && course) {
+          let cls = course.classes.find(cl => cl.name === row.class_name);
+          if (!cls) {
+            cls = { id: uid(), name: row.class_name, assignments: [] };
+            course.classes.push(cls);
+          }
+          if (teacherId && !cls.assignments.some(a => a.teacherId === teacherId)) {
+            cls.assignments.push({ teacherId, periods: parseInt(row.periods, 10) || 5 });
+          }
+        }
+      });
+
       renderTeachers(); renderCourses(); renderCourseClassArea(); renderAllocTable();
       renderCourseView(); renderTeacherView();
       alert('Imported successfully!');
@@ -713,8 +855,8 @@ function importData(e){
 // INIT
 // ═══════════════════════════════════════════
 renderTeachers(); renderCourses(); renderCourseClassArea();
-document.getElementById('teacher-name').addEventListener('keydown',e=>{if(e.key==='Enter')addTeacher();});
-document.getElementById('course-name').addEventListener('keydown',e=>{if(e.key==='Enter')addCourse();});
+document.getElementById('teacher-name').addEventListener('keydown',e=>{if(e.key==='Enter')addTeacher();e.target.focus();});
+document.getElementById('course-name').addEventListener('keydown',e=>{if(e.key==='Enter')addCourse();e.target.focus();});
 </script>
 </body>
 </html>
