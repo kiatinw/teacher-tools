@@ -348,12 +348,12 @@ function uid(){ return 'id' + (_id++); }
 
 function loadDefaultCourses() {
   const defaultCourses = [
-    { name: 'Year 7 English', markers: 2 }, { name: 'Year 7 Mathematics', markers: 2 }, { name: 'Year 7 Science', markers: 2 },
-    { name: 'Year 8 English', markers: 2 }, { name: 'Year 8 Mathematics', markers: 2 }, { name: 'Year 8 Science', markers: 2 },
-    { name: 'Year 9 English', markers: 2 }, { name: 'Year 9 Mathematics', markers: 2 }, { name: 'Year 9 Science', markers: 2 },
-    { name: 'Year 10 English', markers: 2 }, { name: 'Year 10 Mathematics', markers: 2 }, { name: 'Year 10 Science', markers: 2 },
-    { name: 'Year 11 Mathematics Advanced', markers: 2 }, { name: 'Year 11 Mathematics Standard 2', markers: 2 }, { name: 'Year 11 English Advanced', markers: 2 },
-    { name: 'Year 12 Mathematics Extension 1', markers: 3 }, { name: 'Year 12 Mathematics Advanced', markers: 2 }, { name: 'Year 12 English Advanced', markers: 2 },
+    { name: 'Year 7 Mathematics', markers: 2 },
+    { name: 'Year 8 Mathematics', markers: 2 },
+    { name: 'Year 9 Mathematics', markers: 2 },
+    { name: 'Year 10 Mathematics', markers: 2 },
+    { name: 'Year 11 Mathematics Advanced', markers: 2 }, { name: 'Year 11 Mathematics Standard 2', markers: 2 }, 
+    { name: 'Year 12 Mathematics Extension 1', markers: 3 }, { name: 'Year 12 Mathematics Advanced', markers: 2 },
   ];
 
   if (state.courses.length === 0 && state.teachers.length === 0) { // Only load if state is empty
@@ -927,8 +927,11 @@ function processImportedData(text) {
       let courseName = getVal(['course_name', 'course', 'subject']);
       
       // Filter by faculty code if provided
-      if (facultyCode && className && !className.toUpperCase().startsWith(facultyCode)) return;
-
+      if (facultyCode && className) {
+        const codePart = className.replace(/^\d+/, '');
+        if (!codePart.toUpperCase().startsWith(facultyCode)) return;
+      }
+      
       // If no course name, fallback to using the class name.
       if (!courseName && className) courseName = className;
 
