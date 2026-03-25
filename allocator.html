@@ -98,6 +98,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 .class-chip.selected .teacher-badge{color:rgba(255,255,255,0.8);}
 .teacher-badge{font-size:0.65rem;color:var(--dim);margin-top:0.2rem;font-weight:600;}
 
+/* ── COLLAPSIBLE ── */
+.course-drop-zone.collapsed .course-details-wrapper { display: none; }
+.collapse-toggle { font-size: 0.7rem; color: var(--accent); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
+
+/* ── ALLOCATE VIEW TEACHER LIST ── */
+.teaching-list { font-size: 0.7rem; color: var(--dim); font-style: italic; margin-top: 0.2rem; }
+
 /* ── LIST ITEMS ── */
 .list-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.4rem;background:var(--surface2);transition:background .15s;}
 .list-item:hover{background:var(--border);}
@@ -243,7 +250,15 @@ tbody tr:hover td{background:var(--surface2);}
     <div class="card-title">Assign Classes to Courses</div>
     <p style="font-size:.8rem;color:var(--dim);margin-bottom:1.2rem;">For each course, add class groups and assign teachers with their period load.</p>
     <div id="unassigned-wrapper" class="unassigned-section">
-        <div style="font-size:0.75rem;font-weight:700;color:var(--amber);margin-bottom:0.8rem;text-transform:uppercase;letter-spacing:0.05em;">Unmapped Classes (Drag to Course)</div>
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; gap: 1rem; flex-wrap: wrap;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.05em;">Unmapped Classes</div>
+            <div class="input-row" style="margin:0;">
+                <select id="bulk-move-course" class="alloc-select" style="font-size: 0.75rem; height: 32px; padding: 0 0.5rem;">
+                    <option value="">— Move Selected to Course —</option>
+                </select>
+                <button class="btn btn-primary btn-sm" style="height:32px; padding: 0 0.8rem;" onclick="bulkMoveClasses()">Move</button>
+            </div>
+        </div>
         <div id="unassigned-list" class="pills-wrap"></div>
         <div style="margin-top:0.6rem;font-size:0.75rem;color:var(--ink2);opacity:0.8;">Click to select multiple, then drag to a course below.</div>
     </div>
@@ -286,6 +301,7 @@ tbody tr:hover td{background:var(--surface2);}
       <h2>Allocations</h2>
       <p>Auto-allocate assigns writers and markers to balance workload. Click any dropdown to override manually.</p>
     </div>
+    <button class="btn btn-secondary" onclick="clearAllAllocations()">🗑 Clear All</button>
     <button class="btn btn-primary" onclick="autoAllocate()">&#9889; Auto-Allocate All</button>
   </div>
   <div id="alloc-notice" class="notice" style="display:none;"></div>
@@ -359,7 +375,7 @@ let state = {
   teachers: [],
   courses:  [],
   allocs:   {},
-  unassignedClasses: [] // [{id, name, assignments:[{teacherId, periods}]}]
+  unassignedClasses: [] // [{id, name, assignments:[{teacherId, periods}], collapsed: false}]
 };
 let selectedClassIds = new Set();
 let _id = 1;
@@ -377,7 +393,7 @@ function loadDefaultCourses() {
 
   if (state.courses.length === 0 && state.teachers.length === 0) { // Only load if state is empty
     defaultCourses.forEach(c => {
-      state.courses.push({ id: uid(), name: c.name, markersNeeded: c.markers, allTeachersMark: false, classes: [] });
+      state.courses.push({ id: uid(), name: c.name, markersNeeded: c.markers, allTeachersMark: false, classes: [], collapsed: false });
     });
   }
 }
@@ -457,7 +473,7 @@ function addCourse(){
   const name=nameInp.value.trim();
   if(!name) return;
   const markersNeeded=Math.max(1,parseInt(markInp.value)||2);
-  state.courses.push({id:uid(), name, markersNeeded, classes:[] });
+  state.courses.push({id:uid(), name, markersNeeded, classes:[], collapsed: false });
   nameInp.value='';
   renderCourses(); renderCourseClassArea(); renderAllocTable();
 }
@@ -497,8 +513,16 @@ function renderCourseClassArea(){
   if(!state.courses.length){
     el.innerHTML='<div class="list-empty">Add courses and teachers above to begin assigning classes.</div>';return;
   }
+
+  // Update bulk move dropdown
+  const bulkSelect = document.getElementById('bulk-move-course');
+  if (bulkSelect) {
+    bulkSelect.innerHTML = '<option value="">— Move Selected to Course —</option>' + 
+      state.courses.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  }
+
   el.innerHTML=state.courses.map(c=>`
-    <div class="course-drop-zone" style="margin-bottom:1.4rem;padding:0.8rem;border-bottom:1px solid var(--rule);" ondragover="allowDrop(event)" ondrop="dropClasses(event, '${c.id}')" ondragleave="dragLeave(event)">
+    <div class="course-drop-zone ${c.collapsed ? 'collapsed' : ''}" style="margin-bottom:1.4rem;padding:0.8rem;border-bottom:1px solid var(--rule);" ondragover="allowDrop(event)" ondrop="dropClasses(event, '${c.id}')" ondragleave="dragLeave(event)">
       <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;flex-wrap:wrap;pointer-events:none;">
         <strong style="font-family:var(--font-head);font-size:1.05rem;">${esc(c.name)}</strong>
         <div class="marker-count" title="Markers needed for this course">
@@ -507,11 +531,14 @@ function renderCourseClassArea(){
           <span class="mc-val">${c.markersNeeded}</span>
           <button class="mc-btn" onclick="updateMarkersNeeded('${c.id}',1)">+</button>
         </div>
+        <button class="collapse-toggle" style="pointer-events: auto;" onclick="toggleCourseCollapse('${c.id}')">${c.collapsed ? 'Expand' : 'Collapse'}</button>
       </div>
-      ${renderClassesForCourse(c)}
-      <div class="input-row" style="margin-top:.8rem;">
-        <input type="text" id="new-class-name-${c.id}" placeholder="New class code (e.g. 12MX1A)" style="max-width:240px;">
-        <button class="btn btn-secondary btn-sm" onclick="addClass('${c.id}')">+ Add Class</button>
+      <div class="course-details-wrapper">
+        ${renderClassesForCourse(c)}
+        <div class="input-row" style="margin-top:.8rem;">
+          <input type="text" id="new-class-name-${c.id}" placeholder="New class code (e.g. 12MX1A)" style="max-width:240px;">
+          <button class="btn btn-secondary btn-sm" onclick="addClass('${c.id}')">+ Add Class</button>
+        </div>
       </div>
     </div>`).join('');
 }
@@ -549,6 +576,12 @@ function toggleSelectClass(id) {
     renderUnassignedArea();
 }
 
+function toggleCourseCollapse(courseId) {
+    const course = state.courses.find(c => c.id === courseId);
+    if (course) course.collapsed = !course.collapsed;
+    renderCourseClassArea();
+}
+
 function dragStart(e, id) {
     if (!selectedClassIds.has(id)) {
         // If dragging an unselected item, treat it as the only selection
@@ -563,6 +596,24 @@ function dragStart(e, id) {
     }
     e.dataTransfer.setData('text/plain', JSON.stringify(Array.from(selectedClassIds)));
     e.dataTransfer.effectAllowed = 'move';
+}
+
+function bulkMoveClasses() {
+    const courseId = document.getElementById('bulk-move-course').value;
+    if (!courseId) { alert('Select a course first.'); return; }
+    if (selectedClassIds.size === 0) { alert('Select classes to move first.'); return; }
+    
+    const course = state.courses.find(c => c.id === courseId);
+    selectedClassIds.forEach(id => {
+        const idx = state.unassignedClasses.findIndex(cl => cl.id === id);
+        if (idx !== -1) {
+            const cls = state.unassignedClasses.splice(idx, 1)[0];
+            course.classes.push(cls);
+        }
+    });
+    selectedClassIds.clear();
+    renderCourseClassArea();
+    renderAllocTable();
 }
 
 function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
@@ -660,11 +711,11 @@ function removeTeacherFromClass(courseId, classId, teacherId) {
 // ═══════════════════════════════════════════
 function autoAllocate(){
   const workload = {};
-  state.teachers.forEach(t => { workload[t.id] = { write: 0, mark: 0, total: 0 }; });
+  state.teachers.forEach(t => { workload[t.id] = { writingCount: 0, markingCount: 0 }; });
 
   function calculateTotalLoad(id) {
     const w = workload[id];
-    return (w.write * WRITING_WEIGHT) + w.mark;
+    return (w.writingCount * WRITING_WEIGHT) + w.markingCount;
   }
 
   state.courses.forEach(course=>{
@@ -687,30 +738,27 @@ function autoAllocate(){
       });
     }
 
-    // Pick writer from eligible, fallback to all
-    const writerPool=sortByLoad(eligibleIds.length?eligibleIds:allIds);
+    // Strictly allocate teachers teaching the course
+    if (eligibleIds.length === 0) return; 
+
+    // Pick writer from eligible
+    const writerPool=sortByLoad(eligibleIds);
     const writerId=writerPool[0]||null;
-    if(writerId) workload[writerId].write += 1;
+    if(writerId) workload[writerId].writingCount += 1;
 
     // Pick markers: writer always marks; fill remaining from eligible then all
     const needed=course.markersNeeded;
     const markerIds=writerId?[writerId]:[];
     const markingLoadPerMarker = (course.classes.length * MARKING_WEIGHT_PER_CLASS) / needed;
-    if(writerId) workload[writerId].mark += markingLoadPerMarker;
+    if(writerId) workload[writerId].markingCount += markingLoadPerMarker;
 
     // Remaining slots
     const remaining=needed-markerIds.length;
     if(remaining>0){
-      const candidates = sortByLoad((eligibleIds.length ? eligibleIds : allIds).filter(id => !markerIds.includes(id)));
+      const candidates = sortByLoad(eligibleIds.filter(id => !markerIds.includes(id)));
       candidates.slice(0,remaining).forEach(id=>{
         markerIds.push(id);
-        workload[id].mark += markingLoadPerMarker;
-      });
-      // Still not enough? Pull from all
-      if(markerIds.length<needed){
-        sortByLoad(allIds.filter(id=>!markerIds.includes(id)))
-          .slice(0,needed-markerIds.length)
-          .forEach(id=>{markerIds.push(id);workload[id].mark += markingLoadPerMarker;});
+        workload[id].markingCount += markingLoadPerMarker;
       }
     }
 
@@ -721,6 +769,13 @@ function autoAllocate(){
   renderCourseView();
   renderTeacherView();
   renderAllocTable();
+}
+
+function clearAllAllocations() {
+    if (confirm("Are you sure you want to clear ALL writers and markers?")) {
+        state.allocs = {};
+        renderAllocTable(); renderCourseView(); renderTeacherView();
+    }
 }
 
 // ═══════════════════════════════════════════
@@ -736,6 +791,10 @@ function renderAllocTable(){
   const rows = state.courses.map(course => {
     const a=state.allocs[course.id]||{writerId:null,markerIds:[]};
     const classNames=course.classes.map(cl=>cl.name).join(', ')||'<span style="color:var(--dim)">None</span>';
+    const courseTeachers = getTeachersForCourse(course).map(id => {
+        const t = state.teachers.find(te => te.id === id);
+        return t ? t.name : 'Unknown';
+    }).join(', ');
 
     const writerOpts=`<option value="">— unassigned —</option>${state.teachers.map(t=>`<option value="${t.id}"${a.writerId===t.id?' selected':''}>${esc(t.name)}</option>`).join('')}`;
 
@@ -756,6 +815,7 @@ function renderAllocTable(){
         <div style="flex:2;min-width:200px;">
           <div class="td-course">${esc(course.name)}</div>
           <div class="td-sub" style="margin-top:.25rem;">${classNames}</div>
+          ${courseTeachers ? `<div class="teaching-list">Teachers: ${esc(courseTeachers)}</div>` : ''}
         </div>
         <div style="flex:1;min-width:180px;">
           <div style="font-size:.6rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem;">Writer</div>
@@ -845,7 +905,7 @@ function renderTeacherView(){
 
   // Build per-teacher task lists
   const workload = {};
-  state.teachers.forEach(t => { workload[t.id] = { write: [], mark: [], load: 0 }; });
+  state.teachers.forEach(t => { workload[t.id] = { writing: [], marking: [], load: 0 }; });
 
   state.courses.forEach(course=>{
     const a=state.allocs[course.id];
@@ -859,12 +919,12 @@ function renderTeacherView(){
     }
     const markingLoadPerMarker = (course.classes.length * MARKING_WEIGHT_PER_CLASS) / Math.max(1, markersCount);
     if(a.writerId&&workload[a.writerId]) {
-      workload[a.writerId].write.push(course);
+      workload[a.writerId].writing.push(course);
       workload[a.writerId].load += WRITING_WEIGHT;
     }
     a.markerIds.filter(Boolean).forEach(mid=>{
       if(workload[mid]) {
-        workload[mid].mark.push(course);
+        workload[mid].marking.push(course);
         workload[mid].load += markingLoadPerMarker;
       }
     });
