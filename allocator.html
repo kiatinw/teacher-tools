@@ -542,7 +542,12 @@ function dragStart(e, id) {
         // If dragging an unselected item, treat it as the only selection
         selectedClassIds.clear();
         selectedClassIds.add(id);
-        renderUnassignedArea(); // Visual update
+        
+        // Visual update without destroying DOM nodes (which would kill the drag)
+        document.querySelectorAll('#unassigned-list .class-chip').forEach(chip => {
+            chip.classList.remove('selected');
+        });
+        e.currentTarget.classList.add('selected');
     }
     e.dataTransfer.setData('text/plain', JSON.stringify(Array.from(selectedClassIds)));
     e.dataTransfer.effectAllowed = 'move';
@@ -986,6 +991,7 @@ function processImportedData(text) {
     const fcEl = document.getElementById('faculty-code');
     const facultyCode = fcEl ? fcEl.value.trim().toUpperCase() : '';
     const data = parseCSV(text);
+    selectedClassIds.clear();
     state = { teachers: [], courses: [], allocs: {}, unassignedClasses: [] };
     _id = 1;
     const teacherMap = {}, courseMap = {};
