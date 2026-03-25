@@ -924,16 +924,19 @@ function processImportedData(text) {
       };
 
       const className = getVal(['class_name', 'class_code', 'class']);
-      const courseName = getVal(['course_name', 'course', 'subject']);
+      let courseName = getVal(['course_name', 'course', 'subject']);
       
       // Filter by faculty code if provided
       if (facultyCode && className && !className.toUpperCase().startsWith(facultyCode)) return;
 
+      // If no course name, fallback to using the class name.
+      if (!courseName && className) courseName = className;
+
       // Teacher Name
       let teacherName = getVal(['teacher_name', 'teacher']);
       if (!teacherName) {
-        const first = getVal(['first_name', 'first', 'firstname']);
-        const last = getVal(['surname', 'last_name', 'lastname']);
+        const first = getVal(['first_name', 'first', 'firstname', 'pref_given_name']);
+        const last = getVal(['surname', 'last_name', 'lastname', 'pref_surname']);
         if (first || last) teacherName = `${first} ${last}`.trim();
       }
 
