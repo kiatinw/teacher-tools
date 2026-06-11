@@ -19,226 +19,66 @@
   --good:   #1a6b45;
   --warn:   #a35c00;
 }
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{font-size:16px;}
-body{
-  background:var(--cream);
-  color:var(--ink);
-  font-family:'Public Sans',sans-serif;
-  min-height:100vh;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(0,0,0,0.04) 28px);
-}
+body{background:var(--cream);color:var(--ink);font-family:'Public Sans',sans-serif;min-height:100vh;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(0,0,0,0.04) 28px);}
 input,select,textarea,button{font-family:'Public Sans',sans-serif;}
-
-/* ── Header ─────────────────────────────────────── */
-.header{
-  background:var(--ink);
-  padding:0 40px;
-  height:60px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;top:0;z-index:100;
-}
-.header-title{
-  font-family:'Fraunces',serif;
-  font-size:18px;
-  font-weight:600;
-  color:var(--paper);
-  letter-spacing:-0.01em;
-  display:flex;align-items:center;gap:10px;
-}
-.header-pill{
-  background:var(--accent);
-  color:#fff;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  padding:3px 8px;
-  border-radius:3px;
-  font-family:'DM Mono',monospace;
-}
+.header{background:var(--ink);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--paper);letter-spacing:-0.01em;display:flex;align-items:center;gap:10px;}
+.header-pill{background:var(--accent);color:#fff;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;font-family:'DM Mono',monospace;}
 .header-sub{font-size:12px;color:#888;font-family:'DM Mono',monospace;}
-
-/* ── Layout ─────────────────────────────────────── */
 .main{max-width:820px;margin:0 auto;padding:36px 24px 64px;}
-
-/* ── Section cards ──────────────────────────────── */
-.card{
-  background:var(--white);
-  border:1px solid var(--rule);
-  border-radius:4px;
-  padding:24px 26px 8px;
-  margin-bottom:20px;
-  box-shadow:0 1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
-  position:relative;
-}
-.card::before{
-  content:'';
-  position:absolute;
-  left:0;top:0;bottom:0;
-  width:3px;
-  background:var(--accent);
-  border-radius:4px 0 0 4px;
-}
-.card-title{
-  font-family:'Fraunces',serif;
-  font-size:11px;
-  font-weight:600;
-  color:var(--accent);
-  text-transform:uppercase;
-  letter-spacing:0.12em;
-  margin-bottom:16px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--cream);
-}
-
-/* ── Fields ─────────────────────────────────────── */
+.card{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:24px 26px 8px;margin-bottom:20px;box-shadow:0 1px 0 rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.04);position:relative;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:4px 0 0 4px;}
+.card-title{font-family:'Fraunces',serif;font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--cream);}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
 .field{margin-bottom:16px;}
-.field label{
-  display:block;
-  font-size:10.5px;
-  font-weight:600;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:0.07em;
-  margin-bottom:5px;
-  font-family:'DM Mono',monospace;
-}
+.field label{display:block;font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;font-family:'DM Mono',monospace;}
 .field label .opt{font-weight:400;text-transform:none;letter-spacing:0;color:#b0a89e;font-size:10px;font-family:'Public Sans',sans-serif;}
-.field input,.field select,.field textarea{
-  width:100%;
-  padding:8px 11px;
-  border-radius:4px;
-  background:var(--paper);
-  border:1px solid var(--rule);
-  color:var(--ink);
-  font-size:13.5px;
-  transition:border-color .15s,box-shadow .15s;
-  appearance:none;
-}
-.field input:focus,.field select:focus,.field textarea:focus{
-  outline:none;
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(42,88,141,0.1);
-  background:var(--white);
-}
+.field input,.field select,.field textarea{width:100%;padding:8px 11px;border-radius:4px;background:var(--paper);border:1px solid var(--rule);color:var(--ink);font-size:13.5px;transition:border-color .15s,box-shadow .15s;appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,88,141,0.1);background:var(--white);}
 .field textarea{resize:vertical;min-height:90px;line-height:1.6;}
-
 .date-row{display:flex;gap:8px;align-items:flex-end;}
 .date-row>.field{flex:1;margin-bottom:0;}
-
 .btn-link{background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap;font-family:'Public Sans',sans-serif;}
 .btn-link:hover{color:#1d3d63;}
-
-/* ── Tab switcher ────────────────────────────────── */
-.tab-bar{
-  display:flex;gap:0;margin-bottom:20px;
-  border:1px solid var(--rule);
-  border-radius:4px;
-  overflow:hidden;
-}
-.tab-btn{
-  flex:1;padding:10px 16px;background:var(--paper);border:none;cursor:pointer;
-  font-size:13px;font-weight:500;color:var(--muted);
-  font-family:'Public Sans',sans-serif;
-  border-right:1px solid var(--rule);
-  transition:background .15s,color .15s;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-}
+.tab-bar{display:flex;gap:0;margin-bottom:20px;border:1px solid var(--rule);border-radius:4px;overflow:hidden;}
+.tab-btn{flex:1;padding:10px 16px;background:var(--paper);border:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);font-family:'Public Sans',sans-serif;border-right:1px solid var(--rule);transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;}
 .tab-btn:last-child{border-right:none;}
 .tab-btn.active{background:var(--accent);color:#fff;}
 .tab-btn:not(.active):hover{background:var(--cream);}
 .tab-label-mono{font-family:'DM Mono',monospace;font-size:11px;opacity:.75;}
-
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-
-/* ── Student list ─────────────────────────────────── */
-.student-paste{
-  width:100%;min-height:120px;padding:10px 12px;
-  border-radius:4px;background:var(--paper);border:1px solid var(--rule);
-  color:var(--ink);font-size:13px;line-height:1.6;resize:vertical;
-  font-family:'DM Mono',monospace;
-}
+.student-paste{width:100%;min-height:120px;padding:10px 12px;border-radius:4px;background:var(--paper);border:1px solid var(--rule);color:var(--ink);font-size:13px;line-height:1.6;resize:vertical;font-family:'DM Mono',monospace;}
 .student-paste:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,88,141,0.1);background:var(--white);}
-
-.parse-btn{
-  background:var(--accent);color:#fff;border:none;border-radius:4px;
-  padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;
-  font-family:'Public Sans',sans-serif;margin-top:8px;
-  transition:background .15s;
-}
+.parse-btn{background:var(--accent);color:#fff;border:none;border-radius:4px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Public Sans',sans-serif;margin-top:8px;transition:background .15s;}
 .parse-btn:hover{background:#1d3d63;}
-
 .parse-status{font-size:12px;margin-top:8px;min-height:20px;}
 .parse-status.ok{color:var(--good);}
 .parse-status.warn{color:var(--warn);}
-
 .student-table-wrap{margin-top:14px;overflow-x:auto;}
-.student-edit-table{
-  width:100%;border-collapse:collapse;font-size:13px;
-}
-.student-edit-table th{
-  background:var(--cream);color:var(--muted);
-  font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;
-  padding:7px 10px;text-align:left;
-  border-bottom:2px solid var(--rule);
-  font-family:'DM Mono',monospace;
-}
-.student-edit-table td{
-  padding:4px 6px;border-bottom:1px solid var(--cream);vertical-align:middle;
-}
-.student-edit-table td input{
-  width:100%;padding:5px 8px;border-radius:3px;border:1px solid transparent;
-  background:transparent;font-size:13px;color:var(--ink);
-  font-family:'Public Sans',sans-serif;
-  transition:border-color .12s,background .12s;
-}
-.student-edit-table td input:focus{
-  outline:none;border-color:var(--accent);background:var(--paper);
-}
-.student-edit-table .row-del{
-  background:none;border:none;color:#c0b8b0;cursor:pointer;padding:0 4px;font-size:16px;
-}
+.student-edit-table{width:100%;border-collapse:collapse;font-size:13px;}
+.student-edit-table th{background:var(--cream);color:var(--muted);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:7px 10px;text-align:left;border-bottom:2px solid var(--rule);font-family:'DM Mono',monospace;}
+.student-edit-table td{padding:4px 6px;border-bottom:1px solid var(--cream);vertical-align:middle;}
+.student-edit-table td input{width:100%;padding:5px 8px;border-radius:3px;border:1px solid transparent;background:transparent;font-size:13px;color:var(--ink);font-family:'Public Sans',sans-serif;transition:border-color .12s,background .12s;}
+.student-edit-table td input:focus{outline:none;border-color:var(--accent);background:var(--paper);}
+.student-edit-table .row-del{background:none;border:none;color:#c0b8b0;cursor:pointer;padding:0 4px;font-size:16px;}
 .student-edit-table .row-del:hover{color:var(--accent2);}
-
 .extra-rows-row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
 .extra-rows-row label{font-size:12px;color:var(--muted);}
 .extra-rows-input{width:72px;padding:6px 8px;border-radius:4px;border:1px solid var(--rule);background:var(--paper);font-size:13px;text-align:center;}
 .extra-rows-input:focus{outline:none;border-color:var(--accent);}
-
-/* ── Generate button ─────────────────────────────── */
 .gen-wrap{text-align:center;margin-top:28px;}
-.gen-btn{
-  background:var(--ink);color:var(--paper);border:none;
-  border-radius:4px;padding:13px 52px;
-  font-size:15px;font-weight:700;cursor:pointer;
-  font-family:'Fraunces',serif;
-  letter-spacing:-0.01em;
-  transition:background .2s,transform .1s;
-  box-shadow:0 2px 0 rgba(0,0,0,0.3);
-}
+.gen-btn{background:var(--ink);color:var(--paper);border:none;border-radius:4px;padding:13px 52px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Fraunces',serif;letter-spacing:-0.01em;transition:background .2s,transform .1s;box-shadow:0 2px 0 rgba(0,0,0,0.3);}
 .gen-btn:hover{background:#2d2a26;transform:translateY(-1px);}
 .gen-btn:active{transform:translateY(0);box-shadow:none;}
 .gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 .gen-btn.success{background:var(--good);}
 .gen-hint{color:#b0a89e;font-size:11.5px;margin-top:8px;font-family:'DM Mono',monospace;}
-
-/* ── Misc ─────────────────────────────────────────── */
-.row-count-badge{
-  display:inline-block;
-  background:var(--accent);color:#fff;
-  font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;
-  font-family:'DM Mono',monospace;vertical-align:middle;margin-left:6px;
-}
+.row-count-badge{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;font-family:'DM Mono',monospace;vertical-align:middle;margin-left:6px;}
 .hint-text{font-size:11.5px;color:#b0a89e;margin-bottom:10px;font-family:'DM Mono',monospace;}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .main{animation:fadeUp .3s ease;}
 </style>
@@ -254,58 +94,30 @@ input,select,textarea,button{font-family:'Public Sans',sans-serif;}
 </div>
 
 <div class="main">
-
-  <!-- Course & Task Info -->
   <div class="card">
     <div class="card-title">Course &amp; Task Information</div>
     <div class="grid-2">
-      <div class="field">
-        <label>Course</label>
-        <input type="text" id="f-course" placeholder="e.g. Mathematics Advanced" />
-      </div>
-      <div class="field">
-        <label>Class</label>
-        <input type="text" id="f-class" placeholder="e.g. 12MADA1" />
-      </div>
+      <div class="field"><label>Course</label><input type="text" id="f-course" placeholder="e.g. Mathematics Advanced" /></div>
+      <div class="field"><label>Class</label><input type="text" id="f-class" placeholder="e.g. 12MADA1" /></div>
     </div>
     <div class="grid-3">
-      <div class="field">
-        <label>Task Number</label>
-        <select id="f-tasknum">
-          <option value="1">1</option><option value="2">2</option>
-          <option value="3">3</option><option value="4">4</option>
-          <option value="5">5</option><option value="6">6</option>
-        </select>
+      <div class="field"><label>Task Number</label>
+        <select id="f-tasknum"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select>
       </div>
-      <div class="field">
-        <label>Weighting (%)</label>
-        <input type="number" id="f-weighting" min="0" max="100" placeholder="e.g. 30" />
-      </div>
-      <div class="field">
-        <label>Topics <span class="opt">(optional)</span></label>
-        <input type="text" id="f-topics" placeholder="e.g. Calculus, Integration" />
-      </div>
+      <div class="field"><label>Weighting (%)</label><input type="number" id="f-weighting" min="0" max="100" placeholder="e.g. 30" /></div>
+      <div class="field"><label>Topics <span class="opt">(optional)</span></label><input type="text" id="f-topics" placeholder="e.g. Calculus, Integration" /></div>
     </div>
-
-    <!-- Date & Time -->
     <div class="field">
       <label>Date &amp; Time</label>
       <div class="date-row">
-        <div class="field" id="date-picker-wrap" style="margin-bottom:0;">
-          <input type="date" id="f-date" />
-        </div>
-        <div class="field" id="date-text-wrap" style="display:none;margin-bottom:0;">
-          <input type="text" id="f-date-text" placeholder="e.g. See examination timetable" />
-        </div>
+        <div class="field" id="date-picker-wrap" style="margin-bottom:0;"><input type="date" id="f-date" /></div>
+        <div class="field" id="date-text-wrap" style="display:none;margin-bottom:0;"><input type="text" id="f-date-text" placeholder="e.g. See examination timetable" /></div>
         <button class="btn-link" onclick="toggleDateOverride()" id="date-override-btn" style="margin-bottom:2px;">Override</button>
-        <div class="field" style="margin-bottom:0;width:180px;">
-          <input type="text" id="f-time" placeholder="e.g. Period 3, 9:05am" />
-        </div>
+        <div class="field" style="margin-bottom:0;width:180px;"><input type="text" id="f-time" placeholder="e.g. Period 3, 9:05am" /></div>
       </div>
     </div>
   </div>
 
-  <!-- Instructions -->
   <div class="card">
     <div class="card-title">Instructions to Students</div>
     <div class="field" style="margin-bottom:8px;">
@@ -313,56 +125,28 @@ input,select,textarea,button{font-family:'Public Sans',sans-serif;}
     </div>
   </div>
 
-  <!-- Signature Table -->
   <div class="card">
     <div class="card-title">Student Signature Table</div>
-
     <div class="tab-bar">
-      <button class="tab-btn active" id="tab-blank-btn" onclick="switchTab('blank')">
-        <span>Option 1</span>
-        <span class="tab-label-mono">Blank rows</span>
-      </button>
-      <button class="tab-btn" id="tab-list-btn" onclick="switchTab('list')">
-        <span>Option 2</span>
-        <span class="tab-label-mono">Student list</span>
-      </button>
+      <button class="tab-btn active" id="tab-blank-btn" onclick="switchTab('blank')"><span>Option 1</span><span class="tab-label-mono">Blank rows</span></button>
+      <button class="tab-btn" id="tab-list-btn" onclick="switchTab('list')"><span>Option 2</span><span class="tab-label-mono">Student list</span></button>
     </div>
-
-    <!-- Option 1: blank rows -->
     <div class="tab-panel active" id="tab-blank">
-      <div class="field" style="max-width:200px;">
-        <label>Number of rows</label>
-        <input type="number" id="f-blank-rows" value="25" min="1" max="200" />
-      </div>
+      <div class="field" style="max-width:200px;"><label>Number of rows</label><input type="number" id="f-blank-rows" value="25" min="1" max="200" /></div>
     </div>
-
-    <!-- Option 2: student list -->
     <div class="tab-panel" id="tab-list">
       <p class="hint-text">Paste a class roll — one student per line. Any format works.</p>
-      <textarea class="student-paste" id="student-paste" placeholder="e.g.
-Smith, John
-Emily Johnson
-20345 Sarah O'Brien
-3 — Williams, Tom"></textarea>
+      <textarea class="student-paste" id="student-paste" placeholder="e.g.&#10;Smith, John&#10;Emily Johnson&#10;20345 Sarah O'Brien&#10;3 — Williams, Tom"></textarea>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;">
         <button class="parse-btn" onclick="parseStudents()">↳ Parse names</button>
         <button class="btn-link" onclick="clearStudents()">Clear</button>
       </div>
       <p class="parse-status" id="parse-status"></p>
-
       <div class="student-table-wrap" id="student-table-wrap" style="display:none;">
         <table class="student-edit-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th style="width:32px;"></th>
-            </tr>
-          </thead>
+          <thead><tr><th>#</th><th>First Name</th><th>Last Name</th><th style="width:32px;"></th></tr></thead>
           <tbody id="student-tbody"></tbody>
         </table>
-
         <div class="extra-rows-row">
           <label>Add <input type="number" class="extra-rows-input" id="extra-rows" value="0" min="0" max="100" /> extra blank rows</label>
           <span id="total-rows-badge"></span>
@@ -375,15 +159,13 @@ Emily Johnson
     <button class="gen-btn" id="gen-btn" onclick="generateDocx()">Generate Register</button>
     <p class="gen-hint">Downloads a formatted .docx ready to print</p>
   </div>
-
 </div>
 
 <script>
 let dateOverrideActive = false;
-let students = []; // [{first, last}]
+let students = [];
 let activeTab = 'blank';
 
-// ── Helpers ────────────────────────────────────────
 function toggleDateOverride(){
   dateOverrideActive = !dateOverrideActive;
   document.getElementById('date-picker-wrap').style.display = dateOverrideActive ? 'none' : 'block';
@@ -399,43 +181,25 @@ function switchTab(tab){
   document.getElementById('tab-list-btn').classList.toggle('active',  tab==='list');
 }
 
-// ── Student parser ─────────────────────────────────
-// Handles: "Last, First", "First Last", "ID Last, First", "ID First Last"
 function parseName(raw){
-  // Strip leading numbers/IDs and punctuation like "20345 —"
   let s = raw.replace(/^\s*\d+\s*[-–—]?\s*/,'').trim();
-  // "Last, First" format
   if(s.includes(',')){
     const parts = s.split(',');
-    const last  = parts[0].trim();
-    const first = parts.slice(1).join(',').trim();
-    return {first, last};
+    return {first: parts.slice(1).join(',').trim(), last: parts[0].trim()};
   }
-  // "First Last" — split on last space
   const words = s.split(/\s+/).filter(Boolean);
-  if(words.length === 0) return null;
-  if(words.length === 1) return {first:'', last:words[0]};
-  const last  = words[words.length-1];
-  const first = words.slice(0, words.length-1).join(' ');
-  return {first, last};
+  if(!words.length) return null;
+  if(words.length===1) return {first:'', last:words[0]};
+  return {first: words.slice(0,-1).join(' '), last: words[words.length-1]};
 }
 
 function parseStudents(){
-  const raw   = document.getElementById('student-paste').value;
-  const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
-  const parsed = lines.map(parseName).filter(Boolean);
-
-  students = parsed.map(p=>({first:p.first, last:p.last}));
+  const lines = document.getElementById('student-paste').value.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  students = lines.map(parseName).filter(Boolean);
   renderStudentTable();
-
   const st = document.getElementById('parse-status');
-  if(students.length===0){
-    st.textContent='No names found — check your pasted text.';
-    st.className='parse-status warn';
-  } else {
-    st.textContent=`✓ ${students.length} student${students.length!==1?'s':''} parsed — edit any that look wrong.`;
-    st.className='parse-status ok';
-  }
+  if(!students.length){ st.textContent='No names found — check your pasted text.'; st.className='parse-status warn'; }
+  else { st.textContent=`✓ ${students.length} student${students.length!==1?'s':''} parsed — edit any that look wrong.`; st.className='parse-status ok'; }
   updateTotalBadge();
 }
 
@@ -452,45 +216,35 @@ function renderStudentTable(){
   tbody.innerHTML='';
   students.forEach((s,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td style="width:32px;color:#b0a89e;font-size:12px;font-family:'DM Mono',monospace;text-align:center;">${i+1}</td>
+    tr.innerHTML=`<td style="width:32px;color:#b0a89e;font-size:12px;font-family:'DM Mono',monospace;text-align:center;">${i+1}</td>
       <td><input type="text" value="${esc(s.first)}" oninput="students[${i}].first=this.value" /></td>
       <td><input type="text" value="${esc(s.last)}"  oninput="students[${i}].last=this.value" /></td>
       <td><button class="row-del" onclick="removeStudent(${i})" title="Remove">×</button></td>`;
     tbody.appendChild(tr);
   });
-  document.getElementById('student-table-wrap').style.display = students.length>0 ? 'block' : 'none';
+  document.getElementById('student-table-wrap').style.display = students.length>0?'block':'none';
   updateTotalBadge();
 }
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function removeStudent(i){ students.splice(i,1); renderStudentTable(); }
 
-function removeStudent(i){
-  students.splice(i,1);
-  renderStudentTable();
-}
-
-document.addEventListener('change', e=>{
-  if(e.target.id==='extra-rows') updateTotalBadge();
-});
+document.addEventListener('change', e=>{ if(e.target.id==='extra-rows') updateTotalBadge(); });
 
 function updateTotalBadge(){
   const extra = parseInt(document.getElementById('extra-rows').value)||0;
-  const total = students.length + extra;
+  const total = students.length+extra;
   const badge = document.getElementById('total-rows-badge');
   if(students.length>0){
     badge.innerHTML=`<span class="row-count-badge">${total} total row${total!==1?'s':''}</span>
       <span style="font-size:12px;color:var(--muted);margin-left:6px;">(${students.length} named + ${extra} blank)</span>`;
-  } else {
-    badge.innerHTML='';
-  }
+  } else { badge.innerHTML=''; }
 }
 
 // ── Generate DOCX ──────────────────────────────────
 async function generateDocx(){
   const btn = document.getElementById('gen-btn');
   btn.disabled=true; btn.textContent='Generating...';
-
   try{
     if(typeof docx==='undefined') throw new Error('docx library not loaded — check internet connection and refresh.');
 
@@ -498,14 +252,14 @@ async function generateDocx(){
           AlignmentType,BorderStyle,WidthType,ShadingType,VerticalAlign,
           HeightRule,TableLayoutType}=docx;
 
-    const v  = id=>document.getElementById(id).value;
-    const course      = v('f-course')||'Course';
-    const cls         = v('f-class');
-    const taskNum     = v('f-tasknum');
-    const weighting   = v('f-weighting');
-    const topics      = v('f-topics');
-    const instructions= v('f-instructions');
-    const timeVal     = v('f-time');
+    const v = id=>document.getElementById(id).value;
+    const course       = v('f-course')||'Course';
+    const cls          = v('f-class');
+    const taskNum      = v('f-tasknum');
+    const weighting    = v('f-weighting');
+    const topics       = v('f-topics');
+    const instructions = v('f-instructions');
+    const timeVal      = v('f-time');
 
     let dateVal='';
     if(dateOverrideActive){
@@ -516,17 +270,90 @@ async function generateDocx(){
     }
     const dateTime=[dateVal,timeVal].filter(Boolean).join('  —  ');
 
-    // Shared styles — matching notification generator
     const F='Public Sans';
     const CN='2a588d',CW='FFFFFF',CS='cbedfd',CT='1a2e44',CL='e4f2fc';
 
-    // A4 narrow margins: 1.27cm = 720 DXA each side
-    // content width = 11906 - 720 - 720 = 10466 DXA
-    const PW=10466, LW=3000, VW=PW-LW;
+    // ── Page geometry (all in DXA, 1 cm = 567 DXA) ──────────────
+    // A4: 11906 × 16838 DXA
+    // Margins: 720 DXA (≈1.27 cm) each side
+    const PAGE_H   = 16838;
+    const MARGIN_T = 720;
+    const MARGIN_B = 720;
+    const USABLE_H = PAGE_H - MARGIN_T - MARGIN_B; // 15398 DXA
 
-    const bdr={style:BorderStyle.SINGLE,size:4,color:'D0E2F3'};
-    const borders={top:bdr,bottom:bdr,left:bdr,right:bdr};
-    const noBorders={top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE}};
+    const PW = 10466; // content width (11906 - 720*2)
+    const LW = 3000;
+    const VW = PW - LW;
+
+    // ── Measured fixed-height elements (DXA) ─────────────────────
+    // Each paragraph spacing = before + after + line height.
+    // TextRun size is in half-points; 1 pt ≈ 20 DXA.
+    // Line height ≈ size_halfpt * 1.15 * 20 / 2  (single spacing)
+    //
+    // School name:   32 hp → line ≈ 368; before=0 after=20   → ~388
+    // Course banner: 24 hp → line ≈ 276; before=0 after=0    → ~276
+    // "Asmnt Task Register" subheading: 20 hp → line≈230; before=40 after=100 → ~370
+    // Details table: rows each 280 DXA min; count varies
+    // gap(50) after table: 50
+    // Instructions heading + box + gap: calculated below
+    // Sig heading paragraph: 20hp→230; before=80 after=40    → ~350
+    // Sig subtitle italic:   16hp→184; before=0  after=40    → ~224
+    // Sig header row: 280 (fixed)
+
+    // ── Calibrated fixed heights (DXA) ──────────────────────────
+    // These were measured empirically against Word's actual rendering.
+    // Word adds inter-paragraph spacing and table spacing that exceeds
+    // what docx spacing:{before,after} alone suggests.
+
+    const H_SCHOOL_NAME  = 500;   // "St Ives High School" bold 32hp + after:20
+    const H_COURSE       = 420;   // course banner 24hp + borders
+    const H_SUBTITLE     = 480;   // "Assessment Task Register" 20hp + before:40 after:100
+
+    // Details table: ATLEAST 280 but Word pads each row; empirically ~340 per row
+    const detailRows = [!!cls, true, !!dateTime, !!weighting, !!topics].filter(Boolean).length;
+    const H_DETAIL_TABLE = detailRows * 340;
+    const H_GAP_AFTER_DETAIL = 80;
+
+    // Instructions
+    const instrLineCount = instructions ? instructions.split('\n').length : 0;
+    // Heading ~400, cell top+bottom margins 140, each line ~260 DXA, gap 80
+    const H_INSTR = instructions
+      ? 400 + 140 + (instrLineCount * 260) + 80
+      : 0;
+
+    // Sig section header + subtitle + sig header row
+    const H_SIG_HEADING  = 420;   // mkH paragraph before:80 after:40 + 20hp line
+    const H_SIG_SUBTITLE = 300;   // italic 16hp + after:40
+    const H_SIG_HDR_ROW  = 340;   // header row ATLEAST 280, Word renders ~340
+
+    // Extra inter-element spacing Word adds between block-level elements
+    const H_WORD_SLOP    = 1100;   // conservative safety buffer
+
+    // Total overhead consumed by everything above the data rows
+    const OVERHEAD = H_SCHOOL_NAME + H_COURSE + H_SUBTITLE
+                   + H_DETAIL_TABLE + H_GAP_AFTER_DETAIL
+                   + H_INSTR
+                   + H_SIG_HEADING + H_SIG_SUBTITLE + H_SIG_HDR_ROW
+                   + H_WORD_SLOP;
+
+    const AVAILABLE = USABLE_H - OVERHEAD;
+
+    // Row count
+    let nRows;
+    if(activeTab==='blank'){
+      nRows = Math.max(1, parseInt(document.getElementById('f-blank-rows').value)||25);
+    } else {
+      const extra = Math.max(0, parseInt(document.getElementById('extra-rows').value)||0);
+      nRows = students.length + extra;
+      if(nRows < 1) nRows = 1;
+    }
+
+    // Clamp row height: minimum 200 DXA (still signable), maximum fills page exactly
+    const rowH = Math.max(200, Math.min(Math.floor(AVAILABLE / nRows), 600));
+
+    // ── Builders ─────────────────────────────────────────────────
+    const bdr     = {style:BorderStyle.SINGLE,size:4,color:'D0E2F3'};
+    const borders = {top:bdr,bottom:bdr,left:bdr,right:bdr};
 
     const mkCell=(text,opts={})=>new TableCell({
       borders,
@@ -537,46 +364,28 @@ async function generateDocx(){
       children:[new Paragraph({
         spacing:{before:0,after:0},
         alignment:opts.align||AlignmentType.LEFT,
-        children:[new TextRun({
-          text:String(text||''),
-          bold:!!opts.bold,
-          italics:!!opts.italic,
-          size:opts.sz||18,
-          font:F,
-          color:opts.color||CT
-        })]
+        children:[new TextRun({text:String(text||''),bold:!!opts.bold,italics:!!opts.italic,size:opts.sz||18,font:F,color:opts.color||CT})]
       })]
     });
 
-    const mkRow=(label,value,i)=>new TableRow({children:[
-      mkCell(label,{w:LW,shade:CS,bold:true,sz:17,color:CN}),
-      mkCell(value,{w:VW,shade:i%2===0?CW:CL}),
-    ]});
+    let ri=0;
+    const detailRowsArr=[];
+    if(cls)       detailRowsArr.push(new TableRow({height:{value:280,rule:HeightRule.ATLEAST},children:[mkCell('Class',{w:LW,shade:CS,bold:true,sz:17,color:CN}),mkCell(cls,{w:VW,shade:ri++%2===0?CW:CL})]}));
+    detailRowsArr.push(new TableRow({height:{value:280,rule:HeightRule.ATLEAST},children:[mkCell('Task Number',{w:LW,shade:CS,bold:true,sz:17,color:CN}),mkCell('Task '+taskNum,{w:VW,shade:ri++%2===0?CW:CL})]}));
+    if(dateTime)  detailRowsArr.push(new TableRow({height:{value:280,rule:HeightRule.ATLEAST},children:[mkCell('Date / Time',{w:LW,shade:CS,bold:true,sz:17,color:CN}),mkCell(dateTime,{w:VW,shade:ri++%2===0?CW:CL})]}));
+    if(weighting) detailRowsArr.push(new TableRow({height:{value:280,rule:HeightRule.ATLEAST},children:[mkCell('Weighting',{w:LW,shade:CS,bold:true,sz:17,color:CN}),mkCell(weighting+'%',{w:VW,shade:ri++%2===0?CW:CL})]}));
+    if(topics)    detailRowsArr.push(new TableRow({height:{value:280,rule:HeightRule.ATLEAST},children:[mkCell('Topics',{w:LW,shade:CS,bold:true,sz:17,color:CN}),mkCell(topics,{w:VW,shade:ri++%2===0?CW:CL})]}));
 
-    // Compact inline heading — no paragraph gap, just bold label
-    const mkH=text=>new Paragraph({
-      spacing:{before:80,after:40},
-      children:[new TextRun({text,bold:true,size:20,font:F,color:CN})]
-    });
+    const mkH = text=>new Paragraph({spacing:{before:80,after:40},children:[new TextRun({text,bold:true,size:20,font:F,color:CN})]});
+    const gap = (n=60)=>new Paragraph({spacing:{before:0,after:n},children:[]});
 
-    const gap=(n=60)=>new Paragraph({spacing:{before:0,after:n},children:[]});
-
-    // Task details table
-    let ri=0; const dr=[];
-    dr.push(mkRow('Class',cls,ri++));
-    dr.push(mkRow('Task Number','Task '+taskNum,ri++));
-    if(dateTime) dr.push(mkRow('Date / Time',dateTime,ri++));
-    if(weighting) dr.push(mkRow('Weighting',weighting+'%',ri++));
-    if(topics) dr.push(mkRow('Topics',topics,ri++));
-
-    // Instructions box
-    const instrBox=new Table({
+    const instrBox = new Table({
       width:{size:PW,type:WidthType.DXA},columnWidths:[PW],
       rows:[new TableRow({children:[new TableCell({
         borders,width:{size:PW,type:WidthType.DXA},
         shading:{fill:CL,type:ShadingType.CLEAR},
         margins:{top:70,bottom:70,left:140,right:140},
-        children:instructions.split('\n').map((line,i,arr)=>new Paragraph({
+        children: instructions.split('\n').map((line,i,arr)=>new Paragraph({
           spacing:{before:0,after:i<arr.length-1?40:0},
           children:[new TextRun({text:line,size:18,font:F,color:CT})]
         }))
@@ -584,109 +393,57 @@ async function generateDocx(){
     });
 
     // Signature table
-    // Columns: First Name | Last Name | Notification Received | Date
-    // Widths proportional to PW
-    const C1=Math.round(PW*0.24); // First name
-    const C2=Math.round(PW*0.24); // Last name
-    const C3=Math.round(PW*0.36); // Notification Received (wider for signature space)
-    const C4=PW-C1-C2-C3;         // Date
+    const C1=Math.round(PW*0.24), C2=Math.round(PW*0.24), C3=Math.round(PW*0.36), C4=PW-C1-C2-C3;
+    const sigBdr     = {style:BorderStyle.SINGLE,size:4,color:'AAAAAA'};
+    const sigBorders = {top:sigBdr,bottom:sigBdr,left:sigBdr,right:sigBdr};
 
-    // Dynamic row height — calculated so the table fills the page regardless of row count
-    // A4 usable height = 16838 - top margin - bottom margin = 15398 DXA
-    // Overhead = everything above the sig data rows (header, task table, headings, gaps, sig header row)
-    // We estimate overhead conservatively; rows get a minimum of 280 DXA for legibility
-    function calcRowHeight(nRows){
-      const usable=15398;
-      const overhead=instructions?3730:3280;
-      const sigHeaderH=280;
-      const available=usable-overhead-sigHeaderH;
-      const h=Math.floor(available/nRows);
-      return Math.max(280,Math.min(h,520)); // clamp: 280 min (signable), 520 max (not wasteful)
-    }
-
-    const sigBdr={style:BorderStyle.SINGLE,size:4,color:'AAAAAA'};
-    const sigBorders={top:sigBdr,bottom:sigBdr,left:sigBdr,right:sigBdr};
-
-    const mkSigHeaderCell=(text,w,italic)=>new TableCell({
-      borders:sigBorders,
-      width:{size:w,type:WidthType.DXA},
-      shading:{fill:CN,type:ShadingType.CLEAR},
-      verticalAlign:VerticalAlign.CENTER,
+    const mkSigHdrCell=(text,w,italic)=>new TableCell({
+      borders:sigBorders,width:{size:w,type:WidthType.DXA},
+      shading:{fill:CN,type:ShadingType.CLEAR},verticalAlign:VerticalAlign.CENTER,
       margins:{top:50,bottom:50,left:100,right:100},
-      children:[new Paragraph({
-        alignment:AlignmentType.CENTER,
-        children:[new TextRun({text,bold:!italic,italics:!!italic,size:italic?16:18,font:F,color:CW})]
-      })]
+      children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text,bold:!italic,italics:!!italic,size:italic?16:18,font:F,color:CW})]})]
     });
 
-    const mkSigCell=(text,w,italic,sz)=>new TableCell({
-      borders:sigBorders,
-      width:{size:w,type:WidthType.DXA},
-      verticalAlign:VerticalAlign.CENTER,
-      margins:{top:30,bottom:30,left:100,right:100},
-      children:[new Paragraph({
-        children:[new TextRun({text:text||'',italics:!!italic,size:sz||18,font:F,color:CT})]
-      })]
+    const mkSigCell=(text,w)=>new TableCell({
+      borders:sigBorders,width:{size:w,type:WidthType.DXA},
+      verticalAlign:VerticalAlign.CENTER,margins:{top:30,bottom:30,left:100,right:100},
+      children:[new Paragraph({children:[new TextRun({text:text||'',size:18,font:F,color:CT})]})]
     });
 
     const sigHeaderRow=new TableRow({
       tableHeader:true,
       height:{value:280,rule:HeightRule.ATLEAST},
       children:[
-        mkSigHeaderCell('First Name',C1,false),
-        mkSigHeaderCell('Last Name',C2,false),
-        mkSigHeaderCell('Notification Received',C3,true),
-        mkSigHeaderCell('Date',C4,false),
+        mkSigHdrCell('First Name',C1,false),
+        mkSigHdrCell('Last Name',C2,false),
+        mkSigHdrCell('Notification Received',C3,true),
+        mkSigHdrCell('Date',C4,false),
       ]
     });
 
-    // Build data rows
-    let sigRows=[sigHeaderRow];
-
+    const sigDataRows=[];
     if(activeTab==='blank'){
-      const n=Math.max(1,parseInt(document.getElementById('f-blank-rows').value)||25);
-      const rowH=calcRowHeight(n);
-      for(let i=0;i<n;i++){
-        sigRows.push(new TableRow({
-          height:{value:rowH,rule:HeightRule.EXACT},
-          children:[
-            mkSigCell('',C1),mkSigCell('',C2),mkSigCell('',C3),mkSigCell('',C4)
-          ]
-        }));
+      for(let i=0;i<nRows;i++){
+        sigDataRows.push(new TableRow({height:{value:rowH,rule:HeightRule.EXACT},children:[mkSigCell('',C1),mkSigCell('',C2),mkSigCell('',C3),mkSigCell('',C4)]}));
       }
     } else {
-      // Named students
-      const extra=Math.max(0,parseInt(document.getElementById('extra-rows').value)||0);
-      const totalNamedRows=students.length+extra;
-      const rowH=calcRowHeight(totalNamedRows);
       students.forEach(s=>{
-        sigRows.push(new TableRow({
-          height:{value:rowH,rule:HeightRule.EXACT},
-          children:[
-            mkSigCell(s.first,C1),mkSigCell(s.last,C2),mkSigCell('',C3),mkSigCell('',C4)
-          ]
-        }));
+        sigDataRows.push(new TableRow({height:{value:rowH,rule:HeightRule.EXACT},children:[mkSigCell(s.first,C1),mkSigCell(s.last,C2),mkSigCell('',C3),mkSigCell('',C4)]}));
       });
+      const extra=Math.max(0,parseInt(document.getElementById('extra-rows').value)||0);
       for(let i=0;i<extra;i++){
-        sigRows.push(new TableRow({
-          height:{value:rowH,rule:HeightRule.EXACT},
-          children:[
-            mkSigCell('',C1),mkSigCell('',C2),mkSigCell('',C3),mkSigCell('',C4)
-          ]
-        }));
+        sigDataRows.push(new TableRow({height:{value:rowH,rule:HeightRule.EXACT},children:[mkSigCell('',C1),mkSigCell('',C2),mkSigCell('',C3),mkSigCell('',C4)]}));
       }
     }
 
     const sigTable=new Table({
-      width:{size:PW,type:WidthType.DXA},
-      columnWidths:[C1,C2,C3,C4],
-      rows:sigRows,
+      width:{size:PW,type:WidthType.DXA},columnWidths:[C1,C2,C3,C4],
+      rows:[sigHeaderRow,...sigDataRows],
       layout:TableLayoutType.FIXED,
     });
 
-    // Build document
+    // ── Assemble document ─────────────────────────────────────────
     const docChildren=[
-      // Header — compact
       new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:20},
         children:[new TextRun({text:'St Ives High School',bold:true,size:32,font:F,color:CN})]}),
       new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},
@@ -696,14 +453,11 @@ async function generateDocx(){
       new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:40,after:100},
         children:[new TextRun({text:'Assessment Task Register',bold:false,size:20,font:F,color:CT})]}),
 
-      // Task details
-      new Table({width:{size:PW,type:WidthType.DXA},columnWidths:[LW,VW],rows:dr}),
+      new Table({width:{size:PW,type:WidthType.DXA},columnWidths:[LW,VW],rows:detailRowsArr}),
       gap(50),
 
-      // Instructions
-      ...(instructions?[mkH('Instructions'),instrBox,gap(50)]:[]),
+      ...(instructions ? [mkH('Instructions'), instrBox, gap(50)] : []),
 
-      // Signature table
       mkH('Student Acknowledgement'),
       new Paragraph({spacing:{before:0,after:40},children:[new TextRun({
         text:'Students, please sign below to confirm you have received notification of this assessment task.',
@@ -716,7 +470,7 @@ async function generateDocx(){
     const theDoc=new Document({
       styles:{default:{document:{run:{font:F,size:20}}}},
       sections:[{
-        properties:{page:{size:{width:11906,height:16838},margin:{top:720,right:720,bottom:720,left:720}}},
+        properties:{page:{size:{width:11906,height:16838},margin:{top:MARGIN_T,right:720,bottom:MARGIN_B,left:720}}},
         children:docChildren
       }]
     });
@@ -725,16 +479,14 @@ async function generateDocx(){
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
     a.href=url;
-    const safeCourse=(course).replace(/[^a-zA-Z0-9]/g,'_');
-    a.download=`Task_Register_${safeCourse}_Task${taskNum}.docx`;
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    a.download=`Task_Register_${course.replace(/[^a-zA-Z0-9]/g,'_')}_Task${taskNum}.docx`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    btn.textContent='✓ Downloaded!';
-    btn.classList.add('success');
+    btn.textContent='✓ Downloaded!'; btn.classList.add('success');
     setTimeout(()=>{btn.textContent='Generate Register';btn.classList.remove('success');btn.disabled=false;},3000);
 
-  }catch(e){
+  } catch(e){
     console.error(e);
     alert('Error generating document: '+e.message);
     btn.textContent='Generate Register';
