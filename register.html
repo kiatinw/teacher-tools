@@ -136,6 +136,13 @@ input,select,textarea,button{font-family:'Public Sans',sans-serif;}
     </div>
     <div class="tab-panel" id="tab-list">
       <p class="hint-text">Paste a class roll — one student per line. Any format works.</p>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;">Name order:</span>
+        <div class="tab-bar" style="margin-bottom:0;width:auto;flex:none;">
+          <button class="tab-btn active" id="order-fn-btn" onclick="setNameOrder('first')" style="padding:6px 14px;font-size:12px;">First → Last</button>
+          <button class="tab-btn" id="order-ln-btn" onclick="setNameOrder('last')" style="padding:6px 14px;font-size:12px;">Last → First</button>
+        </div>
+      </div>
       <textarea class="student-paste" id="student-paste" placeholder="e.g.&#10;Smith, John&#10;Emily Johnson&#10;20345 Sarah O'Brien&#10;3 — Williams, Tom"></textarea>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;">
         <button class="parse-btn" onclick="parseStudents()">↳ Parse names</button>
@@ -165,6 +172,18 @@ input,select,textarea,button{font-family:'Public Sans',sans-serif;}
 let dateOverrideActive = false;
 let students = [];
 let activeTab = 'blank';
+let nameOrder = 'first'; // 'first' = parsed first→last; 'last' = parsed last→first
+
+function setNameOrder(order){
+  nameOrder = order;
+  document.getElementById('order-fn-btn').classList.toggle('active', order==='first');
+  document.getElementById('order-ln-btn').classList.toggle('active', order==='last');
+  // Swap existing students' first/last and re-render
+  if(students.length){
+    students = students.map(s=>({first:s.last, last:s.first}));
+    renderStudentTable();
+  }
+}
 
 function toggleDateOverride(){
   dateOverrideActive = !dateOverrideActive;
